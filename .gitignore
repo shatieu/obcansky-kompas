@@ -1,0 +1,12 @@
+node_modules/
+.next/
+out/
+.env*
+!.env.example
+.vercel/
+.claude/settings.local.json
+coverage/
+playwright-report/
+test-results/
+*.tsbuildinfo
+.pglite/
