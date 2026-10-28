@@ -9,6 +9,8 @@ import { loadLettersContent } from "@/lib/letters/load";
 import { shareMetadata } from "@/lib/share/metadata";
 import { parseRecipients } from "@/lib/share/moments";
 import { sharePanelTexts, shareTexts } from "@/lib/share/texts";
+import { pageMetadata } from "@/lib/seo/site";
+import { seoTexts } from "@/lib/seo/texts";
 
 /**
  * /akce – dopisy zástupcům (SPEC §9.2). Stránka je statická: šablony dopisů a malé adresáře
@@ -27,7 +29,10 @@ type Props = { searchParams: Promise<{ r?: string | string[] }> };
  */
 export async function generateMetadata({ searchParams }: Props): Promise<Metadata> {
   const { r } = await searchParams;
-  return { title: loadUiAkce().akce.meta_title, ...shareMetadata("dopisy", { recipients: parseRecipients(Array.isArray(r) ? r[0] : r) }) };
+  return {
+    ...pageMetadata("/akce", loadUiAkce().akce.meta_title, seoTexts().descriptions.akce),
+    ...shareMetadata("dopisy", { recipients: parseRecipients(Array.isArray(r) ? r[0] : r) }),
+  };
 }
 
 export default function AkcePage() {

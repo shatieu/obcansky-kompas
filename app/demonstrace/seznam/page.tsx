@@ -19,7 +19,7 @@ import { publicSignText } from "@/lib/share/demonstrace-data";
  */
 export function generateMetadata(): Metadata {
   const t = demoTexts().list;
-  return { title: t.meta_title, description: t.meta_description };
+  return { title: t.meta_title, description: t.meta_description, alternates: { canonical: "/demonstrace/seznam" } };
 }
 
 export default async function DemoListPage({ searchParams }: { searchParams: Promise<Record<string, string | string[] | undefined>> }) {

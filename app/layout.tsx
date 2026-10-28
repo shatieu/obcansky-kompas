@@ -2,6 +2,8 @@ import type { Metadata, Viewport } from "next";
 import localFont from "next/font/local";
 import { SiteFooter, SiteHeader } from "@/components/site-chrome";
 import { ui } from "@/lib/content";
+import { siteUrl } from "@/lib/seo/site";
+import { seoTexts } from "@/lib/seo/texts";
 import "./globals.css";
 
 /* Mona Sans (GitHub, OFL) – self-hosted, soubory obsahují latin + latin-ext (česká diakritika). */
@@ -13,6 +15,9 @@ const mona = localFont({
   ],
   variable: "--font-mona",
   display: "swap",
+  // Přednačítá se jen široký řez (nadpisy = LCP na / i /kompas). Text (3 řezy, 81 kB) se stáhne hned
+  // po CSS a do té doby ho kreslí metricky upravený záložní font – nekonkuruje JS na pomalé síti.
+  preload: false,
   fallback: ["Helvetica Neue", "Arial", "sans-serif"],
 });
 const monaWide = localFont({
@@ -25,10 +30,21 @@ const monaWide = localFont({
   fallback: ["Arial Black", "sans-serif"],
 });
 
+/**
+ * Výchozí metadata (vyhledávače, sdílení). Stránky dodávají jen krátký titulek (šablona připojí název
+ * webu), popis a kanonickou adresu (lib/seo/site.ts). Ikony, manifest a výchozí OG obrázek jsou
+ * souborové konvence v app/ (icon.svg, favicon.ico, apple-icon.png, manifest.ts, opengraph-image.tsx).
+ * openGraph tu nemá titulek ani popis – Next je doplní z titulku a popisu každé stránky; stránky
+ * s vlastním obrázkem (shareMetadata) si openGraph nastavují celé.
+ */
+const seo = seoTexts();
 export const metadata: Metadata = {
-  metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000"),
-  title: ui.home.meta_title,
+  metadataBase: new URL(siteUrl()),
+  title: { default: ui.home.meta_title, template: `%s – ${seo.site_name}` },
   description: ui.home.meta_description,
+  applicationName: seo.site_name,
+  openGraph: { type: "website", locale: "cs_CZ", siteName: seo.site_name },
+  twitter: { card: "summary_large_image" },
 };
 
 export const viewport: Viewport = {

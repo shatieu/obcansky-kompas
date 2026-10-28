@@ -157,6 +157,23 @@ test.describe("§4.4 komponenty", () => {
       "href",
       "/demonstrace",
     );
+    // Světlá plocha (vlastník: web je bílý s modrými a černými prvky; panáčci jako v davu): hero ani hlavička nejsou noční.
+    const hero = page.locator("#h-home").locator("xpath=ancestor::section[1]");
+    await expect(hero).not.toHaveClass(/k-night/);
+    expect(await page.locator("[data-night-top]").count()).toBe(0);
+    const bgOf = (sel: string) =>
+      page.evaluate((s) => {
+        let e: Element | null = document.querySelector(s);
+        while (e) {
+          const c = getComputedStyle(e).backgroundColor;
+          if (c !== "rgba(0, 0, 0, 0)" && c !== "transparent") return c;
+          e = e.parentElement;
+        }
+        return getComputedStyle(document.documentElement).backgroundColor;
+      }, sel);
+    expect(await bgOf("[data-hero-demo]")).toBe("rgb(255, 255, 255)");
+    expect(await bgOf("header.k-appbar")).toBe("rgb(255, 255, 255)");
+    expect(await page.locator("#h-home").evaluate((e) => getComputedStyle(e).color)).toBe("rgb(11, 27, 51)");
     const flag = await page.locator("section .k-flag").first().boundingBox();
     const crowd = await pic.boundingBox();
     expect(flag && crowd).toBeTruthy();

@@ -13,6 +13,7 @@ import { demoTextsSchema } from "../components/demonstrace/join/texts";
 import { crowdTextsSchema } from "../lib/crowd/texts";
 import { lookupTextsSchema } from "../lib/sign/lookup-texts";
 import { loadLinks } from "../lib/content/links-schema";
+import { META_DESCRIPTION_MAX, seoTextsSchema } from "../lib/seo/texts";
 
 const LIMITS = {
   question: { words: 8 },
@@ -81,6 +82,9 @@ try {
       if (k === "title" || k.endsWith("_title")) checkHeading(where, v);
       else if (k === "lead" || k.endsWith("_lead")) checkLead(where, v);
       else if (k.endsWith("_button")) checkButton(where, v);
+      // Popisy pro vyhledávače (meta description): víc než 160 znaků Google ořízne.
+      if ((k === "meta_description" || prefix === "seo.descriptions.") && v.length > META_DESCRIPTION_MAX)
+        err(where, `popis pro vyhledávače má ${v.length} znaků (max. ${META_DESCRIPTION_MAX})`);
     }
   };
   walk(c.ui, "");
@@ -97,6 +101,8 @@ try {
   if (!demo.success) err("ui.demonstrace", demo.error.issues.map((i) => `${i.path.join(".")}: ${i.message}`).join("; "));
   const crowd = crowdTextsSchema.safeParse(c.ui.demonstrace_crowd);
   if (!crowd.success) err("ui.demonstrace_crowd", crowd.error.issues.map((i) => `${i.path.join(".")}: ${i.message}`).join("; "));
+  const seo = seoTextsSchema.safeParse(c.ui.seo);
+  if (!seo.success) err("ui.seo", seo.error.issues.map((i) => `${i.path.join(".")}: ${i.message}`).join("; "));
   const lookup = lookupTextsSchema.safeParse(c.ui.lookup);
   if (!lookup.success) err("ui.lookup", lookup.error.issues.map((i) => `${i.path.join(".")}: ${i.message}`).join("; "));
 

@@ -24,6 +24,7 @@
     "seed:clear": "tsx scripts/seed-clear.ts",
     "poc:clear": "tsx scripts/poc-clear.ts",
     "measure:js": "tsx scripts/measure-js.ts",
+    "icons": "tsx scripts/generate-icons.ts",
     "org:invite": "tsx scripts/org-invite.ts",
     "seed:demonstrace": "tsx scripts/content-build.ts && tsx scripts/seed-demonstrace.ts",
     "demo:reported": "tsx scripts/demo-reported.ts",

@@ -2,6 +2,8 @@ import type { Metadata } from "next";
 import { aiEnabled } from "@/lib/moderation/ai";
 import { pagesTexts } from "@/lib/org/texts";
 import { Disclosure, Page, PageHead } from "../metodika/_ui";
+import { pageMetadata } from "@/lib/seo/site";
+import { seoTexts } from "@/lib/seo/texts";
 
 /**
  * /soukromi (SPEC §14.4): správce (TODO(owner)), účel, právní základ (čl. 9 odst. 2 písm. a)
@@ -11,7 +13,7 @@ import { Disclosure, Page, PageHead } from "../metodika/_ui";
 export const dynamic = "force-static";
 
 export function generateMetadata(): Metadata {
-  return { title: pagesTexts().privacy.meta_title };
+  return pageMetadata("/soukromi", pagesTexts().privacy.meta_title, seoTexts().descriptions.soukromi);
 }
 
 export default function PrivacyPage() {

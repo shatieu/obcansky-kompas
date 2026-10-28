@@ -6,8 +6,12 @@ import { ScreenHeading, SectionTitle } from "@/components/ui/typography";
 import { ui } from "@/lib/content";
 import { flags } from "@/lib/env";
 import { getStats } from "@/lib/stats/source";
+import { pageMetadata } from "@/lib/seo/site";
+import { seoTexts } from "@/lib/seo/texts";
 
-export const metadata: Metadata = { title: ui.stats.meta_title };
+export function generateMetadata(): Metadata {
+  return pageMetadata("/statistiky", ui.stats.meta_title, seoTexts().descriptions.statistiky);
+}
 /** ISR: do DB max. jeden dotaz za minutu (SPEC §14.2). */
 export const revalidate = 60;
 

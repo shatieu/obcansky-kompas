@@ -5,6 +5,8 @@ import { formatDateCz } from "@/lib/org/format";
 import { pagesTexts, type PagesTexts } from "@/lib/org/texts";
 import { Icon } from "@/components/ui/icon";
 import { Disclosure, Page, PageHead } from "../_ui";
+import { pageMetadata } from "@/lib/seo/site";
+import { seoTexts } from "@/lib/seo/texts";
 
 /**
  * /metodika/zdroje (SPEC §11, §13): každé tvrzení se zdrojem, místem ve zdroji a posledním
@@ -14,7 +16,7 @@ import { Disclosure, Page, PageHead } from "../_ui";
 export const dynamic = "force-static";
 
 export function generateMetadata(): Metadata {
-  return { title: pagesTexts().sources.meta_title };
+  return pageMetadata("/metodika/zdroje", pagesTexts().sources.meta_title, seoTexts().descriptions.zdroje);
 }
 
 type S = PagesTexts["sources"];

@@ -21,6 +21,12 @@ describe("ilustrace demonstrace v hero", () => {
     expect(svg).toMatch(/var\(--blue\)/);
   });
 
+  it("barvy jako dav na světlé ploše: čáry --ink, bílá cedule = --surface s obrysem, žádné noční tokeny", () => {
+    expect(svg).toMatch(/var\(--ink\)/);
+    expect(svg).toMatch(/var\(--surface\)/);
+    expect(svg).not.toMatch(/--night|--on-night/);
+  });
+
   it("žádná šála v trikolóře", () => {
     for (const s of HERO_CROWD_SEEDS) expect(generateStickman(s).scarf).toBe(false);
   });

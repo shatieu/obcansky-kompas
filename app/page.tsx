@@ -9,16 +9,22 @@ import { Kicker } from "@/components/ui/typography";
 import { ui } from "@/lib/content";
 import { flags } from "@/lib/env";
 import { getStats } from "@/lib/stats/source";
+import type { Metadata } from "next";
+import { homeJsonLd, JsonLd } from "@/lib/seo/json-ld";
 
 /** Hlavní stránka (SPEC §13), ISR po 60 s (SPEC §14.2). Červený prvek obrazovky = vlajka. */
 export const revalidate = 60;
+
+/** Titulek a popis z layoutu (výchozí); tady jen kanonická adresa. */
+export const metadata: Metadata = { alternates: { canonical: "/" } };
 
 export default async function HomePage() {
   const stats = await getStats({});
   return (
     <div>
-      {/* Plakát: noční plocha (hlavička nad ní přejde do noční přes data-night-top). */}
-      <section className="k-night" data-night-top aria-labelledby="h-home">
+      <JsonLd data={homeJsonLd()} />
+      {/* Plakát na světlé ploše jako zbytek webu a dav: nadpis a panáčci v --ink, hlavička běžná světlá. */}
+      <section aria-labelledby="h-home">
         {/* Mobil: vlajka → otázka → dav. Desktop: otázka vlevo, vpravo vlajka a pod ní (s odstupem) dav. */}
         <div className="k-wrap grid pb-5 pt-5 lg:grid-cols-[minmax(0,1fr)_440px] lg:grid-rows-[auto_auto] lg:items-center lg:gap-x-12 lg:pb-10 lg:pt-9">
           <div className="lg:col-start-2 lg:row-start-1 lg:flex lg:justify-center lg:self-end">

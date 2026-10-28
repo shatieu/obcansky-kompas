@@ -6,7 +6,7 @@ const CROWD = heroCrowdSvg();
 
 /**
  * Ilustrace online demonstrace v hero hlavní stránky. Statické SVG ze serveru, bez textu a bez JS;
- * celé je odkazem do davu (/demonstrace). Barvy z tokenů noční plochy (čáry --ink, cedule bílé a modré).
+ * celé je odkazem do davu (/demonstrace). Světlá plocha jako dav: čáry --ink, cedule bílé s obrysem --ink a modré (žádná červená – ta patří vlajce).
  */
 export function HeroDemo({ label, href = "/demonstrace", className }: { label: string; href?: string; className?: string }) {
   return (

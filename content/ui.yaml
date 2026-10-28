@@ -51,7 +51,7 @@ home:
   demo_button: Online demonstrace
 
 compass:
-  meta_title: Kompas – Občanský kompas
+  meta_title: Kompas
   progress_label: Otázka {n} z {total}
   next_button: Další otázka
   back_button: Zpět
@@ -138,7 +138,7 @@ stance:
   by: Postoj spolku, který kompas provozuje. Kompas výše je neutrální.
 
 stats:
-  meta_title: Statistiky – Občanský kompas
+  meta_title: Statistiky
   title: Jak odpovídají ostatní
   lead: Odpovědi lidí, kteří kompas vyplnili a ověřili svůj podpis.
   disclaimer: Vzorek lidí, kteří kompas vyplnili. Není to reprezentativní průzkum.
@@ -180,7 +180,7 @@ common:
 
 # ---------- Podpis, ověření, osobní stránka, e-maily (SPEC §7) – jen server ----------
 sign:
-  meta_title: Podpis – Občanský kompas
+  meta_title: Podpis
   title: Podepiš své prohlášení
   lead: Text se skládá z tvých odpovědí, ručně se nepřepisuje.
   statement_title: Můj text
@@ -238,7 +238,7 @@ sign:
   withdrawn_lead: Osobní údaje jsme smazali.
 
 verify:
-  meta_title: Ověření podpisu – Občanský kompas
+  meta_title: Ověření podpisu
   working: Ověřuju podpis…
   done_title: Podepsáno.
   done_lead: Díky, tvůj hlas je započítaný.
@@ -252,7 +252,7 @@ verify:
   sign_again_button: Podepsat znovu
 
 page:
-  meta_title: Prohlášení – Občanský kompas
+  meta_title: Prohlášení
   kicker: PROHLÁŠENÍ
   title: Prohlášení
   anonymous: Podepsáno bez jména
@@ -353,7 +353,7 @@ lookup:
 
 # ---------- /fotka (SPEC §9.3) – jen server. Slogany jsou v content/slogans.yaml. ----------
 photo:
-  meta_title: Profilová fotka – Občanský kompas
+  meta_title: Profilová fotka
   meta_description: Rámeček na profilovou fotku. Fotka zůstává v tvém telefonu, nikam ji neposíláme.
   kicker: PROFILOVÁ FOTKA
   title: Ukaž, že ti média nejsou jedno
@@ -399,7 +399,7 @@ photo:
 
 # ---------- /akce (SPEC §9.2) a /v/[uuid]/zakon (SPEC §10) – jen server ----------
 akce:
-  meta_title: Napiš svým zástupcům – Občanský kompas
+  meta_title: Napiš svým zástupcům
   kicker: DOPISY
   title: Napiš svým zástupcům
   lead: Dopis se složí z tvých odpovědí a zůstane jen v tvém prohlížeči.
@@ -501,7 +501,7 @@ akce:
     senator_detail: "Obvod č. {n} – {name}"
 
 zakon:
-  meta_title: Můj zákon – Občanský kompas
+  meta_title: Můj zákon
   kicker: MŮJ ZÁKON
   lead: Zákon složený z tvých odpovědí, ke stažení jako PDF nebo DOCX.
   source_signature: Podle tvého podpisu
@@ -523,7 +523,7 @@ zakon:
 # ---------- /hnuti, /org/[token], /metodika, /metodika/zdroje, /o-projektu, /soukromi (SPEC §12–§14) – jen server ----------
 # *_body = text za rozbalovacím prvkem (Disclosure), smí být delší.
 hnuti:
-  meta_title: Strany a hnutí – Občanský kompas
+  meta_title: Strany a hnutí
   title: Jak odpověděly strany a hnutí
   lead: Stejné otázky jako v kompasu, s odůvodněním od každého subjektu.
   type_strana: Strana
@@ -544,7 +544,7 @@ hnuti:
   compass_button: Spustit kompas
 
 org:
-  meta_title: Odpovědi subjektu – Občanský kompas
+  meta_title: Odpovědi subjektu
   kicker: Neveřejný formulář
   title: Odpovědi za {name}
   lead: Stejné otázky jako v kompasu, ke každé můžeš připsat odůvodnění.
@@ -578,7 +578,7 @@ org:
   error_static_demo: V ukázce zatím nelze odpovědi odeslat.
 
 method:
-  meta_title: Metodika – Občanský kompas
+  meta_title: Metodika
   kicker: Metodika
   title: Jak kompas funguje
   lead: Otázky, věty i zdroje jsou veřejné, tady je vidíš všechny.
@@ -624,7 +624,7 @@ method:
   demo_reports_body: Každého panáčka jde nahlásit, z jedné IP adresy jednou. Po třech nahlášeních z různých adres se vlastní slogan a jméno skryjí, dokud je nezkontroluje člověk. Každý zásah, ať ho udělá kontrola, nahlášení, nebo člověk, se zapíše do záznamu.
 
 sources:
-  meta_title: Zdroje a ověření – Občanský kompas
+  meta_title: Zdroje a ověření
   kicker: Metodika
   title: Všechny zdroje a ověření
   lead: Každé tvrzení z vysvětlivek a čísel, se zdrojem a posledním verdiktem.
@@ -654,7 +654,7 @@ sources:
   back_button: Zpět na metodiku
 
 about:
-  meta_title: O projektu – Občanský kompas
+  meta_title: O projektu
   kicker: O projektu
   title: Kdo za kompasem stojí
   lead: Kompas provozuje spolek, kód je veřejný a může ho použít kdokoli.
@@ -674,7 +674,7 @@ about:
   security_body: Našel/našla jsi chybu v zabezpečení? Kontakt je v souboru security.txt.
 
 privacy:
-  meta_title: Soukromí – Občanský kompas
+  meta_title: Soukromí
   kicker: Soukromí
   title: Jak zacházíme s tvými údaji
   lead: Odpovědi bez podpisu zůstávají jen v tvém prohlížeči, k nám nic nejde.
@@ -807,7 +807,7 @@ demonstrace:
   page_mine_label: Můj panáček v davu
   page_edit_button: Upravit panáčka
   join:
-    meta_title: Připojit se k demonstraci – Občanský kompas
+    meta_title: Připojit se k demonstraci
     kicker: Online demonstrace
     edit_kicker: Úprava panáčka
     home_aria: Zpět na hlavní stránku
@@ -903,7 +903,7 @@ demonstrace:
     owner_conflict_keep: Nechat původní
     owner_conflict_kept: Necháváme původní podpis. Úprava tohohle podpisu funguje dál.
   list:
-    meta_title: Seznam účastníků – Online demonstrace
+    meta_title: Seznam účastníků demonstrace
     meta_description: Přístupný seznam lidí, kteří se připojili k online demonstraci.
     home_aria: Zpět na hlavní stránku
     kicker: Online demonstrace
@@ -964,3 +964,24 @@ demonstrace_crowd:
     close: Zavřít
     figure_label: "Panáček s cedulí: {slogan}"
     figure_label_no_sign: Panáček bez cedule
+
+# ---------- Vyhledávače a sdílení (metadata, manifest, výchozí OG obrázek) – jen server ----------
+# Čte lib/seo/texts.ts. Titulky stránek jsou u jejich sekcí (meta_title, bez přípony – připojí ji
+# šablona „%s – {site_name}“ v app/layout.tsx). Popisy: jedna až dvě věty, max. 160 znaků (lint:content).
+seo:
+  site_name: Občanský kompas
+  short_name: Kompas
+  # Výchozí sdílecí obrázek (app/opengraph-image.tsx): nadpis = home.title, kicker = home.kicker.
+  image_alt: Česká vlajka a otázka Občanského kompasu, jak financovat ČT a ČRo
+  # Provozovatel pro strukturovaná data (JSON-LD Organization na /). Prázdné = Organization se
+  # nevypisuje (žádná vymyšlená data). TODO(owner): oficiální název spolku.
+  organization_name: ""
+  descriptions:
+    kompas: Osm otázek o tom, jak platit Českou televizi a Český rozhlas. U každé volby najdeš vysvětlení se zdroji.
+    statistiky: Jak na otázky kompasu odpovídají lidé, kteří ho vyplnili a ověřili svůj podpis.
+    akce: Napiš poslancům, senátorům, kraji nebo obci. Dopis se složí z tvých odpovědí a zůstane jen v tvém prohlížeči.
+    hnuti: Jak na otázky kompasu odpověděly strany a hnutí, s odůvodněním od každého z nich.
+    metodika: Jak kompas skládá tvůj text z odpovědí, kdy se otázky větví a jak ověřujeme fakta ve vysvětlivkách.
+    zdroje: Každé tvrzení z vysvětlivek a čísel kompasu se zdrojem a posledním verdiktem ověření.
+    o_projektu: Kdo kompas provozuje, jak zůstává nestranný a kde najdeš jeho veřejný zdrojový kód.
+    soukromi: Jaké údaje zpracováváme, když podepíšeš. Odpovědi bez podpisu zůstávají jen v tvém prohlížeči.

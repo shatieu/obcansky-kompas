@@ -1,12 +1,14 @@
 import type { Metadata } from "next";
 import { pagesTexts } from "@/lib/org/texts";
 import { Disclosure, Page, PageHead, PrimaryAction } from "../metodika/_ui";
+import { pageMetadata } from "@/lib/seo/site";
+import { seoTexts } from "@/lib/seo/texts";
 
 /** /o-projektu (SPEC §13): spolek (TODO(owner)), kontakt (TODO(owner)), repozitář, AGPL. Statická. */
 export const dynamic = "force-static";
 
 export function generateMetadata(): Metadata {
-  return { title: pagesTexts().about.meta_title };
+  return pageMetadata("/o-projektu", pagesTexts().about.meta_title, seoTexts().descriptions.o_projektu);
 }
 
 export default function AboutPage() {

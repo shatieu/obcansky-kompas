@@ -11,7 +11,7 @@ import { flags } from "@/lib/env";
 /** Stránka je statická (texty z repa); data davu si klient bere z cachovaného API (§6.4). */
 export function generateMetadata(): Metadata {
   const t = crowdTexts();
-  return { title: t.meta_title, description: t.meta_description };
+  return { title: t.meta_title, description: t.meta_description, alternates: { canonical: "/demonstrace" } };
 }
 
 export default function DemonstracePage() {

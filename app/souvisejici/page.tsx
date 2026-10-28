@@ -4,6 +4,7 @@ import { Kicker, SectionTitle } from "@/components/ui/typography";
 import { INITIATIVES_ANCHOR, links, READING_ANCHOR } from "@/lib/content/links";
 import type { LinkItem } from "@/lib/content/links-schema";
 import { Page, PageHead } from "../metodika/_ui";
+import { pageMetadata } from "@/lib/seo/site";
 
 /**
  * /souvisejici „Odkazy a čtení“ (požadavek vlastníka 2026-10-28). Dvě jasně oddělené části:
@@ -14,7 +15,7 @@ import { Page, PageHead } from "../metodika/_ui";
 export const dynamic = "force-static";
 
 export function generateMetadata(): Metadata {
-  return { title: links.meta_title, description: links.lead };
+  return pageMetadata("/souvisejici", links.meta_title, links.lead);
 }
 
 function LinkList({ items, onBlue = false }: { items: LinkItem[]; onBlue?: boolean }) {

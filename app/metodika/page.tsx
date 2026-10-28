@@ -7,12 +7,14 @@ import { Icon } from "@/components/ui/icon";
 import { TextLink } from "@/components/ui/button";
 import { LINKS_HREF, links, READING_ANCHOR } from "@/lib/content/links";
 import { Disclosure, ExternalLink, Page, PageHead, PrimaryAction } from "./_ui";
+import { pageMetadata } from "@/lib/seo/site";
+import { seoTexts } from "@/lib/seo/texts";
 
 /** /metodika (SPEC §11.3, §13): jak kompas funguje, větvení, knihovna vět, ověřování, data. Statická. */
 export const dynamic = "force-static";
 
 export function generateMetadata(): Metadata {
-  return { title: pagesTexts().method.meta_title };
+  return pageMetadata("/metodika", pagesTexts().method.meta_title, seoTexts().descriptions.metodika);
 }
 
 function groupTitle(g: LibraryGroup, m: ReturnType<typeof pagesTexts>["method"]): string {

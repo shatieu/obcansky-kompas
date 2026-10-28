@@ -11,6 +11,8 @@ import type { PublicOrganization } from "@/lib/org/service";
 import { getOrganizations } from "@/lib/org/source";
 import { pagesTexts, type PagesTexts } from "@/lib/org/texts";
 import { Disclosure, Page, PageHead, PrimaryAction } from "../metodika/_ui";
+import { pageMetadata } from "@/lib/seo/site";
+import { seoTexts } from "@/lib/seo/texts";
 
 /**
  * /hnuti (SPEC §12, §13): strany a hnutí abecedně, s odpověďmi a odůvodněním, nebo
@@ -20,7 +22,7 @@ import { Disclosure, Page, PageHead, PrimaryAction } from "../metodika/_ui";
 export const revalidate = 60;
 
 export function generateMetadata(): Metadata {
-  return { title: pagesTexts().hnuti.meta_title };
+  return pageMetadata("/hnuti", pagesTexts().hnuti.meta_title, seoTexts().descriptions.hnuti);
 }
 
 type H = PagesTexts["hnuti"];

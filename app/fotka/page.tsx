@@ -5,10 +5,11 @@ import { ShareArrival } from "@/components/share/share-arrival";
 import { loadPhotoUi, loadSlogans } from "@/lib/photo/content";
 import { shareMetadata } from "@/lib/share/metadata";
 import { sharePanelTexts, shareTexts } from "@/lib/share/texts";
+import { pageMetadata } from "@/lib/seo/site";
 
 const ui = loadPhotoUi();
 
-export const metadata: Metadata = { title: ui.meta_title, description: ui.meta_description, ...shareMetadata("fotka") };
+export const metadata: Metadata = { ...pageMetadata("/fotka", ui.meta_title, ui.meta_description), ...shareMetadata("fotka") };
 
 /**
  * /fotka (SPEC §9.3): rámeček na profilovou fotku. Stránka je statická, vše se
