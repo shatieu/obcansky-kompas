@@ -2,9 +2,11 @@
 
 import { useState } from "react";
 import { saveCompassState } from "@/lib/compass-storage";
+import type { Statement } from "@/lib/compose/core";
 import type { Answers, Demographics } from "@/lib/compose/types";
 import type { SignTexts } from "@/lib/sign/texts";
 import { Button, StickyBar } from "@/components/ui/button";
+import { StatementText } from "@/components/ui/statement-text";
 import { Notice, SectionTitle } from "@/components/ui/typography";
 import { saveEditSession } from "./edit-session";
 
@@ -23,7 +25,8 @@ export function EditPanel({
   t: SignTexts["sign"];
   token: string;
   signature: { id: string; answers: Answers; showName: boolean; demographics: Demographics };
-  statement: string;
+  /** Složený text (null = neznámá verze obsahu). */
+  statement: Pick<Statement, "intro" | "blocks" | "outro"> | null;
   readOnly: boolean;
 }) {
   const [confirming, setConfirming] = useState(false);
@@ -67,7 +70,7 @@ export function EditPanel({
         <h2 id="edit-statement" className="k-letter__meta">
           {t.statement_title}
         </h2>
-        <p className="mt-1">{statement}</p>
+        {statement && <StatementText statement={statement} className="mt-1" />}
       </section>
       <div className="flex min-w-0 flex-col gap-3">
         {readOnly && <Notice tone="info">{t.read_only}</Notice>}

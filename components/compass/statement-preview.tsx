@@ -4,6 +4,7 @@ import { ui } from "@/lib/content";
 import type { Statement } from "@/lib/compose";
 import { Checkbox } from "@/components/ui/fields";
 import { StatementPreview as MyText } from "@/components/ui/statement-preview";
+import { StatementText } from "@/components/ui/statement-text";
 import { Kicker } from "@/components/ui/typography";
 
 interface Props {
@@ -18,10 +19,10 @@ function HideNevim({ hideUnknown, onToggleHide }: Omit<Props, "statement">) {
 
 /** Živý náhled „Můj text“ (SPEC §6) – mobil: sbalený řádek nad tlačítkem. */
 export function StatementPreview({ statement, hideUnknown, onToggleHide }: Props) {
-  const hasAnswers = statement.parts.some((p) => p.questionId !== null);
+  const hasAnswers = statement.blocks.length > 0;
   return (
-    <MyText label={ui.preview.title} paragraphs={hasAnswers ? [statement.text] : []} peek={hasAnswers ? statement.text : ui.preview.empty}>
-      {!hasAnswers && <p className="text-ink-secondary">{ui.preview.empty}</p>}
+    <MyText label={ui.preview.title} peek={hasAnswers ? statement.text : ui.preview.empty}>
+      {hasAnswers ? <StatementText statement={statement} className="mb-2" /> : <p className="text-ink-secondary">{ui.preview.empty}</p>}
       <HideNevim hideUnknown={hideUnknown} onToggleHide={onToggleHide} />
     </MyText>
   );
@@ -29,13 +30,13 @@ export function StatementPreview({ statement, hideUnknown, onToggleHide }: Props
 
 /** Desktop: vedlejší sloupec s kickerem „Můj text“. */
 export function StatementAside({ statement, hideUnknown, onToggleHide }: Props) {
-  const hasAnswers = statement.parts.some((p) => p.questionId !== null);
+  const hasAnswers = statement.blocks.length > 0;
   return (
     <section aria-labelledby="h-mytext">
       <Kicker as="div">
         <h2 id="h-mytext">{ui.preview.title}</h2>
       </Kicker>
-      <div className="mt-2">{hasAnswers ? <p>{statement.text}</p> : <p className="text-ink-secondary">{ui.preview.empty}</p>}</div>
+      <div className="mt-2">{hasAnswers ? <StatementText statement={statement} /> : <p className="text-ink-secondary">{ui.preview.empty}</p>}</div>
       <p className="k-cap mt-2">{ui.preview.aside_note}</p>
       <div className="mt-1">
         <HideNevim hideUnknown={hideUnknown} onToggleHide={onToggleHide} />

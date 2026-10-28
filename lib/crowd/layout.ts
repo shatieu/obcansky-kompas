@@ -11,10 +11,10 @@ export const LAYOUT = {
   firstRow: 11,
   /** O kolik je každá další řada delší. */
   growth: 2,
-  /** Rozestup v řadě při měřítku 1 (jednotky světa; postava ~100). */
-  spacingX: 40,
-  /** Svislý rozestup řad při měřítku 1 – hlava zadní řady je vždy nad hlavou přední. */
-  rowSpacing: 62,
+  /** Rozestup v řadě při měřítku 1 (jednotky světa; postava ~100). Původně 40, +15 % (vlastník 2026-10-28). */
+  spacingX: 46,
+  /** Svislý rozestup řad při měřítku 1 – hlava zadní řady je vždy nad hlavou přední. Původně 62, +16 %. */
+  rowSpacing: 72,
   /** Perspektiva: měřítko řady r = 1 / (1 + r / K). */
   perspectiveK: 80,
   /** Náhodný posun ze seedu (± jednotky × měřítko). */

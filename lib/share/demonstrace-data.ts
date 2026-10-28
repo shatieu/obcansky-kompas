@@ -13,6 +13,7 @@ import { sharePanelTexts, shareTexts } from "./texts";
  * (cache s tagy): vlastní slogan jen schválený, jméno jen schválené a bez skrytí.
  */
 export function publicSignText(slogan: string): string {
+  if (!slogan) return ""; // panáček bez cedule a bez sloganu
   if (slogan.startsWith("t:")) return slogan.slice(2);
   const id = slogan.startsWith("p:") ? slogan.slice(2) : slogan;
   return presetText(id) ?? presetText(DEFAULT_PRESET_ID) ?? "";
@@ -23,7 +24,15 @@ export function demoShareVersion(p: Pick<PersonResponse, "seed" | "pose" | "sign
   return shortHash(JSON.stringify([p.seed, p.pose, p.signColor, p.slogan, p.name]));
 }
 
-export async function demonstraceShareCard(id: string, img: DemoImageTexts): Promise<{ card: ShareCard; found: boolean }> {
+/**
+ * Karta pro OG obrázek. `version` = aktuální demoShareVersion veřejných dat (route ji porovná
+ * s `?v=`: jen shoda smí dostat dlouhou CDN cache), `id` = normalizované id panáčka pro
+ * `Vercel-Cache-Tag: demo-person:<id>` (čištění CDN při skrytí / úpravě / odvolání).
+ */
+export async function demonstraceShareCard(
+  id: string,
+  img: DemoImageTexts,
+): Promise<{ card: ShareCard; found: boolean; version?: string; id?: string }> {
   const person = UUID_RE.test(id) ? await loadPerson(id.toLowerCase()).catch(() => null) : null;
   const meta = await loadMeta().catch(() => null);
   const count = meta?.count ?? null;
@@ -44,7 +53,7 @@ export async function demonstraceShareCard(id: string, img: DemoImageTexts): Pro
     count,
     img,
   );
-  return { card, found: true };
+  return { card, found: true, version: demoShareVersion(person), id: person.id };
 }
 
 /** Konfigurace klientského sdílení panáčka (texty z ui.yaml jen ze serveru, předvolby sloganů). */

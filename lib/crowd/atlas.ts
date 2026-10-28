@@ -1,5 +1,5 @@
-import { POSES, SIGN_COLORS, type Pose, type SignColor } from "@/lib/demo/constants";
-import { drawFigure, drawHead, drawScarf, drawSign } from "@/lib/stickman/canvas";
+import { hasSign, POSES, SIGN_COLORS, SIGN_PAINTS, type Pose, type SignColor, type SignPaint } from "@/lib/demo/constants";
+import { drawFigure, drawHead, drawKeys, drawScarf, drawSign } from "@/lib/stickman/canvas";
 import { figureGeometry, SIGN_SIZE, STROKE, VIEWBOX } from "@/lib/stickman/geometry";
 import { HAIR_STYLES, SIGN_SHAPES, type Hair, type SignShape, type StickmanParams } from "@/lib/stickman/params";
 import { poseAt } from "@/lib/stickman/poses";
@@ -7,8 +7,8 @@ import type { StickmanPalette } from "@/lib/stickman/sign";
 
 /**
  * Atlas textur davu v jednom canvasu (jeden zdroj textury = dávkování v PixiJS):
- * siluety (póza × barva × tvar cedule) pro dálku, hlavy s vlasy, cedule, šála, vlajka, bílý čtverec.
- * Kreslí se z barev aktuálního motivu; při změně motivu se překreslí.
+ * siluety (póza × barva × tvar cedule; bez cedule jedna na pózu) pro dálku, hlavy s vlasy, cedule, šála, vlajka,
+ * značka výběru (bílý kruh s vlajkou – SelectMark z design systému), bílý čtverec. Web je vždy světlý.
  */
 export interface Frame {
   x: number;
@@ -36,11 +36,20 @@ export interface AtlasLayout {
   scarf: Frame;
   flag: Frame;
   white: Frame;
+  /** Značka výběru: kruh MARK_PX × MARK_PX px (v CSS 28 px – size-mark). */
+  mark: Frame;
+  /** Svazek klíčů (póza „klice“), kotva = střed kroužku. */
+  keys: Frame;
 }
 
-export const silKey = (pose: Pose, color: SignColor, shape: SignShape) => `${pose}|${color}|${shape}`;
+/** Velikost značky výběru v atlasu (px); na obrazovce se kreslí na 28 CSS px. */
+export const MARK_PX = 64;
+
+/** Bez cedule nezáleží na tvaru cedule – jedna silueta na pózu. */
+const silShapes = (color: SignColor): readonly SignShape[] => (hasSign(color) ? SIGN_SHAPES : ["rect"]);
+export const silKey = (pose: Pose, color: SignColor, shape: SignShape) => `${pose}|${color}|${hasSign(color) ? shape : "rect"}`;
 export const headKey = (hair: Hair, glasses: boolean) => `${hair}|${glasses ? 1 : 0}`;
-export const signKey = (shape: SignShape, color: SignColor) => `${shape}|${color}`;
+export const signKey = (shape: SignShape, color: SignPaint) => `${shape}|${color}`;
 
 /** Průměrný panáček pro siluety (výška 1). */
 const CANON: StickmanParams = {
@@ -72,7 +81,7 @@ export function atlasLayout(): AtlasLayout {
     k++;
     return f;
   };
-  for (const pose of POSES) for (const color of SIGN_COLORS) for (const shape of SIGN_SHAPES) silhouette.set(silKey(pose, color, shape), cell());
+  for (const pose of POSES) for (const color of SIGN_COLORS) for (const shape of silShapes(color)) silhouette.set(silKey(pose, color, shape), cell());
   const placeholder = cell();
   let y = Math.ceil(k / cols) * ch + 2;
 
@@ -95,7 +104,7 @@ export function atlasLayout(): AtlasLayout {
   const sign = new Map<string, Frame>();
   let rowH = 0;
   for (const shape of SIGN_SHAPES)
-    for (const color of SIGN_COLORS) {
+    for (const color of SIGN_PAINTS) {
       const s = SIGN_SIZE[shape];
       const w = Math.ceil((s.w + STROKE + 2) * PART_RES);
       const h = Math.ceil((s.h + STROKE + 2) * PART_RES);
@@ -116,8 +125,10 @@ export function atlasLayout(): AtlasLayout {
   const flag: Frame = { x, y, w: 70 * PART_RES, h: 48 * PART_RES, ax: 35 * PART_RES, ay: 24 * PART_RES };
   x += flag.w;
   const white: Frame = { x: x + 4, y: y + 4, w: 8, h: 8, ax: 4, ay: 4 };
-  if (y + Math.max(scarf.h, flag.h) > ATLAS_H) throw new Error("atlas: málo místa");
-  return { silhouette, placeholder, head, sign, scarf, flag, white };
+  const mark: Frame = { x: x + 24, y, w: MARK_PX, h: MARK_PX, ax: MARK_PX / 2, ay: MARK_PX / 2 };
+  const keys: Frame = { x: mark.x + mark.w + 4, y, w: 22 * PART_RES, h: 24 * PART_RES, ax: 11 * PART_RES, ay: 5 * PART_RES };
+  if (y + Math.max(scarf.h, flag.h, mark.h, keys.h) > ATLAS_H || keys.x + keys.w > ATLAS_W) throw new Error("atlas: málo místa");
+  return { silhouette, placeholder, head, sign, scarf, flag, white, mark, keys };
 }
 
 /** Nakreslí celý atlas do 2D kontextu. */
@@ -125,12 +136,13 @@ export function drawAtlas(ctx: CanvasRenderingContext2D, L: AtlasLayout, pal: St
   ctx.clearRect(0, 0, ATLAS_W, ATLAS_H);
   for (const pose of POSES)
     for (const color of SIGN_COLORS)
-      for (const shape of SIGN_SHAPES) {
+      for (const shape of silShapes(color)) {
         const f = L.silhouette.get(silKey(pose, color, shape))!;
         ctx.save();
         ctx.translate(f.x + f.ax, f.y + f.ay);
         ctx.scale(SIL_RES, SIL_RES);
-        drawFigure(ctx, figureGeometry({ ...CANON, signShape: shape }, poseAt({ ...CANON, signShape: shape }, pose)), color, { ...pal });
+        const params = { ...CANON, signShape: shape };
+        drawFigure(ctx, figureGeometry(params, poseAt(params, pose, undefined, hasSign(color))), color, { ...pal });
         ctx.restore();
       }
   {
@@ -151,7 +163,7 @@ export function drawAtlas(ctx: CanvasRenderingContext2D, L: AtlasLayout, pal: St
       ctx.restore();
     }
   for (const shape of SIGN_SHAPES)
-    for (const color of SIGN_COLORS) {
+    for (const color of SIGN_PAINTS) {
       const f = L.sign.get(signKey(shape, color))!;
       const s = SIGN_SIZE[shape];
       ctx.save();
@@ -170,25 +182,52 @@ export function drawAtlas(ctx: CanvasRenderingContext2D, L: AtlasLayout, pal: St
   {
     // Vlajka: bílý pruh, červený pruh, modrý klín do poloviny délky; obrys flag-edge (ink).
     const f = L.flag;
-    const w = 66 * PART_RES;
-    const h = 44 * PART_RES;
-    const x0 = f.x + f.ax - w / 2;
-    const y0 = f.y + f.ay - h / 2;
-    ctx.fillStyle = pal.tricolor.white;
-    ctx.fillRect(x0, y0, w, h / 2);
-    ctx.fillStyle = pal.tricolor.red;
-    ctx.fillRect(x0, y0 + h / 2, w, h / 2);
-    ctx.fillStyle = pal.tricolor.blue;
+    drawFlag(ctx, f.x + f.ax, f.y + f.ay, 66 * PART_RES, 44 * PART_RES, pal, PART_RES);
+  }
+  {
+    // Značka výběru (SelectMark „zapnuto“): bílý kruh s obrysem --ink a celou vlajkou 3:2 uvnitř
+    // (v 28px kruhu vlajka 20 × 13,3 px, obrys vlajky 1 px).
+    const f = L.mark;
+    const cx = f.x + f.ax;
+    const cy = f.y + f.ay;
+    const k = MARK_PX / 28;
     ctx.beginPath();
-    ctx.moveTo(x0, y0);
-    ctx.lineTo(x0 + w / 2, y0 + h / 2);
-    ctx.lineTo(x0, y0 + h);
-    ctx.closePath();
+    ctx.arc(cx, cy, MARK_PX / 2 - k, 0, Math.PI * 2);
+    ctx.fillStyle = "#FFFFFF";
     ctx.fill();
+    ctx.lineWidth = 2 * k;
     ctx.strokeStyle = pal.ink;
-    ctx.lineWidth = PART_RES;
-    ctx.strokeRect(x0 - PART_RES / 2, y0 - PART_RES / 2, w + PART_RES, h + PART_RES);
+    ctx.stroke();
+    drawFlag(ctx, cx, cy, 20 * k, (40 / 3) * k, pal, k);
+  }
+  {
+    const f = L.keys;
+    ctx.save();
+    ctx.translate(f.x + f.ax, f.y + f.ay);
+    ctx.scale(PART_RES, PART_RES);
+    drawKeys(ctx, pal);
+    ctx.restore();
   }
   ctx.fillStyle = "#FFFFFF";
   ctx.fillRect(L.white.x - 2, L.white.y - 2, L.white.w + 4, L.white.h + 4);
+}
+
+/** Vlajka 3:2 se středem (cx, cy): bílý a červený pruh, modrý klín do poloviny; obrys `edge` px v --ink. */
+function drawFlag(ctx: CanvasRenderingContext2D, cx: number, cy: number, w: number, h: number, pal: StickmanPalette, edge: number) {
+  const x0 = cx - w / 2;
+  const y0 = cy - h / 2;
+  ctx.fillStyle = pal.tricolor.white;
+  ctx.fillRect(x0, y0, w, h / 2);
+  ctx.fillStyle = pal.tricolor.red;
+  ctx.fillRect(x0, y0 + h / 2, w, h / 2);
+  ctx.fillStyle = pal.tricolor.blue;
+  ctx.beginPath();
+  ctx.moveTo(x0, y0);
+  ctx.lineTo(x0 + w / 2, y0 + h / 2);
+  ctx.lineTo(x0, y0 + h);
+  ctx.closePath();
+  ctx.fill();
+  ctx.strokeStyle = pal.ink;
+  ctx.lineWidth = edge;
+  ctx.strokeRect(x0 - edge / 2, y0 - edge / 2, w + edge, h + edge);
 }

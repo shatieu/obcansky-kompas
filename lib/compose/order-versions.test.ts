@@ -85,7 +85,8 @@ describe("rekonstrukce starých verzí (content_version)", () => {
     const old = composeStatement(answers, "2026-10-28.1");
     expect(old.contentVersion).toBe("2026-10-28.1");
     expect(old.parts.map((p) => p.questionId)).toEqual([null, "q1", "q2", "q3", "q4", "q8", null]);
-    expect(old.text).toBe(
+    // Podepsané věty se rekonstruují přesně (dopisy, srovnání); `text` je jejich zobrazení po odstavcích.
+    expect(old.parts.map((p) => p.text).join(" ")).toBe(
       "Takhle si představuji financování České televize a Českého rozhlasu. " +
         "ČT a ČRo mají ročně dostat asi 8,5 miliardy Kč, víc než v návrhu vlády, ale méně než dnes. " +
         "Peníze mají jít ze státního rozpočtu " +
@@ -94,6 +95,20 @@ describe("rekonstrukce starých verzí (content_version)", () => {
         "Firmy nemají platit. " +
         "Žádám, aby zákonodárci můj názor vzali v úvahu.",
     );
+    // Bloky i u staré verze: stejné odvození (štítek = `short`, pořadí té verze).
+    expect(old.blocks.map((b) => [b.questionId, b.label])).toEqual([
+      ["q1", "Kolik peněz"],
+      ["q2", "Odkud peníze"],
+      ["q3", "Kdo určí výši"],
+      ["q4", "Kdo platí"],
+      ["q8", "Firmy"],
+    ]);
+    expect(old.text.split("\n\n")).toEqual([
+      old.intro.text,
+      ...old.blocks.map((b) => `${b.label}: ${b.text}`),
+      old.outro.text,
+    ]);
+    expect(old.text).toContain("\n\nOdkud peníze: Peníze mají jít ze státního rozpočtu\n\n");
     const now = composeStatement(answers, V);
     expect(now.text).not.toBe(old.text);
     expect(now.parts.at(-2)!.questionId).toBe("q1");

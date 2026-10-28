@@ -18,6 +18,12 @@ export const LIMITS = {
   demoWritePerSignature: { limit: 10, windowSec: HOUR },
   demoWritePerIp: { limit: 20, windowSec: HOUR },
   demoReportPerIp: { limit: 30, windowSec: HOUR },
+  // POST /api/demonstrace/owner (odkaz z e-mailu → cookie): vlastní bucket, aby otevření stránky
+  // úpravy nesnižovalo rozpočet připojení a úprav (demoWritePerIp).
+  demoOwnerPerIp: { limit: 20, windowSec: HOUR },
+  // Načtení odpovědí podle čísla podpisu / odkazu (GET /api/signature/lookup, /v/<číslo>):
+  // ~40 bitů čísla + 30 pokusů za hodinu = výčet nemá šanci.
+  lookupPerIp: { limit: 30, windowSec: HOUR },
 } as const;
 
 export type LimitName = keyof typeof LIMITS;

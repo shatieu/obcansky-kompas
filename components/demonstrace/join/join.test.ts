@@ -14,6 +14,7 @@ import {
   navStates,
   nextStep,
   payload,
+  pickLook,
   prevStep,
   reroll,
   rerollsLeft,
@@ -27,7 +28,7 @@ import { demoTextsSchema } from "./texts";
 
 const okCheck: CheckText = () => true;
 const realCheck: CheckText = (t, f) => scriptCheck(t, f).ok;
-const presets = { "ruce-pryc": "Ruce pryč od médií", "nejsou-jedno": "Média veřejné služby mi nejsou jedno" };
+const presets = { "ruce-pryc": "Ruce pryč od médií", "nejsou-jedno": "Veřejnoprávní média mi nejsou jedno" };
 
 describe("texty demonstrace v ui.yaml", () => {
   it("odpovídají schématu a souhlas má doslovné znění ze SPEC", () => {
@@ -183,5 +184,22 @@ describe("blok postoje: počet", () => {
     expect(countLine(1, t)).toBe("1 člověk");
     expect(countLine(3, t)).toBe("3 lidé");
     expect(countLine(2481, t)).toBe("2 481 lidí");
+  });
+});
+
+describe("bez cedule a galerie (v2)", () => {
+  const d0 = initialDraft("ruce-pryc", 5);
+  it("výběr z galerie změní seed, ale ne počet změn", () => {
+    const d = pickLook({ ...d0, rerollCount: 3 }, 777);
+    expect(d.seed).toBe(777);
+    expect(d.rerollCount).toBe(3);
+  });
+  it("bez cedule je vlastní slogan nepovinný a tělo ho vynechá", () => {
+    const d = { ...d0, signColor: "none" as const, sloganMode: "custom" as const, custom: "" };
+    expect(stepError("slogan", d, okCheck)).toBeNull();
+    const body = payload(d);
+    expect("sloganPresetId" in body).toBe(false);
+    expect("sloganCustom" in body).toBe(false);
+    expect(stepError("slogan", { ...d, signColor: "white" }, okCheck)).toBe("slogan_empty");
   });
 });

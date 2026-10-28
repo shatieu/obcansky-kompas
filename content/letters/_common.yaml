@@ -3,7 +3,7 @@
 # forma: 1 stručná zpráva · 2 běžný dopis · 3 formální dopis
 # delka: 1 krátký a zdvořilý · 2 střední · 3 delší a důrazný
 # Každá varianta uvádí, pro které stupně se hodí. Varianty mění formulace, nikdy fakta.
-version: 1
+version: 2
 
 forma_levels:
   - level: 1
@@ -50,6 +50,9 @@ process_block:
       text: >-
         Důrazně nesouhlasím i se způsobem projednávání. O tak zásadní změně se nemá
         rozhodovat ve spěchu a bez široké veřejné debaty.
+
+# Oslovení jedné osoby, když v adresáři chybí její pohlaví (jinak oslovení podle pohlaví z <typ>.yaml).
+osloveni_neutralni: Vážená paní, vážený pane,
 
 # Patička (výchozí zapnuto, lze vypnout).
 footer: Připraveno pomocí Občanský kompas

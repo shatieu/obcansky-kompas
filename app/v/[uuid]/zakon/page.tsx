@@ -3,6 +3,7 @@ import { loadUiAkce } from "@/components/akce/load-texts";
 import { LawView } from "@/components/law/law-view";
 import { CONTENT_VERSION } from "@/lib/content";
 import { loadLawContent } from "@/lib/law/load";
+import { lookupTexts } from "@/lib/sign/lookup-texts";
 import { readSignatureForLaw } from "./signature";
 
 /**
@@ -28,5 +29,5 @@ function todayCz(): string {
 export default async function ZakonPage({ params }: { params: Promise<{ uuid: string }> }) {
   const { uuid } = await params;
   const signature = await readSignatureForLaw(uuid);
-  return <LawView uuid={uuid} date={todayCz()} content={loadLawContent()} texts={loadUiAkce().zakon} initial={signature} browserContentVersion={CONTENT_VERSION} />;
+  return <LawView uuid={uuid} date={todayCz()} content={loadLawContent()} texts={loadUiAkce().zakon} initial={signature} browserContentVersion={CONTENT_VERSION} lookup={lookupTexts()} />;
 }

@@ -3,6 +3,7 @@ import { ButtonLink, StickyBar, TextLink } from "@/components/ui/button";
 import { Icon } from "@/components/ui/icon";
 import { SampleBanner } from "@/components/ui/sample";
 import { Notice, ScreenHeading } from "@/components/ui/typography";
+import { HomeBackLink } from "@/components/demonstrace/home-link";
 import { maxIndexOf, pageCount, pageItems, pageRange, parsePage } from "@/components/demonstrace/list/pagination";
 import { demoTexts } from "@/components/demonstrace/join/texts";
 import { ui } from "@/lib/content";
@@ -49,8 +50,9 @@ export default async function DemoListPage({ searchParams }: { searchParams: Pro
   const href = (p: number) => (p <= 1 ? "/demonstrace/seznam" : `/demonstrace/seznam?strana=${p}`);
 
   return (
-    <div className="k-wrap pt-3 pb-4 lg:pt-6 lg:pb-6">
+    <div className="k-wrap pt-1 pb-4 lg:pt-4 lg:pb-6">
       <div className="max-w-main">
+        <HomeBackLink label={t.home_aria} className="mb-1" />
         {demo && (
           <div className="mb-3">
             <SampleBanner title={ui.demo.banner_title} text={ui.demo.banner_text} />
@@ -75,7 +77,7 @@ export default async function DemoListPage({ searchParams }: { searchParams: Pro
                     <span className="k-num w-[56px] flex-none lg:w-[72px] pt-[2px] text-right font-semibold">{fill(t.rank, { rank: formatCount(index + 1) })}</span>
                     <span className="min-w-0 flex-1">
                       <span className="block font-semibold break-words">{who}</span>
-                      <span className="block break-words">„{text}“</span>
+                      {text && <span className="block break-words">„{text}“</span>}
                       {day && <span className="k-cap block">{fill(t.joined, { date: formatDay(day) })}</span>}
                     </span>
                     <Icon name="chevron-right" className="mt-[2px] flex-none" />
@@ -108,6 +110,28 @@ export default async function DemoListPage({ searchParams }: { searchParams: Pro
               <span />
             )}
           </nav>
+        )}
+
+        {pages > 2 && (
+          // Skok na stranu bez JS: GET formulář se stejným parametrem ?strana= (mimo rozsah = 1 / poslední).
+          <form action="/demonstrace/seznam" method="get" className="mt-2 flex flex-wrap items-end gap-1">
+            <label className="flex flex-col gap-0.5">
+              <span className="k-cap">{t.page_jump_label}</span>
+              <input
+                name="strana"
+                type="number"
+                inputMode="numeric"
+                min={1}
+                max={pages}
+                defaultValue={page}
+                required
+                className="k-input min-h-[48px] w-[112px]"
+              />
+            </label>
+            <button type="submit" className="k-btn k-btn--secondary">
+              {t.page_jump_button}
+            </button>
+          </form>
         )}
 
         <p className="mt-3">

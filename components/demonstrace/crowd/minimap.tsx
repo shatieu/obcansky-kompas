@@ -9,9 +9,21 @@ export interface MinimapHandle {
 
 const W = 152;
 const H = 104;
+/** Nejmenší rámeček výřezu (px minimapy). */
+const MIN_FRAME = 12;
+
+function parseHex(c: string): [number, number, number] {
+  const m = /^#?([0-9a-f]{6})$/i.exec(c.trim());
+  if (m) {
+    const v = parseInt(m[1]!, 16);
+    return [(v >> 16) & 255, (v >> 8) & 255, v & 255];
+  }
+  const rgb = /rgba?\((\d+)[,\s]+(\d+)[,\s]+(\d+)/.exec(c);
+  return rgb ? [Number(rgb[1]), Number(rgb[2]), Number(rgb[3])] : [69, 78, 93];
+}
 
 /**
- * Minimapa v rohu (§6.2): celý dav jako tečky + rámeček výřezu. Klepnutím nebo tažením
+ * Minimapa v rohu (§6.2): hustota davu (sytost = počet lidí na pixel) + rámeček výřezu. Klepnutím nebo tažením
  * se kamera přesune. Pro klávesnici je posun šipkami na plátně, minimapa je jen pomůcka.
  */
 export function Minimap({ handle, onPick, label }: { handle: Ref<MinimapHandle>; onPick: (x: number, y: number) => void; label: string }) {
@@ -39,19 +51,39 @@ export function Minimap({ handle, onPick, label }: { handle: Ref<MinimapHandle>;
         const oy = (H - bh * k) / 2;
         const map = (x: number, y: number): [number, number] => [ox + (x - bounds.x0) * k, oy + (y - bounds.y0) * k];
         const inv = (sx: number, sy: number): [number, number] => [bounds.x0 + (sx - ox) / k, bounds.y0 + (sy - oy) / k];
-        const img = document.createElement("canvas");
-        img.width = W * dpr;
-        img.height = H * dpr;
-        const c = img.getContext("2d")!;
-        c.scale(dpr, dpr);
-        c.fillStyle = dot;
-        // U velkého davu stačí každý n-tý (tečky by se stejně slily).
-        const step = Math.max(1, Math.floor(count / 40000));
+        // Hustota: počet lidí na pixel minimapy → průhlednost (víc lidí = sytější). Jednotlivé
+        // tečky by u velkého davu splynuly v šum a malý dav by byl skoro neviditelný.
+        const pw = W * dpr;
+        const ph = H * dpr;
+        const grid = new Uint32Array(pw * ph);
+        const step = Math.max(1, Math.floor(count / 200000));
+        let max = 0;
         for (let i = 0; i < count; i += step) {
           const p = positionFor(i);
           const [x, y] = map(p.x, p.y - 45 * p.scale);
-          c.fillRect(x - 0.5, y - 0.5, 1.2, 1.2);
+          const gx = Math.floor(x * dpr);
+          const gy = Math.floor(y * dpr);
+          if (gx < 0 || gy < 0 || gx >= pw || gy >= ph) continue;
+          const idx = gy * pw + gx;
+          const v = (grid[idx] = grid[idx]! + 1);
+          if (v > max) max = v;
         }
+        const img = document.createElement("canvas");
+        img.width = pw;
+        img.height = ph;
+        const c = img.getContext("2d")!;
+        const data = c.createImageData(pw, ph);
+        const rgb = parseHex(dot);
+        const norm = Math.log1p(Math.max(1, max));
+        for (let k = 0; k < grid.length; k++) {
+          const v = grid[k]!;
+          if (!v) continue;
+          data.data[k * 4] = rgb[0];
+          data.data[k * 4 + 1] = rgb[1];
+          data.data[k * 4 + 2] = rgb[2];
+          data.data[k * 4 + 3] = Math.round(255 * (0.35 + 0.65 * (Math.log1p(v) / norm)));
+        }
+        c.putImageData(data, 0, 0);
         cache.current = { count, key, img, map, inv };
       }
       const ctx = cv.getContext("2d")!;
@@ -63,9 +95,12 @@ export function Minimap({ handle, onPick, label }: { handle: Ref<MinimapHandle>;
       const [x1, y1] = cache.current.map(view.x1, view.y1);
       ctx.strokeStyle = ink;
       ctx.lineWidth = 2;
-      const cx = Math.max(1, Math.min(W - 1, x0));
-      const cy = Math.max(1, Math.min(H - 1, y0));
-      ctx.strokeRect(cx, cy, Math.max(4, Math.min(W - 1, x1) - cx), Math.max(4, Math.min(H - 1, y1) - cy));
+      // Rámeček výřezu nejmíň MIN_FRAME px (zblízka by byl tečkou), se středem ve středu výřezu.
+      const fw = Math.max(MIN_FRAME, Math.min(W - 2, x1) - Math.max(1, x0));
+      const fh = Math.max(MIN_FRAME * 0.75, Math.min(H - 2, y1) - Math.max(1, y0));
+      const mx = Math.min(W - 1 - fw / 2, Math.max(1 + fw / 2, (x0 + x1) / 2));
+      const my = Math.min(H - 1 - fh / 2, Math.max(1 + fh / 2, (y0 + y1) / 2));
+      ctx.strokeRect(mx - fw / 2, my - fh / 2, fw, fh);
     },
   }));
 

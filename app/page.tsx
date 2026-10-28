@@ -1,3 +1,4 @@
+import { HeroDemo } from "@/components/home/hero-demo";
 import { StanceBlock } from "@/components/stance-block";
 import { QuestionChart } from "@/components/stats/stats-charts";
 import { ButtonLink, StickyBar, TextLink } from "@/components/ui/button";
@@ -18,13 +19,14 @@ export default async function HomePage() {
     <div>
       {/* Plakát: noční plocha (hlavička nad ní přejde do noční přes data-night-top). */}
       <section className="k-night" data-night-top aria-labelledby="h-home">
-        <div className="k-wrap pb-5 pt-5 lg:grid lg:grid-cols-[minmax(0,1fr)_400px] lg:items-center lg:gap-12 lg:pb-10 lg:pt-9">
-          <div className="lg:order-2 lg:p-3">
-            <div className="mb-6 ml-1.5 w-[200px] lg:m-0 lg:w-full">
+        {/* Mobil: vlajka → otázka → dav. Desktop: otázka vlevo, vpravo vlajka a pod ní (s odstupem) dav. */}
+        <div className="k-wrap grid pb-5 pt-5 lg:grid-cols-[minmax(0,1fr)_440px] lg:grid-rows-[auto_auto] lg:items-center lg:gap-x-12 lg:pb-10 lg:pt-9">
+          <div className="lg:col-start-2 lg:row-start-1 lg:flex lg:justify-center lg:self-end">
+            <div className="mb-5 ml-1.5 w-[120px] lg:m-0 lg:w-[240px]">
               <FlagHero label="" />
             </div>
           </div>
-          <div>
+          <div className="lg:col-start-1 lg:row-span-2 lg:row-start-1">
             <Kicker>{ui.home.kicker}</Kicker>
             <h1 id="h-home" className="k-h k-display">
               {ui.home.title}
@@ -35,6 +37,12 @@ export default async function HomePage() {
                 {ui.home.start_button}
               </ButtonLink>
             </div>
+          </div>
+          <div className="mt-4 lg:col-start-2 lg:row-start-2 lg:mt-12 lg:self-start">
+            <HeroDemo label={ui.home.demo_aria} className="mx-auto max-w-[400px] lg:max-w-none" />
+            <TextLink href="/demonstrace" icon="arrow-right" className="mt-2 inline-flex min-h-[48px] items-center">
+              {ui.home.demo_button}
+            </TextLink>
           </div>
         </div>
       </section>

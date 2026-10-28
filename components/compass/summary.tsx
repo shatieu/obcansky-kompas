@@ -12,6 +12,7 @@ import { AnswerOption } from "@/components/ui/answer";
 import { BudgetSlider } from "@/components/ui/budget-slider";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/fields";
+import { StatementText } from "@/components/ui/statement-text";
 import { Notice, ScreenHeading } from "@/components/ui/typography";
 import { nextMultiValue } from "./select";
 
@@ -55,6 +56,14 @@ export default function Summary({
   const rowRefs = useRef<Partial<Record<QuestionId, HTMLButtonElement | null>>>({});
   const { states, effective } = evaluation;
 
+  /** Štítek odstavce → řádek odpovědi se stejným štítkem (bez změny #hash, ten řídí krok kompasu). */
+  const goToRow = (qid: string) => {
+    const row = document.getElementById(`sum-row-${qid}`);
+    if (!row) return;
+    row.scrollIntoView({ block: "start", behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth" });
+    row.focus({ preventScroll: true });
+  };
+
   const collapse = (qid: QuestionId) => {
     setOpen(null);
     requestAnimationFrame(() => rowRefs.current[qid]?.focus());
@@ -72,7 +81,21 @@ export default function Summary({
     <section aria-labelledby="h-summary">
       <ScreenHeading id="h-summary" headingRef={headingRef} title={ui.compass.summary_title} lead={ui.compass.summary_lead} />
       <div className="k-letter mt-3" aria-live="polite">
-        <p>{statement.text}</p>
+        <StatementText
+          statement={statement}
+          label={(b) => (
+            <a
+              className="k-stmt__label"
+              href={`#sum-row-${b.questionId}`}
+              onClick={(e) => {
+                e.preventDefault();
+                goToRow(b.questionId);
+              }}
+            >
+              {b.label}
+            </a>
+          )}
+        />
       </div>
       <div className="mt-1">
         <Checkbox label={ui.preview.hide_nevim} checked={hideUnknown} onChange={onToggleHide} />
@@ -88,7 +111,16 @@ export default function Summary({
           const isOpen = open === qid;
           const panelId = `sum-${qid}`;
           return (
-            <li key={qid} className="k-sumrow" data-invalid={invalid || undefined} data-skipped={skipped || undefined} data-q={qid}>
+            <li
+              key={qid}
+              id={`sum-row-${qid}`}
+              tabIndex={-1}
+              className="k-sumrow"
+              data-invalid={invalid || undefined}
+              data-skipped={skipped || undefined}
+              data-q={qid}
+            >
+              <p className="k-stmt__label">{q.short}</p>
               <p className="k-cap">{t(ui.compass.question_number, { n: i + 1 })}</p>
               <h3 className="font-semibold">{q.text}</h3>
               <p className="k-sumrow__value mt-0.5 text-[20px] font-bold leading-7">{answerText(qid)}</p>

@@ -1,9 +1,10 @@
-import type { CSSProperties, ReactNode } from "react";
+import type { CSSProperties } from "react";
 import { cx } from "./format";
 
 /**
  * Vlajka – vždy 3:2, vždy celá, vždy sama (README „Vlajka“, pohyb.md).
  * Jen šířka; výška = šířka × 2/3. Obrys 1px flag-edge leží vně vlajky. Nic ji nepřekrývá.
+ * FlagUnfold (potvrzení podpisu) je ve ./flag-unfold – sdílený chunk s /kompas by ho jinak nesl (150 kB).
  */
 export function Flag({
   width = "100%",
@@ -66,45 +67,5 @@ export function SelectMark({ on = false }: { on?: boolean }) {
         <path className="f-blue" d="M0 0L450 300 0 600z" />
       </svg>
     </span>
-  );
-}
-
-/**
- * Potvrzení podpisu (pohyb.md §2): noční plocha, vlajka se rozvine za 800 ms, zpráva až POD ní.
- * `fixed` = přes celou obrazovku. `children` = akce pod zprávou (např. pokračovat).
- */
-export function FlagUnfold({
-  title = "Podepsáno.",
-  text = "Díky. Tvůj hlas je započítaný.",
-  still,
-  fixed = false,
-  onContinue,
-  children,
-  headingLevel = 2,
-}: {
-  title?: string;
-  text?: string;
-  /** Zmrazit na tomto ms (dokumentace). */
-  still?: number;
-  fixed?: boolean;
-  /** Klepnutí kamkoli na plochu pokračuje. */
-  onContinue?: () => void;
-  children?: ReactNode;
-  headingLevel?: 1 | 2;
-}) {
-  const t = still ?? null;
-  const delays = t == null ? undefined : { wedge: -t, stripes: 150 - t };
-  const H = headingLevel === 1 ? "h1" : "h2";
-  return (
-    <div className={cx("k-unfold", "k-night", fixed && "k-unfold--fixed")} role="status" aria-live="polite" onClick={onContinue}>
-      <div className="k-unfold__flag">
-        <Flag unfold delays={delays} label="" />
-      </div>
-      <div className="k-unfold__msg" style={t == null ? undefined : { animationDelay: `${600 - t}ms`, animationPlayState: "paused" }}>
-        <H className="k-h k-display">{title}</H>
-        <p>{text}</p>
-        {children}
-      </div>
-    </div>
   );
 }

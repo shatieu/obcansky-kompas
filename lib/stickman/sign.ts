@@ -1,4 +1,4 @@
-import type { SignColor } from "@/lib/demo/constants";
+import type { SignPaint } from "@/lib/demo/constants";
 import { SIGN_SIZE } from "./geometry";
 import type { SignShape } from "./params";
 
@@ -10,8 +10,8 @@ export interface StickmanPalette {
   ink: string;
   /** Výplň hlavy (zakryje dav za ní). */
   surface: string;
-  signFill: Record<SignColor, string>;
-  signText: Record<SignColor, string>;
+  signFill: Record<SignPaint, string>;
+  signText: Record<SignPaint, string>;
   /** Šála v trikolóře – oficiální barvy (stejné v obou motivech). */
   tricolor: { white: string; red: string; blue: string };
 }

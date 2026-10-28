@@ -3,27 +3,30 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import type { SignTexts } from "@/lib/sign/texts";
+import type { ShortIdTexts } from "@/lib/sign/lookup-texts";
+import { ShortIdBadge } from "@/components/lookup/short-id-badge";
 import { Button, ButtonLink, StickyBar } from "@/components/ui/button";
-import { FlagUnfold } from "@/components/ui/flag";
+import { FlagUnfold } from "@/components/ui/flag-unfold";
 import { ScreenHeading } from "@/components/ui/typography";
 import { WaitBar } from "@/components/ui/wait-bar";
 
 type State =
   | { s: "working" }
-  | { s: "done"; url: string }
-  | { s: "used"; url: string | null }
+  | { s: "done"; url: string; shortId: string | null }
+  | { s: "used"; url: string | null; shortId: string | null }
   | { s: "expired" }
   | { s: "invalid" }
   | { s: "unavailable"; message: string };
 
 /** Po rozvinutí vlajky (800 ms) pokračuje na osobní stránku – klepnutím nebo samo po 1,5 s. */
 const AUTO_CONTINUE_MS = 800 + 1500;
+const AUTO_CONTINUE_WITH_ID_MS = 800 + 6000;
 
 /**
  * /overeni/[token]: token se spotřebuje až POSTem z prohlížeče (ne samotným otevřením odkazu,
  * které umí udělat i náhled v poště). Hotovo = noční plakátová plocha FlagUnfold (pohyb.md §2).
  */
-export function VerifyClient({ token, t }: { token: string; t: SignTexts["verify"] }) {
+export function VerifyClient({ token, t, shortIdTexts }: { token: string; t: SignTexts["verify"]; shortIdTexts?: ShortIdTexts }) {
   const router = useRouter();
   const [state, setState] = useState<State>({ s: "working" });
   const started = useRef(false);
@@ -34,9 +37,10 @@ export function VerifyClient({ token, t }: { token: string; t: SignTexts["verify
     (async () => {
       try {
         const res = await fetch("/api/sign/verify", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ token }) });
-        const json = (await res.json().catch(() => ({}))) as { url?: string; message?: string };
-        if (res.ok && json.url) setState({ s: "done", url: json.url });
-        else if (res.status === 409) setState({ s: "used", url: json.url ?? null });
+        const json = (await res.json().catch(() => ({}))) as { url?: string; message?: string; shortId?: string };
+        const shortId = typeof json.shortId === "string" ? json.shortId : null;
+        if (res.ok && json.url) setState({ s: "done", url: json.url, shortId });
+        else if (res.status === 409) setState({ s: "used", url: json.url ?? null, shortId });
         else if (res.status === 410) setState({ s: "expired" });
         else if (res.status === 404) setState({ s: "invalid" });
         else setState({ s: "unavailable", message: json.message ?? t.invalid_lead });
@@ -52,9 +56,10 @@ export function VerifyClient({ token, t }: { token: string; t: SignTexts["verify
 
   useEffect(() => {
     if (state.s !== "done") return;
-    const id = window.setTimeout(go, AUTO_CONTINUE_MS);
+    // S číslem podpisu na obrazovce déle (stihnout si ho přečíst); je pak i na osobní stránce.
+    const id = window.setTimeout(go, state.shortId && shortIdTexts ? AUTO_CONTINUE_WITH_ID_MS : AUTO_CONTINUE_MS);
     return () => window.clearTimeout(id);
-  }, [state, go]);
+  }, [state, go, shortIdTexts]);
 
   if (state.s === "working")
     return (
@@ -68,6 +73,7 @@ export function VerifyClient({ token, t }: { token: string; t: SignTexts["verify
   if (state.s === "done")
     return (
       <FlagUnfold fixed headingLevel={1} title={t.done_title} text={t.done_lead} onContinue={go}>
+        {state.shortId && shortIdTexts && <ShortIdBadge className="mt-3" shortId={state.shortId} texts={shortIdTexts} />}
         <Button
           className="mt-4"
           iconEnd="arrow-right"
@@ -92,6 +98,7 @@ export function VerifyClient({ token, t }: { token: string; t: SignTexts["verify
   return (
     <section className="max-w-main py-4 lg:py-6">
       <ScreenHeading title={title} lead={lead} />
+      {state.s === "used" && state.shortId && shortIdTexts && <ShortIdBadge className="mt-3" shortId={state.shortId} texts={shortIdTexts} />}
       {href && cta && (
         <StickyBar className="mt-4">
           <ButtonLink href={href} block iconEnd="arrow-right">

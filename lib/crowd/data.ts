@@ -1,4 +1,4 @@
-import { TILE_SIZE, type MetaResponse, type PersonResponse, type Pose, type SignColor, type TileItem, type TileResponse } from "@/lib/demo/constants";
+import { POSES, TILE_SIZE, type MetaResponse, type PersonResponse, type Pose, type SignColor, type TileItem, type TileResponse } from "@/lib/demo/constants";
 import { isPose, isSignColor } from "@/lib/stickman/params";
 import { mulberry32 } from "@/lib/stickman/prng";
 
@@ -23,6 +23,9 @@ export interface CrowdMeta {
   count: number;
   tiles: number;
   tileSize: number;
+  /** Nejnižší / nejvyšší position_index (indexy mají mezery a nemusí začínat 0). */
+  minIndex: number | null;
+  maxIndex: number | null;
   demo: boolean;
 }
 
@@ -43,8 +46,9 @@ export function personFromResponse(r: PersonResponse): CrowdPerson {
   return personFromItem([r.index, r.seed, r.pose, r.signColor, r.slogan, r.name, r.id, r.joinedDay]);
 }
 
-/** Text sloganu k zobrazení: předvolba podle id, nebo schválený vlastní text. */
+/** Text sloganu k zobrazení: předvolba podle id, nebo schválený vlastní text; "" = bez sloganu. */
 export function sloganText(slogan: string, presets: Record<string, string>, fallbackId: string): string {
+  if (!slogan) return "";
   if (slogan.startsWith("t:")) return slogan.slice(2);
   const id = slogan.startsWith("p:") ? slogan.slice(2) : slogan;
   return presets[id] ?? presets[fallbackId] ?? "";
@@ -55,7 +59,8 @@ export interface CrowdSource {
   tile(n: number): Promise<CrowdPerson[]>;
   person(id: string): Promise<CrowdPerson | null>;
   me(): Promise<{ id: string; index: number } | null>;
-  report(id: string): Promise<boolean>;
+  /** Nahlášení s jednorázovým tokenem Turnstile (bez tokenu server odmítne). */
+  report(id: string, turnstileToken: string): Promise<boolean>;
   readonly fixture: boolean;
 }
 
@@ -78,7 +83,9 @@ export function httpSource(): CrowdSource {
     fixture: false,
     async meta() {
       const m = await getJson<MetaResponse>(`${API}/meta`);
-      return { count: m.count, tiles: m.tiles, tileSize: m.tileSize || TILE_SIZE, demo: !!m.demo };
+      const maxIndex = typeof m.maxIndex === "number" ? m.maxIndex : m.count > 0 ? m.count - 1 : null;
+      const minIndex = typeof m.minIndex === "number" ? m.minIndex : m.count > 0 ? 0 : null;
+      return { count: m.count, tiles: m.tiles, tileSize: m.tileSize || TILE_SIZE, minIndex, maxIndex, demo: !!m.demo };
     },
     async tile(n) {
       const t = await getJson<TileResponse>(`${API}/tile/${n}`);
@@ -100,8 +107,13 @@ export function httpSource(): CrowdSource {
         return null;
       }
     },
-    async report(id) {
-      const res = await fetch(`${API}/${encodeURIComponent(id)}/report`, { method: "POST", credentials: "same-origin" });
+    async report(id, turnstileToken) {
+      const res = await fetch(`${API}/${encodeURIComponent(id)}/report`, {
+        method: "POST",
+        credentials: "same-origin",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({ turnstileToken }),
+      });
       return res.ok || res.status === 409;
     },
   };
@@ -116,16 +128,20 @@ export function fixtureSource(count: number, presetIds: string[], customTexts: s
   const person = (i: number): CrowdPerson => {
     const rnd = mulberry32(i * 2654435761);
     const seed = Math.floor(rnd() * 4294967296) >>> 0;
-    const poses: Pose[] = ["drzi", "mava", "pochoduje", "tleska", "skace", "pest"];
+    const poses: readonly Pose[] = POSES;
     const colors: SignColor[] = ["white", "blue", "red"];
     const custom = customTexts.length > 0 && rnd() < 0.15;
+    // Asi třetina bez cedule (jako seed); vlastní proud, ať zbytek ukázky zůstane stejný.
+    const noSign = mulberry32((i * 2654435761) ^ 0x5eed)() < 1 / 3;
     const slogan = custom ? `t:${customTexts[Math.floor(rnd() * customTexts.length)]}` : `p:${presetIds[Math.floor(rnd() * presetIds.length)] ?? ""}`;
+    const pose = poses[Math.floor(rnd() * poses.length)]!;
+    const paint = colors[Math.floor(rnd() * colors.length)]!;
     const day = new Date(Date.UTC(2026, 9, 1) + Math.floor((i / Math.max(1, count)) * 27) * 86400000);
     return {
       index: i,
       seed,
-      pose: poses[Math.floor(rnd() * poses.length)]!,
-      signColor: colors[Math.floor(rnd() * colors.length)]!,
+      pose,
+      signColor: noSign ? "none" : paint,
       slogan,
       name: FIXTURE_NAMES[Math.floor(rnd() * FIXTURE_NAMES.length)] ?? null,
       id: `fixture-${i}`,
@@ -135,7 +151,7 @@ export function fixtureSource(count: number, presetIds: string[], customTexts: s
   return {
     fixture: true,
     async meta() {
-      return { count, tiles: Math.ceil(count / TILE_SIZE), tileSize: TILE_SIZE, demo: true };
+      return { count, tiles: Math.ceil(count / TILE_SIZE), tileSize: TILE_SIZE, minIndex: count ? 0 : null, maxIndex: count ? count - 1 : null, demo: true };
     },
     async tile(n) {
       const out: CrowdPerson[] = [];

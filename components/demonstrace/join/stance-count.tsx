@@ -39,7 +39,7 @@ export function StanceCount({ texts }: { texts: StanceCountTexts }) {
     };
   }, [texts]);
   return (
-    <span className="block min-h-[24px] font-semibold" aria-live="polite">
+    <span className="block min-h-[24px] min-w-[48px] font-semibold" aria-live="polite">
       {line ?? NB}
     </span>
   );

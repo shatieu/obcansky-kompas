@@ -3,9 +3,12 @@ import { MAX_REROLLS, NAME_MAX, POSES, SIGN_COLORS, SLOGAN_MAX, U32_MAX } from "
 import { isPresetId } from "./slogans";
 
 /**
- * Vstup připojení a úpravy (SPEC-demonstrace §3). Přesně jedno z sloganPresetId / sloganCustom.
+ * Vstup připojení a úpravy (SPEC-demonstrace §3). Nejvýš jedno z sloganPresetId / sloganCustom;
+ * s cedulí právě jedno, bez cedule (signColor `none`) může slogan chybět.
  * Délky se tady hlídají jen hrubě; obsah volných textů kontroluje scriptCheck (lib/moderation).
  */
+const codePoints = (s: string) => Array.from(s).length;
+
 const optText = (max: number) =>
   z
     .string()
@@ -34,10 +37,13 @@ export const demoInputSchema = z
   .superRefine((v, ctx) => {
     const hasPreset = Boolean(v.sloganPresetId);
     const hasCustom = Boolean(v.sloganCustom);
-    if (hasPreset === hasCustom) ctx.addIssue({ code: "custom", path: ["sloganPresetId"], message: "slogan" });
+    const sloganOptional = v.signColor === "none";
+    if (hasPreset && hasCustom) ctx.addIssue({ code: "custom", path: ["sloganPresetId"], message: "slogan" });
+    if (!hasPreset && !hasCustom && !sloganOptional) ctx.addIssue({ code: "custom", path: ["sloganPresetId"], message: "slogan" });
     if (hasPreset && !isPresetId(v.sloganPresetId!)) ctx.addIssue({ code: "custom", path: ["sloganPresetId"], message: "slogan" });
-    if (v.sloganCustom && v.sloganCustom.length > SLOGAN_MAX) ctx.addIssue({ code: "custom", path: ["sloganCustom"], message: "slogan" });
-    if (v.firstName && v.firstName.length > NAME_MAX) ctx.addIssue({ code: "custom", path: ["firstName"], message: "name" });
+    // Délka v kódových bodech (jako scriptCheck a klient), ne v UTF-16 jednotkách.
+    if (v.sloganCustom && codePoints(v.sloganCustom) > SLOGAN_MAX) ctx.addIssue({ code: "custom", path: ["sloganCustom"], message: "slogan" });
+    if (v.firstName && codePoints(v.firstName) > NAME_MAX) ctx.addIssue({ code: "custom", path: ["firstName"], message: "name" });
   });
 
 export type DemoInput = z.output<typeof demoInputSchema>;

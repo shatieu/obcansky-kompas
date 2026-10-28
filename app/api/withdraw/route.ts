@@ -24,7 +24,7 @@ export async function POST(req: NextRequest): Promise<Response> {
     if (r.status !== "ok") return error("not_found", 404, t.edit_invalid_lead);
     revalidateSignature(r.signatureId);
     // Panáček z online demonstrace se smazal ve stejné transakci → zneplatnit jeho dlaždici.
-    if (r.demonstrator) revalidateDemo({ index: r.demonstrator.index, id: r.demonstrator.id, meta: true });
+    if (r.demonstrator) await revalidateDemo({ index: r.demonstrator.index, id: r.demonstrator.id, meta: true });
     return json({ ok: true, id: r.signatureId, url: signaturePath(r.signatureId), message: t.withdrawn_lead });
   } catch (e) {
     return unavailable(e, "withdraw");

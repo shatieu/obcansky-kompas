@@ -1,9 +1,12 @@
 import {
   LEVELS,
   POSITIONS,
+  isPersonType,
   type AddresseeType,
   type Delka,
   type Forma,
+  type Gender,
+  type LetterText,
   type LettersContent,
   type Position,
   type Variant,
@@ -49,6 +52,11 @@ function pick<T>(list: readonly T[], seed: string | number, salt: string): T {
 
 export interface ComposeLetterInput {
   addressee: AddresseeType;
+  /**
+   * Pohlaví adresáta-osoby (z data/directories). Určuje oslovení a shodu v textu;
+   * null/undefined = neznámé → neutrální oslovení. U zastupitelstev se ignoruje.
+   */
+  gender?: Gender | null;
   /** Věty z podepsaného textu (composeStatement), v pořadí. Tvoří jádro dopisu. */
   statementSentences: string[];
   forma: Forma;
@@ -76,6 +84,10 @@ export interface LetterPart {
 export interface ComposedLetter {
   addressee: AddresseeType;
   addresseeLabel: string;
+  /** Pohlaví, podle kterého se dopis složil (null = neznámé nebo zastupitelstvo). */
+  gender: Gender | null;
+  /** Oslovení (první řádek dopisu). */
+  salutation: string;
   forma: Forma;
   delka: Delka;
   seed: string;
@@ -98,6 +110,26 @@ export function eligibleVariants(list: readonly Variant[], forma: Forma, delka: 
   return list.filter((v) => v.forma.includes(forma) && v.delka.includes(delka));
 }
 
+/**
+ * Znění textu pro dané pohlaví. Prostý text platí pro všechny; m/z podle pohlaví;
+ * neznámé pohlaví → `n`, u oslovení bez `n` společné neutrální oslovení.
+ */
+export function resolveText(text: LetterText, gender: Gender | null, neutralFallback?: string): string {
+  if (typeof text === "string") return text;
+  if (gender === "M") return text.m;
+  if (gender === "Z") return text.z;
+  const n = text.n ?? neutralFallback;
+  if (n === undefined) throw new Error("Chybí neutrální znění textu pro neznámé pohlaví.");
+  return n;
+}
+
+/** Funkce adresáta do adresy podle pohlaví („poslankyně“, „ministr kultury“), jinak null. */
+export function addresseeRole(type: AddresseeType, gender: Gender | null | undefined, content: LettersContent): string | null {
+  const f = content.types[type]?.funkce;
+  if (!f || !gender) return null;
+  return gender === "Z" ? f.z : f.m;
+}
+
 const clean = (s: string) => s.replace(/[ \t]+/g, " ").replace(/ *\n */g, "\n").trim();
 
 /** Složí dopis. Čistá funkce: stejný vstup a obsah → stejný dopis. */
@@ -107,6 +139,10 @@ export function composeLetter(input: ComposeLetterInput, content: LettersContent
   assertLevel("delka", delka);
   const type = content.types[addressee];
   if (!type) throw new Error(`Neznámý typ adresáta „${String(addressee)}“.`);
+
+  const gender: Gender | null = isPersonType(addressee) ? (input.gender ?? null) : null;
+  const neutral = content.common.osloveni_neutralni;
+  const txt = (pos: Position) => resolveText(chosen[pos].text, gender, pos === "osloveni" ? neutral : undefined);
 
   const chosen = {} as Record<Position, Variant>;
   for (const pos of POSITIONS) {
@@ -120,8 +156,8 @@ export function composeLetter(input: ComposeLetterInput, content: LettersContent
     if (t) parts.push({ kind, variantId, text: t });
   };
 
-  add("osloveni", chosen.osloveni.text, chosen.osloveni.id);
-  add("uvod", chosen.uvod.text, chosen.uvod.id);
+  add("osloveni", txt("osloveni"), chosen.osloveni.id);
+  add("uvod", txt("uvod"), chosen.uvod.id);
   add(
     "jadro",
     input.statementSentences
@@ -129,14 +165,14 @@ export function composeLetter(input: ComposeLetterInput, content: LettersContent
       .filter(Boolean)
       .join(" "),
   );
-  add("prechod", chosen.prechod.text, chosen.prechod.id);
-  add("zadost", chosen.zadost.text, chosen.zadost.id);
+  add("prechod", txt("prechod"), chosen.prechod.id);
+  add("zadost", txt("zadost"), chosen.zadost.id);
   if (input.includeProcessBlock) {
     const v = pick(eligibleVariants(content.common.process_block.variants, forma, delka), seed, `${addressee}|proces|${forma}|${delka}`);
-    add("projednavani", v.text, v.id);
+    add("projednavani", resolveText(v.text, gender), v.id);
   }
   if (input.customSentence) add("vlastni", input.customSentence);
-  add("zaver", chosen.zaver.text, chosen.zaver.id);
+  add("zaver", txt("zaver"), chosen.zaver.id);
   if (input.senderName) add("podpis", input.senderName);
   if (input.includeFooter !== false) add("paticka", content.common.footer);
 
@@ -150,6 +186,8 @@ export function composeLetter(input: ComposeLetterInput, content: LettersContent
   return {
     addressee,
     addresseeLabel: type.label,
+    gender,
+    salutation: parts[0]?.text ?? "",
     forma,
     delka,
     seed: String(seed),

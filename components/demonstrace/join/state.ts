@@ -91,12 +91,20 @@ export function reroll(d: JoinDraft, rand?: () => number): JoinDraft {
   return { ...d, seed: Math.min(seed, U32_MAX), rerollCount: d.rerollCount + 1 };
 }
 
+/**
+ * Výběr z galerie vzhledů (lib/demo/gallery): jen jiný seed, počet změn se NEZVYŠUJE – server
+ * seed z galerie pozná a změnu nezapočítá.
+ */
+export function pickLook(d: JoinDraft, seed: number): JoinDraft {
+  return seed >>> 0 === d.seed ? d : { ...d, seed: seed >>> 0 };
+}
+
 /** Jednotné ořezání mezer (jako server: víc mezer → jedna, okraje pryč). */
 export const tidy = (s: string) => s.replace(/\s+/g, " ").trim();
 
-/** Text na ceduli pro náhled: vlastní (i neschválený – vidí ho jen autor) nebo předvolba. */
+/** Slogan pro náhled a souhrn: vlastní (i neschválený – vidí ho jen autor) nebo předvolba. */
 export function signText(d: JoinDraft, presets: Record<string, string>): string {
-  if (d.sloganMode === "custom" && tidy(d.custom)) return tidy(d.custom);
+  if (d.sloganMode === "custom") return tidy(d.custom) || (d.signColor === "none" ? "" : presets[d.presetId] ?? "");
   return presets[d.presetId] ?? "";
 }
 
@@ -105,7 +113,8 @@ export function stepError(step: Step, d: JoinDraft, check: CheckText): StepError
   if (step === "slogan") {
     if (d.sloganMode === "preset") return d.presetId ? null : "slogan_empty";
     const t = tidy(d.custom);
-    if (!t) return "slogan_empty";
+    // Bez cedule je slogan nepovinný (ukáže se jen na kartě).
+    if (!t) return d.signColor === "none" ? null : "slogan_empty";
     if (Array.from(t).length > SLOGAN_MAX || !check(t, "slogan")) return "moderation_slogan";
     return null;
   }
@@ -145,8 +154,9 @@ export function navStates(current: Step, visited: ReadonlySet<Step>, d: JoinDraf
 export function payload(d: JoinDraft) {
   const custom = d.sloganMode === "custom" ? tidy(d.custom) : "";
   const name = d.showName ? tidy(d.firstName) : "";
+  const noSlogan = !custom && d.sloganMode === "custom" && d.signColor === "none";
   return {
-    ...(custom ? { sloganCustom: custom } : { sloganPresetId: d.presetId }),
+    ...(custom ? { sloganCustom: custom } : noSlogan ? {} : { sloganPresetId: d.presetId }),
     pose: d.pose,
     signColor: d.signColor,
     seed: d.seed >>> 0,

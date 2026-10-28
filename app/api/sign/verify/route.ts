@@ -1,5 +1,5 @@
 import { NextResponse, type NextRequest } from "next/server";
-import { isSecureRequest, setOwnerCookie } from "@/lib/demo/owner";
+import { isSecureRequest, ownerEpoch, setOwnerCookie } from "@/lib/demo/owner";
 import { getSql } from "@/lib/db/client";
 import { revalidateSignature } from "@/lib/sign/cache";
 import { error, logEvent, readJson, signaturePath, unavailable, writeGate } from "@/lib/sign/http";
@@ -28,12 +28,13 @@ export async function POST(req: NextRequest): Promise<Response> {
         revalidateSignature(r.signatureId);
         // Doklad vlastnictví pro online demonstraci (cookie ok_owner, lib/demo/owner.ts).
         return setOwnerCookie(
-          NextResponse.json({ ok: true, id: r.signatureId, url: signaturePath(r.signatureId) }, { headers: { "cache-control": "no-store" } }),
+          NextResponse.json({ ok: true, id: r.signatureId, shortId: r.shortId, url: signaturePath(r.signatureId) }, { headers: { "cache-control": "no-store" } }),
           r.signatureId,
           isSecureRequest(req),
+          await ownerEpoch(getSql(), r.signatureId),
         );
       case "used":
-        return error("used", 409, t.used_lead, { id: r.signatureId, url: signaturePath(r.signatureId) });
+        return error("used", 409, t.used_lead, { id: r.signatureId, shortId: r.shortId, url: signaturePath(r.signatureId) });
       case "expired":
         return error("expired", 410, t.expired_lead);
       default:

@@ -5,6 +5,14 @@ import { z } from "zod";
 export const ADDRESSEE_TYPES = ["poslanec", "senator", "kraj", "obec", "ministr-kultury", "prezident"] as const;
 export type AddresseeType = (typeof ADDRESSEE_TYPES)[number];
 
+/** Adresát je jedna osoba (oslovení a shoda podle pohlaví), ne sbor (zastupitelstvo). */
+export const PERSON_TYPES = ["poslanec", "senator", "ministr-kultury", "prezident"] as const;
+export type PersonType = (typeof PERSON_TYPES)[number];
+export const isPersonType = (t: AddresseeType): t is PersonType => (PERSON_TYPES as readonly string[]).includes(t);
+
+/** Pohlaví adresáta jako v data/directories (`pohlavi`): M = muž, Z = žena. */
+export type Gender = "M" | "Z";
+
 export const POSITIONS = ["osloveni", "uvod", "prechod", "zadost", "zaver"] as const;
 export type Position = (typeof POSITIONS)[number];
 
@@ -20,15 +28,35 @@ const Levels = z
   .min(1)
   .refine((a) => new Set(a).size === a.length, { message: "Stupně se nesmí opakovat." });
 
+const Str = z.string().trim().min(1);
+
+/**
+ * Text podle pohlaví adresáta: `m` (muž), `z` (žena), `n` (pohlaví neznámé – neutrální přeformulování).
+ * U oslovení může `n` chybět – pak se použije společné `osloveni_neutralni`.
+ */
+export const GenderedTextSchema = z.object({ m: Str, z: Str, n: Str.optional() }).strict();
+export type GenderedText = z.infer<typeof GenderedTextSchema>;
+export const LetterTextSchema = z.union([Str, GenderedTextSchema]);
+export type LetterText = z.infer<typeof LetterTextSchema>;
+
 export const VariantSchema = z
   .object({
     id: z.string().min(1),
     forma: Levels,
     delka: Levels,
-    text: z.string().trim().min(1),
+    text: LetterTextSchema,
   })
   .strict();
 export type Variant = z.infer<typeof VariantSchema>;
+
+/** Všechna znění textu (prostý text, nebo m/z/n). */
+export const textForms = (t: LetterText): string[] => (typeof t === "string" ? [t] : [t.m, t.z, ...(t.n ? [t.n] : [])]);
+
+/**
+ * Dvojznačné tvary, které do dopisu konkrétnímu člověku nepatří: „nepodepsal/a“, „poslanec/kyně“,
+ * „byl(a)“ a dvojice oslovení „paní poslankyně, pane poslanče“.
+ */
+export const AMBIGUOUS_GENDER_RE = /\p{L}\/\p{L}|\p{L}\((a|ka|kyně|y)\)|\bpaní\s+\p{L}+,\s*(\p{L}+\s+)?pane\b/iu;
 
 /** Pozice má 3–5 variant s unikátním id i textem. */
 const VariantList = z
@@ -39,10 +67,11 @@ const VariantList = z
     const ids = new Set<string>();
     const texts = new Set<string>();
     for (const v of list) {
+      const key = JSON.stringify(v.text);
       if (ids.has(v.id)) ctx.addIssue({ code: "custom", message: `Duplicitní id varianty "${v.id}".` });
-      if (texts.has(v.text)) ctx.addIssue({ code: "custom", message: `Duplicitní text varianty "${v.id}".` });
+      if (texts.has(key)) ctx.addIssue({ code: "custom", message: `Duplicitní text varianty "${v.id}".` });
       ids.add(v.id);
-      texts.add(v.text);
+      texts.add(key);
     }
   });
 
@@ -51,6 +80,8 @@ export const LetterTypeSchema = z
     type: z.enum(ADDRESSEE_TYPES),
     version: z.number().int().min(1),
     label: z.string().trim().min(1),
+    /** Funkce do adresy podle pohlaví (jen u jedné osoby), např. poslanec / poslankyně. */
+    funkce: z.object({ m: Str, z: Str }).strict().optional(),
     positions: z
       .object({
         osloveni: VariantList,
@@ -78,6 +109,8 @@ export const LetterCommonSchema = z
       })
       .strict(),
     footer: z.string().trim().min(1),
+    /** Oslovení jedné osoby, když neznáme její pohlaví. */
+    osloveni_neutralni: Str,
   })
   .strict();
 export type LetterCommon = z.infer<typeof LetterCommonSchema>;
@@ -101,6 +134,30 @@ export function parseLettersContent(raw: { common: unknown; types: unknown[] }):
     types[t.type] = t;
   }
   for (const type of ADDRESSEE_TYPES) if (!types[type]) errors.push(`chybí typ adresáta "${type}"`);
+
+  // Pohlaví: jedna osoba = oslovení podle pohlaví, funkce v adrese; sbor = jen prostý text.
+  for (const t of parsed) {
+    const person = isPersonType(t.type);
+    if (person && !t.funkce) errors.push(`${t.type}: chybí funkce (m/z) pro adresu`);
+    if (!person && t.funkce) errors.push(`${t.type}: funkce patří jen k adresátovi-osobě`);
+    for (const pos of POSITIONS)
+      for (const v of t.positions[pos]) {
+        const where = `${t.type}/${pos}/${v.id}`;
+        if (person && pos === "osloveni" && typeof v.text === "string") errors.push(`${where}: oslovení osoby musí mít tvar m/z`);
+        if (!person && typeof v.text !== "string") errors.push(`${where}: zastupitelstvo nemá pohlaví, text musí být prostý`);
+        if (typeof v.text !== "string" && pos !== "osloveni" && !v.text.n) errors.push(`${where}: chybí neutrální znění n`);
+        for (const form of textForms(v.text)) {
+          if (AMBIGUOUS_GENDER_RE.test(form)) errors.push(`${where}: dvojznačný rodový tvar v „${form}“`);
+          if (/\{\{|\}\}/.test(form)) errors.push(`${where}: neznámý zástupný symbol v „${form}“`);
+        }
+      }
+  }
+
+  for (const v of common.process_block.variants) {
+    if (typeof v.text !== "string" && !v.text.n) errors.push(`process_block/${v.id}: chybí neutrální znění n`);
+    for (const form of textForms(v.text)) if (AMBIGUOUS_GENDER_RE.test(form)) errors.push(`process_block/${v.id}: dvojznačný rodový tvar`);
+  }
+  if (AMBIGUOUS_GENDER_RE.test(common.osloveni_neutralni)) errors.push("osloveni_neutralni: dvojznačný rodový tvar");
 
   const covers = (list: Variant[], f: Forma, d: Delka) => list.some((v) => v.forma.includes(f) && v.delka.includes(d));
   for (const f of LEVELS)

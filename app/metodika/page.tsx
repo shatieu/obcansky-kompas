@@ -2,9 +2,10 @@ import type { Metadata } from "next";
 import { questionsFile, sentencesFile, t } from "@/lib/content";
 import { branchingRules, sentenceLibrary, type LibraryGroup } from "@/lib/methodology/library";
 import { buildSourcesIndex, humanReviewedItems } from "@/lib/methodology/sources";
-import { aiEnabled } from "@/lib/moderation/ai";
 import { pagesTexts } from "@/lib/org/texts";
 import { Icon } from "@/components/ui/icon";
+import { TextLink } from "@/components/ui/button";
+import { LINKS_HREF, links, READING_ANCHOR } from "@/lib/content/links";
 import { Disclosure, ExternalLink, Page, PageHead, PrimaryAction } from "./_ui";
 
 /** /metodika (SPEC §11.3, §13): jak kompas funguje, větvení, knihovna vět, ověřování, data. Statická. */
@@ -105,12 +106,10 @@ export default function MethodPage() {
       </Disclosure>
 
       {/* Online demonstrace (SPEC-demonstrace §4, §13): jen popis pravidel, seznamy se nezveřejňují. */}
-      <Disclosure title={m.demo_title} sub={aiEnabled() ? m.demo_ai_on : m.demo_ai_off}>
+      <Disclosure title={m.demo_title}>
         <p>{m.demo_body}</p>
         <h3 className="k-h3">{m.demo_script_title}</h3>
         <p>{m.demo_script_body}</p>
-        <h3 className="k-h3">{m.demo_ai_title}</h3>
-        <p>{m.demo_ai_body}</p>
         <h3 className="k-h3">{m.demo_reports_title}</h3>
         <p>{m.demo_reports_body}</p>
       </Disclosure>
@@ -125,6 +124,13 @@ export default function MethodPage() {
           <ExternalLink href={m.repo_url}>{m.repo_link}</ExternalLink>
         </p>
       </Disclosure>
+
+      {/* Jen „K přečtení“ (nestranné zdroje); iniciativy odkazuje výhradně blok postoje (SPEC §1). */}
+      <p className="mt-2">
+        <TextLink href={`${LINKS_HREF}#${READING_ANCHOR}`} icon="arrow-right">
+          {links.method_link}
+        </TextLink>
+      </p>
 
       <PrimaryAction href="/metodika/zdroje">{m.sources_button}</PrimaryAction>
     </Page>

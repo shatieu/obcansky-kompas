@@ -1,4 +1,5 @@
 import { ImageResponse } from "next/og";
+import { hasSign } from "@/lib/demo/constants";
 import { generateStickman } from "@/lib/stickman/params";
 import { poseAt } from "@/lib/stickman/poses";
 import { figureGeometry } from "@/lib/stickman/geometry";
@@ -167,18 +168,20 @@ const n2 = (v: number) => String(Math.round(v * 100) / 100);
 export function sceneSvg(placed: Placed[], box: Box): string {
   const parts = placed.map((p) => {
     const params = generateStickman(p.seed);
-    const fig = figureGeometry(params, poseAt(params, p.pose));
+    const fig = figureGeometry(params, poseAt(params, p.pose, undefined, hasSign(p.signColor)));
     const body = figureSvg(fig, { signColor: p.signColor, signText: "", palette: p.layer === "fg" ? FG_PALETTE : CROWD_PALETTE, signShape: params.signShape });
     return `<g transform="translate(${n2(p.x - box.x)} ${n2(p.y - box.y)}) scale(${n2(p.scale)})">${body}</g>`;
   });
   return `<svg xmlns="http://www.w3.org/2000/svg" width="${box.w}" height="${box.h}" viewBox="0 0 ${box.w} ${box.h}">${parts.join("")}</svg>`;
 }
 
-/** Text cedule panáčka v popředí: řádky, střed, natočení a velikost v px (souřadnice boxu). */
+/** Text cedule panáčka v popředí: řádky, střed, natočení a velikost v px (souřadnice boxu). Bez cedule null. */
 export function fgSignText(p: Placed, box: Box) {
+  if (!hasSign(p.signColor)) return null;
   const params = generateStickman(p.seed);
-  const lay = stickmanLayout(params, { pose: p.pose, signText: p.signText });
+  const lay = stickmanLayout(params, { pose: p.pose, signText: p.signText, signColor: p.signColor });
   const fig = lay.figure;
+  if (!lay.text || !fig.sign) return null;
   return {
     lines: lay.text.lines,
     fontSize: lay.text.fontSize * p.scale,
@@ -260,11 +263,11 @@ export function OgDemoCard({ card }: { card: ShareCard }) {
   );
 }
 
-export async function renderOg(card: ShareCard, cacheControl: string): Promise<Response> {
+export async function renderOg(card: ShareCard, cacheControl: string, extraHeaders: Record<string, string> = {}): Promise<Response> {
   const fonts = await loadOgFonts();
   return new ImageResponse(card.figure ? <OgDemoCard card={card} /> : <OgCard card={card} />, {
     ...OG_SIZE,
     fonts,
-    headers: { "cache-control": cacheControl },
+    headers: { ...extraHeaders, "cache-control": cacheControl },
   });
 }

@@ -2,8 +2,14 @@
  * Dav v PixiJS v8 (SPEC-demonstrace §6). Jen prohlížeč – importuje se dynamicky z komponenty
  * davu, aby se PixiJS stahoval jen na stránkách /demonstrace*.
  *
- * Vrstvy (zezadu): dlažba a pódium → tečky (celý dav) → statické siluety (ParticleContainer)
- * → postavy ze spritů (animované, s textem cedule zblízka), seřazené podle hloubky.
+ * Vrstvy (zezadu): dlažba a pódium → tečky (celý dav, jeden ParticleContainer na dlaždici)
+ * → statické siluety (ParticleContainer) → postavy ze spritů (animované, s textem cedule
+ * zblízka), seřazené podle hloubky → značka výběru.
+ *
+ * Výkon: smyčka rAF běží jen, když je co dělat (animace, let kamery, změna) – v klidu a při
+ * prefers-reduced-motion se zastaví a probudí ji až vstup nebo data. Animují se jen postavy ve
+ * skutečném výřezu (okraj slouží jen k přednačtení); postavy střední úrovně se pózují v půlce snímků.
+ * Na úrovni teček se dlaždice nestahují (tečky z rozvržení, barva jen u už načtených dlaždic).
  */
 import "pixi.js/unsafe-eval";
 import {
@@ -20,17 +26,17 @@ import {
   Texture,
   type Renderer,
 } from "pixi.js";
-import type { SignColor } from "@/lib/demo/constants";
+import { hasSign, type SignColor, type SignPaint } from "@/lib/demo/constants";
 import { figureGeometry, STROKE, type Figure } from "@/lib/stickman/geometry";
 import { generateStickman, type StickmanParams } from "@/lib/stickman/params";
 import { poseAt } from "@/lib/stickman/poses";
 import { layoutSignText, SIGN_FONT_WEIGHT, type StickmanPalette } from "@/lib/stickman/sign";
-import { ATLAS_H, ATLAS_W, atlasLayout, drawAtlas, headKey, PART_RES, signKey, SIL_RES, silKey, type AtlasLayout, type Frame } from "./atlas";
+import { ATLAS_H, ATLAS_W, atlasLayout, drawAtlas, headKey, MARK_PX, PART_RES, signKey, SIL_RES, silKey, type AtlasLayout, type Frame } from "./atlas";
 import { clampCamera, screenToWorld, viewRect, zoomAt, type Camera, type Viewport } from "./camera";
 import { sloganText, type CrowdPerson, type CrowdSource } from "./data";
 import { crowdBounds, forEachInRect, hitTest, LAYOUT, nearestIndex, positionFor, rowOf, rowScale, rowStart, rowY, STAGE, type Rect } from "./layout";
 import { animatedCap, figurePx, LOD_PX, lodFor, selectAnimated } from "./lod";
-import { tilesForRect } from "./tiles";
+import { tileOf, tilesForRect } from "./tiles";
 
 // Jen WebGL a canvas (WebGPU nepoužíváme) – menší balík než `pixi.js/particle-container`.
 extensions.add(GlParticleContainerPipe, CanvasParticleContainerPipe);
@@ -44,6 +50,8 @@ export interface CrowdStats {
   count: number;
   renderer: string;
   tiles: number;
+  /** Běží smyčka rAF (v klidu se zastaví). */
+  running: boolean;
 }
 
 export interface EngineOptions {
@@ -58,6 +66,11 @@ export interface EngineOptions {
   insetBottom?: number;
   /** Index, na který se má kamera zaměřit (stránka /demonstrace/[id]). */
   focusIndex?: number | null;
+  /**
+   * Kolik px výřezu nahoře a dole zakrývají překryvy, když je otevřená karta (hlavička s počtem,
+   * spodní list karty). Kamera při hledání postavy míří do zbylého viditelného pásu.
+   */
+  focusInsets?: () => { top: number; bottom: number };
   onSelect?: (p: CrowdPerson) => void;
   onCamera?: (c: Camera) => void;
   onMeta?: (count: number, demo: boolean) => void;
@@ -73,6 +86,7 @@ interface Colors {
   red: number;
   tint: number;
   soft: number;
+  muted: number;
   font: string;
 }
 
@@ -81,6 +95,15 @@ const TILE_CONCURRENCY = 4;
 const MAX_CACHED_TILES = 200;
 const TEXT_RES = 4;
 const TEXT_CACHE = 400;
+/** Průhlednost postav, které zakrývají zvýrazněnou postavu. */
+const FOCUS_DIM_ALPHA = 0.25;
+/** Značka výběru na obrazovce (CSS px, size-mark) a její „pop“ (scale .4 → 1, 160 ms). */
+const MARK_CSS = 28;
+const MARK_POP_MS = 160;
+/** Kolik teček (částic) se smí přestavět v jednom snímku – bez dlouhých úloh. */
+const DOT_BUDGET = 12_000;
+/** Výška postavy včetně cedule (jednotky světa při měřítku 1). */
+const FIGURE_H = 200;
 
 function cssColor(el: Element, name: string, fallback: string): string {
   const v = getComputedStyle(el).getPropertyValue(name).trim();
@@ -109,6 +132,7 @@ function readColors(host: Element): Colors {
   const onBlue = v("--on-blue", "#FFFFFF");
   const tint = v("--blue-tint", "#E8EEF6");
   const soft = v("--rule-soft", "#C5CDD8");
+  const muted = v("--muted", "#5C6675");
   const fw = cssColor(root, "--font-mona-wide", "");
   const font = `${fw ? `${fw}, ` : ""}"Mona Sans Expanded", "Arial Black", Arial, sans-serif`;
   const pal: StickmanPalette = {
@@ -118,7 +142,7 @@ function readColors(host: Element): Colors {
     signText: { white: ink, blue: onBlue, red: onBlue },
     tricolor: { white: "#FFFFFF", red: "#D7141A", blue: "#11457E" },
   };
-  return { pal, surface: hex(surface), ink: hex(ink), blue: hex(blue), red: hex(red), tint: hex(tint), soft: hex(soft), font };
+  return { pal, surface: hex(surface), ink: hex(ink), blue: hex(blue), red: hex(red), tint: hex(tint), soft: hex(soft), muted: hex(muted), font };
 }
 
 /** Jedna postava ze spritů. */
@@ -130,11 +154,14 @@ class Rig {
   readonly head: Sprite;
   readonly scarf: Sprite;
   readonly fist: Sprite;
+  readonly keys: Sprite;
   person!: CrowdPerson;
   params!: StickmanParams;
   textKey = "";
+  /** Blízká úroveň (pózuje se každý snímek); střední jen v každém druhém. */
+  near = false;
   constructor(atlas: Texture[], white: Texture) {
-    // atlas[0] = cedule (dočasně), [1] = hlava, [2] = šála
+    // atlas[0] = cedule (dočasně), [1] = hlava, [2] = šála, [3] = klíče
     for (let i = 0; i < 2; i++) this.lines.push(this.line(white));
     this.sign = new Sprite(atlas[0]);
     this.sign.anchor.set(0.5);
@@ -144,6 +171,9 @@ class Rig {
     this.c.addChild(this.text);
     for (let i = 0; i < 11; i++) this.lines.push(this.line(white));
     this.fist = this.line(white);
+    this.keys = new Sprite(atlas[3]);
+    this.keys.visible = false;
+    this.c.addChild(this.keys);
     this.scarf = new Sprite(atlas[2]);
     this.c.addChild(this.scarf);
     this.head = new Sprite(atlas[1]);
@@ -163,7 +193,10 @@ export class CrowdEngine {
   private stage = new Container();
   private world = new Container();
   private bg = new Container();
-  private dots!: ParticleContainer;
+  /** Tečky: jeden ParticleContainer na dlaždici (1 000 indexů) – změna dlaždice nepřepočítá celý dav. */
+  private dotsLayer = new Container();
+  private dotTiles = new Map<number, DotTile>();
+  private atlasTex!: Texture;
   private statics!: ParticleContainer;
   private rigLayer = new Container();
   private atlasCanvas = document.createElement("canvas");
@@ -174,8 +207,17 @@ export class CrowdEngine {
 
   private cam: Camera = { x: 0, y: -100, z: 1 };
   private vp: Viewport = { w: 1, h: 1 };
+  /** Rozsah indexů k vykreslení = maxIndex + 1 (indexy mají mezery; počet účastníků je jiné číslo). */
   private extent = 0;
+  /** Nejnižší obsazený index (bez DEMO_MODE chybí seedoví, dav nemusí začínat 0). */
+  private minIndex = 0;
   private demo = false;
+  /** Zvýrazněná postava (karta otevřená, „Najdi mě“, /demonstrace/[id]); null = běžné procházení. */
+  private focusIndex: number | null = null;
+  private focusMark!: Sprite;
+  /** Bod ve světě, nad který (rig) nebo na který (tečka) se kreslí značka výběru. */
+  private markAnchor: { x: number; y: number; above: boolean } | null = null;
+  private markT0 = 0;
   private persons = new Map<number, CrowdPerson>();
   private paramsCache = new Map<number, StickmanParams>();
   private tiles = new Map<number, number>(); // n → poslední použití
@@ -186,12 +228,16 @@ export class CrowdEngine {
   private rigPool: Rig[] = [];
   private animated = new Set<number>();
   private staticPool: Particle[] = [];
-  private dotParticles: Particle[] = [];
   private dotsFrom = -1;
+  /** Dlaždice teček čekající na přestavbu (rozpočet DOT_BUDGET na snímek). */
+  private dotQueue = new Set<number>();
   private dotsDirty = true;
   private textCache = new Map<string, Texture>();
 
-  private built: { rect: Rect; z: number } | null = null;
+  /** Poslední přestavba výřezu: skutečný výřez, rozšířený obdélník (přednačtení) a zoom. */
+  private built: { view: Rect; rect: Rect; z: number } | null = null;
+  private ready = false;
+  private frameNo = 0;
   private viewDirty = true;
   private renderDirty = true;
   private visibleCount = 0;
@@ -243,6 +289,9 @@ export class CrowdEngine {
       resolution: Math.min(2, window.devicePixelRatio || 1),
       autoDensity: true,
       antialias: true,
+      // Smyčka se v klidu zastaví – poslední snímek musí zůstat platný i pro pozdější skládání
+      // stránky (překryvy, karta); bez toho prohlížeč místy ukázal prázdné plátno.
+      preserveDrawingBuffer: true,
       backgroundColor: this.colors.surface,
       skipExtensionImports: true,
     });
@@ -260,12 +309,14 @@ export class CrowdEngine {
     this.atlasCanvas.height = ATLAS_H;
     this.atlasSource = new CanvasSource({ resource: this.atlasCanvas, scaleMode: "linear", autoGenerateMipmaps: true });
     this.paintAtlas();
-    const atlasTex = new Texture({ source: this.atlasSource });
+    this.atlasTex = new Texture({ source: this.atlasSource });
 
-    this.dots = new ParticleContainer({ texture: atlasTex, dynamicProperties: { position: false, color: false, vertex: false, uvs: false, rotation: false } });
-    this.statics = new ParticleContainer({ texture: atlasTex, dynamicProperties: { position: false, color: false, vertex: false, uvs: false, rotation: false } });
+    this.statics = staticParticles(this.atlasTex);
     this.rigLayer.sortableChildren = true;
-    this.world.addChild(this.bg, this.dots, this.statics, this.rigLayer);
+    this.dotsLayer.sortableChildren = true;
+    this.focusMark = new Sprite(this.frame("mark"));
+    this.focusMark.visible = false;
+    this.world.addChild(this.bg, this.dotsLayer, this.statics, this.rigLayer, this.focusMark);
     this.stage.addChild(this.world);
     this.buildBackground();
 
@@ -278,16 +329,19 @@ export class CrowdEngine {
       meta = await this.o.source.meta();
     } catch (e) {
       this.o.onError?.(e);
-      meta = { count: 0, tiles: 0, tileSize: 1000, demo: false };
+      meta = { count: 0, tiles: 0, tileSize: 1000, minIndex: null, maxIndex: null, demo: false };
     }
-    this.extent = Math.max(0, meta.count);
+    this.extent = meta.maxIndex === null ? 0 : Math.max(0, meta.maxIndex + 1);
+    this.minIndex = Math.max(0, Math.min(meta.minIndex ?? 0, this.extent));
     this.demo = meta.demo;
-    this.o.onMeta?.(this.extent, this.demo);
+    // Zobrazený počet = skutečný počet účastníků (ne rozsah indexů s mezerami).
+    this.o.onMeta?.(Math.max(0, meta.count), this.demo);
     this.buildBackground();
 
     if (this.o.initialCamera) this.cam = this.clamp(this.o.initialCamera);
     else if (this.o.focusIndex != null) this.cam = this.clamp(this.cameraOnIndex(this.o.focusIndex, true));
     else this.cam = this.startCamera();
+    this.ready = true;
     this.applyCamera();
     this.start();
   }
@@ -308,11 +362,19 @@ export class CrowdEngine {
     const y = STAGE.y1 + (this.o.mobile ? 6 : 24) - (this.vp.h / 2 - (this.o.insetBottom ?? 0)) / z;
     return this.clamp({ x: 0, y, z });
   }
-  /** Kamera na postavě; `upper` = postava v horní třetině (pod ní se otevře karta). */
+  /**
+   * Kamera na postavě. `upper` = otevře se karta: postava (i s cedulí) se vejde do pásu mezi
+   * horním překryvem a listem karty (focusInsets), jinak doprostřed výřezu.
+   */
   cameraOnIndex(index: number, upper = false): Camera {
     const p = positionFor(index);
-    const z = Math.min(4, (this.o.mobile ? 1.4 : 1.6) / p.scale);
-    return { x: p.x, y: p.y - 55 * p.scale + (upper ? (this.vp.h * 0.22) / z : 0), z };
+    const ins = upper ? this.o.focusInsets?.() : undefined;
+    const top = Math.max(0, ins?.top ?? 0);
+    const band = Math.max(96, this.vp.h - top - Math.max(0, ins?.bottom ?? 0));
+    const figH = FIGURE_H * p.scale;
+    const z = Math.max(0.05, Math.min(4, (this.o.mobile ? 1.4 : 1.6) / p.scale, (band * 0.8) / figH));
+    const cy = p.y - figH / 2;
+    return { x: p.x, y: cy - (top + band / 2 - this.vp.h / 2) / z, z };
   }
   endCamera(): Camera {
     return this.clamp(this.cameraOnIndex(Math.max(0, this.extent - 1)));
@@ -356,10 +418,14 @@ export class CrowdEngine {
     const b = this.built;
     if (!b) this.viewDirty = true;
     else {
+      // Animované postavy jsou jen ze skutečného výřezu (+10 %), proto přestavba po posunu o 10 %.
       const r = viewRect(this.cam, this.vp);
       const zr = this.cam.z / b.z;
-      if (r.x0 < b.rect.x0 || r.y0 < b.rect.y0 || r.x1 > b.rect.x1 || r.y1 > b.rect.y1 || zr > 1.12 || zr < 0.89) this.viewDirty = true;
+      const w = b.view.x1 - b.view.x0;
+      const h = b.view.y1 - b.view.y0;
+      if (Math.abs(r.x0 - b.view.x0) > w * 0.1 || Math.abs(r.y0 - b.view.y0) > h * 0.1 || zr > 1.12 || zr < 0.89) this.viewDirty = true;
     }
+    this.placeMark(performance.now());
     this.o.onCamera?.(this.camera);
     this.wake();
   }
@@ -379,9 +445,47 @@ export class CrowdEngine {
     if (p.index >= this.extent) {
       this.extent = p.index + 1;
       this.dotsDirty = true;
-    }
+    } else this.colorDotTile(tileOf(p.index));
     this.viewDirty = true;
     this.wake();
+  }
+
+  /**
+   * Zvýraznění postavy: kreslí se nad všemi ostatními a postavy před ní, které ji překrývají, se
+   * zprůhlední. Jen při hledání konkrétní postavy (karta, „Najdi mě“, /demonstrace/[id]);
+   * null = běžné procházení. Na úrovni teček se zvýrazní tečka.
+   */
+  setFocus(index: number | null) {
+    if (index === this.focusIndex) return;
+    this.focusIndex = index;
+    this.markT0 = performance.now();
+    this.viewDirty = true;
+    this.wake();
+  }
+
+  /** Značka výběru: stálých 28 CSS px při každém přiblížení, nad hlavou/cedulí, nebo na tečce. */
+  private placeMark(now: number) {
+    const a = this.markAnchor;
+    if (!a || !this.focusMark) {
+      if (this.focusMark) this.focusMark.visible = false;
+      return;
+    }
+    const z = this.cam.z;
+    const k = this.reducedMotion ? 1 : Math.min(1, (now - this.markT0) / MARK_POP_MS);
+    const pop = 0.4 + 0.6 * (1 - Math.pow(1 - k, 3));
+    this.focusMark.visible = true;
+    this.focusMark.scale.set(((MARK_CSS / MARK_PX) * pop) / z);
+    this.focusMark.position.set(a.x, a.above ? a.y - (MARK_CSS / 2 + 6) / z : a.y);
+  }
+
+  /** Obrys postavy (chodidla pos, včetně cedule) pro zjištění překryvu. */
+  private figureBox(p: CrowdPerson, pos: { x: number; y: number; scale: number }): Rect {
+    const params = this.paramsOf(p);
+    const s = pos.scale * params.height;
+    const sign = hasSign(p.signColor);
+    const hw = (sign ? 46 : 30) * s;
+    const top = (sign ? FIGURE_H - 8 : 125) * s;
+    return { x0: pos.x - hw, x1: pos.x + hw, y0: pos.y - top, y1: pos.y };
   }
 
   setReducedMotion(v: boolean) {
@@ -468,18 +572,15 @@ export class CrowdEngine {
   private bindLifecycle() {
     const onVis = () => {
       if (document.hidden) this.stop();
-      else this.start();
+      else this.wake();
     };
     document.addEventListener("visibilitychange", onVis);
     const ro = new ResizeObserver(() => this.resize());
     ro.observe(this.o.host);
-    const mq = window.matchMedia("(prefers-color-scheme: dark)");
-    const onTheme = () => this.retheme();
-    mq.addEventListener("change", onTheme);
+    // Web je vždy světlý (DECISIONS) – žádné přebarvení podle prefers-color-scheme.
     this.cleanup.push(() => {
       document.removeEventListener("visibilitychange", onVis);
       ro.disconnect();
-      mq.removeEventListener("change", onTheme);
     });
   }
 
@@ -492,25 +593,6 @@ export class CrowdEngine {
     this.cam = this.clamp(this.cam);
     this.built = null;
     this.applyCamera();
-  }
-
-  private retheme() {
-    // Motiv se mění přes CSS proměnné – chvíli počkat, než se přepočítají.
-    requestAnimationFrame(() => {
-      this.colors = readColors(this.o.host);
-      this.renderer.background.color = this.colors.surface;
-      this.paintAtlas();
-      for (const t of this.textCache.values()) t.destroy(true);
-      this.textCache.clear();
-      for (const [i, r] of this.rigs) {
-        this.releaseRig(r);
-        this.rigs.delete(i);
-      }
-      this.buildBackground();
-      this.dotsDirty = true;
-      this.viewDirty = true;
-      this.wake();
-    });
   }
 
   // ---------- Textury ----------
@@ -528,6 +610,8 @@ export class CrowdEngine {
       this.frames.set("scarf", mk(this.L.scarf));
       this.frames.set("flag", mk(this.L.flag));
       this.frames.set("white", mk(this.L.white));
+      this.frames.set("mark", mk(this.L.mark));
+      this.frames.set("keys", mk(this.L.keys));
     }
   }
   private frame(k: string): Texture {
@@ -535,7 +619,7 @@ export class CrowdEngine {
   }
 
   /** Text cedule předrenderovaný do malé textury (cache podle textu, tvaru a barvy). */
-  private textTexture(text: string, shape: StickmanParams["signShape"], color: SignColor): Texture {
+  private textTexture(text: string, shape: StickmanParams["signShape"], color: SignPaint): Texture {
     const key = `${shape}|${color}|${text}`;
     const hit = this.textCache.get(key);
     if (hit) {
@@ -669,10 +753,13 @@ export class CrowdEngine {
     this.viewDirty = false;
     const z = this.cam.z;
     const view = viewRect(this.cam, this.vp);
+    // Okraj 20 % jen pro statické siluety a přednačtení dlaždic; animované jen z výřezu + 10 %.
     const mx = (view.x1 - view.x0) * 0.2;
     const my = (view.y1 - view.y0) * 0.2;
     const rect: Rect = { x0: view.x0 - mx, y0: view.y0 - my, x1: view.x1 + mx, y1: view.y1 + my };
-    this.built = { rect, z };
+    const ax = mx / 2;
+    const ay = my / 2;
+    this.built = { view, rect, z };
 
     // První řada, která je už jen tečkami: 100·s·z < LOD_PX.far.
     const sMin = LOD_PX.far / (100 * z);
@@ -686,24 +773,55 @@ export class CrowdEngine {
     const cands: [number, number, number][] = [];
     const statics: { i: number; tex: Texture; x: number; y: number; s: number }[] = [];
     let visible = 0;
-    const detailCount = dotsFrom;
-    forEachInRect(rect, detailCount, (i) => {
+    forEachInRect(rect, dotsFrom, (i) => {
       visible++;
       const pos = positionFor(i);
       const lod = lodFor(figurePx(pos.scale, z));
       const p = this.persons.get(i);
       if (!p) {
-        if (!this.loadedTile(i)) statics.push({ i, tex: this.frame("placeholder"), x: pos.x, y: pos.y, s: pos.scale });
+        if (i >= this.minIndex && !this.loadedTile(i)) statics.push({ i, tex: this.frame("placeholder"), x: pos.x, y: pos.y, s: pos.scale });
         return;
       }
       const params = this.paramsOf(p);
-      if (lod === "near" || lod === "mid") cands.push([i, pos.x, pos.y - 50 * pos.scale]);
+      const inView =
+        pos.x + 50 * pos.scale >= view.x0 - ax &&
+        pos.x - 50 * pos.scale <= view.x1 + ax &&
+        pos.y >= view.y0 - ay &&
+        pos.y - FIGURE_H * pos.scale <= view.y1 + ay;
+      if ((lod === "near" || lod === "mid") && inView) cands.push([i, pos.x, pos.y - 50 * pos.scale]);
       else statics.push({ i, tex: this.frame(`s:${silKey(p.pose, p.signColor, params.signShape)}`), x: pos.x, y: pos.y, s: pos.scale * params.height });
     });
     this.visibleCount = visible + Math.max(0, this.extent - dotsFrom);
 
     const cap = animatedCap(this.o.mobile);
     const chosen = selectAnimated(cands, this.cam.x, this.cam.y, cap);
+
+    // Zvýraznění: postava v popředí (vždy jako rig nad statickými siluetami), překrývající
+    // postavy před ní poloprůhledné, nad ní značka výběru. Na úrovni teček značka na tečce.
+    const f = this.focusIndex;
+    const fp = f !== null ? this.persons.get(f) : undefined;
+    const fPos = f !== null ? positionFor(f) : null;
+    let focusBox: Rect | null = null;
+    this.markAnchor = null;
+    if (f !== null && fp && fPos) {
+      if (f < dotsFrom) {
+        chosen.add(f);
+        focusBox = this.figureBox(fp, fPos);
+        this.markAnchor = { x: fPos.x, y: focusBox.y0, above: true };
+      } else if (f < this.extent) {
+        this.markAnchor = { x: fPos.x, y: fPos.y - 45 * fPos.scale, above: false };
+      }
+    }
+    this.placeMark(performance.now());
+    const dimmed = (i: number, pos: { x: number; y: number; scale: number }): boolean => {
+      if (!focusBox || !fPos || i === f || pos.y <= fPos.y) return false;
+      const p = this.persons.get(i);
+      if (!p) return false;
+      const b = this.figureBox(p, pos);
+      return b.x0 < focusBox.x1 && b.x1 > focusBox.x0 && b.y0 < focusBox.y1 && b.y1 > focusBox.y0;
+    };
+    if (focusBox) for (let k = statics.length - 1; k >= 0; k--) if (statics[k]!.i === f) statics.splice(k, 1);
+
     for (const c of cands) {
       if (chosen.has(c[0])) continue;
       const p = this.persons.get(c[0])!;
@@ -720,6 +838,7 @@ export class CrowdEngine {
         this.rigs.delete(i);
       }
     }
+    const t = this.reducedMotion ? undefined : performance.now();
     for (const i of chosen) {
       const p = this.persons.get(i)!;
       let r = this.rigs.get(i);
@@ -730,9 +849,12 @@ export class CrowdEngine {
       }
       const pos = positionFor(i);
       const near = figurePx(pos.scale, z) >= LOD_PX.near;
-      r.text.visible = near;
-      if (near && !r.textKey) this.assignText(r);
-      this.poseRig(r, this.reducedMotion ? undefined : performance.now());
+      r.near = near || i === f;
+      r.text.visible = near && hasSign(p.signColor);
+      if (r.text.visible && !r.textKey) this.assignText(r);
+      r.c.zIndex = i === f && focusBox ? Number.MAX_SAFE_INTEGER : pos.y;
+      r.c.alpha = dimmed(i, pos) ? FOCUS_DIM_ALPHA : 1;
+      this.poseRig(r, t);
     }
 
     // Statické siluety (zezadu dopředu)
@@ -753,12 +875,14 @@ export class CrowdEngine {
       const sc = st.s / SIL_RES;
       pt.scaleX = sc;
       pt.scaleY = sc;
+      pt.alpha = focusBox && dimmed(st.i, positionFor(st.i)) ? FOCUS_DIM_ALPHA : 1;
       arr.push(pt);
     }
     this.statics.particleChildren = arr;
     this.statics.update();
 
-    if (this.dotsDirty) this.rebuildDots();
+    if (this.dotsDirty) this.planDots();
+    for (const d of this.dotTiles.values()) d.pc.visible = d.shown && intersects(d.box, rect);
     this.loadTiles(view);
     this.renderDirty = true;
   }
@@ -767,34 +891,95 @@ export class CrowdEngine {
     return this.tiles.has(Math.floor(i / 1000));
   }
 
-  private rebuildDots() {
+  // ---------- Tečky (po dlaždicích, s rozpočtem na snímek) ----------
+
+  /** Naplánuje přestavbu dlaždic teček, kterých se týká změna hranice teček nebo rozsahu davu. */
+  private planDots() {
     this.dotsDirty = false;
-    const tex = this.frame("white");
     const from = Math.max(0, this.dotsFrom);
-    for (let i = this.dotParticles.length; i < this.extent; i++) {
-      const pos = positionFor(i);
-      const size = (30 * pos.scale) / 8;
-      this.dotParticles.push(new Particle({ texture: tex, x: pos.x, y: pos.y - 45 * pos.scale, scaleX: size, scaleY: size, anchorX: 0.5, anchorY: 0.5, tint: this.colors.soft }));
-    }
-    for (let i = from; i < this.extent; i++) {
-      const p = this.persons.get(i);
-      const d = this.dotParticles[i]!;
-      d.tint = !p ? this.colors.soft : this.dotColor(p.signColor);
-      d.alpha = !p && this.loadedTile(i) ? 0 : 1;
-    }
-    // Zadní řady dřív (vyšší index = dál).
-    this.dots.particleChildren = this.dotParticles.slice(from, this.extent).reverse();
-    this.dots.update();
-  }
-
-  private dotColor(c: SignColor) {
-    return c === "blue" ? this.colors.blue : c === "red" ? this.colors.red : this.colors.ink;
-  }
-
-  private loadTiles(view: Rect) {
     if (this.extent === 0) return;
+    const last = tileOf(this.extent - 1);
+    for (const [n, d] of this.dotTiles) {
+      if (n > last || (n + 1) * 1000 <= from) {
+        if (d.shown) {
+          d.shown = false;
+          d.pc.visible = false;
+        }
+      } else if (d.from !== Math.max(from, n * 1000) || d.parts.length < Math.min(1000, this.extent - n * 1000)) this.dotQueue.add(n);
+    }
+    for (let n = tileOf(from); n <= last; n++) if (!this.dotTiles.has(n)) this.dotQueue.add(n);
+  }
+
+  /** Přestaví dlaždice teček z fronty, nejvýš DOT_BUDGET částic za snímek. Vrací, zda něco zbylo. */
+  private drainDots(): boolean {
+    let budget = DOT_BUDGET;
+    const from = Math.max(0, this.dotsFrom);
+    for (const n of this.dotQueue) {
+      if (budget <= 0) break;
+      this.dotQueue.delete(n);
+      const base = n * 1000;
+      const end = Math.min(this.extent, base + 1000);
+      if (end <= from || end <= base) continue;
+      let d = this.dotTiles.get(n);
+      if (!d) {
+        d = { pc: staticParticles(this.atlasTex), parts: [], from: -1, shown: false, box: { x0: Infinity, y0: Infinity, x1: -Infinity, y1: -Infinity } };
+        d.pc.zIndex = -n; // zadní řady (vyšší index) dřív
+        this.dotTiles.set(n, d);
+        this.dotsLayer.addChild(d.pc);
+      }
+      const tex = this.frame("white");
+      for (let i = base + d.parts.length; i < end; i++) {
+        const pos = positionFor(i);
+        const size = (30 * pos.scale) / 8;
+        const y = pos.y - 45 * pos.scale;
+        d.parts.push(new Particle({ texture: tex, x: pos.x, y, scaleX: size, scaleY: size, anchorX: 0.5, anchorY: 0.5, tint: this.colors.soft }));
+        const b = d.box;
+        b.x0 = Math.min(b.x0, pos.x - size * 4);
+        b.x1 = Math.max(b.x1, pos.x + size * 4);
+        b.y0 = Math.min(b.y0, y - size * 4);
+        b.y1 = Math.max(b.y1, y + size * 4);
+      }
+      this.colorDotTile(n, d);
+      d.from = Math.max(from, base);
+      d.pc.particleChildren = d.parts.slice(d.from - base).reverse();
+      d.pc.update();
+      d.shown = true;
+      d.pc.visible = !this.built || intersects(d.box, this.built.rect);
+      budget -= d.parts.length;
+      this.renderDirty = true;
+    }
+    return this.dotQueue.size > 0;
+  }
+
+  /** Barvy teček jedné dlaždice (po načtení dat): barva cedule, neznámé tlumeně, mezery skryté. */
+  private colorDotTile(n: number, d = this.dotTiles.get(n)) {
+    if (!d) return;
+    const base = n * 1000;
+    const loaded = this.tiles.has(n);
+    for (let k = 0; k < d.parts.length; k++) {
+      const i = base + k;
+      const p = this.persons.get(i);
+      const pt = d.parts[k]!;
+      pt.tint = p ? this.dotColor(p.signColor) : this.colors.soft;
+      pt.alpha = !p && (i < this.minIndex || loaded) ? 0 : 1;
+    }
+    if (d.from >= 0) d.pc.update();
+  }
+
+  /** Tečka v barvě cedule; bez cedule tlumená (muted), bílá cedule v --ink. */
+  private dotColor(c: SignColor) {
+    return c === "blue" ? this.colors.blue : c === "red" ? this.colors.red : c === "none" ? this.colors.muted : this.colors.ink;
+  }
+
+  /** Dlaždice se stahují jen pro postavy nad úrovní teček (tečky se kreslí z rozvržení). */
+  private loadTiles(view: Rect) {
+    const detail = Math.min(this.extent, Math.max(0, this.dotsFrom));
+    if (detail === 0) {
+      this.queue = [];
+      return;
+    }
     const w = view.x1 - view.x0;
-    const need = tilesForRect(view, this.extent, { margin: w * 0.25, max: MAX_TILES_IN_VIEW });
+    const need = tilesForRect(view, detail, { margin: w * 0.25, max: MAX_TILES_IN_VIEW });
     const now = performance.now();
     for (const n of need) if (this.tiles.has(n)) this.tiles.set(n, now);
     this.queue = need.filter((n) => !this.tiles.has(n) && !this.loading.has(n));
@@ -818,9 +1003,11 @@ export class CrowdEngine {
           if (maxIdx >= this.extent) {
             this.extent = maxIdx + 1;
             this.buildBackground();
+            this.dotsDirty = true;
           }
           this.evictTiles();
-          this.dotsDirty = true;
+          // Jen tečky této dlaždice (1 000 částic), ne celý dav.
+          this.colorDotTile(n);
           this.viewDirty = true;
           this.wake();
         })
@@ -852,12 +1039,14 @@ export class CrowdEngine {
 
   private acquireRig(p: CrowdPerson): Rig {
     const params = this.paramsOf(p);
-    const r = this.rigPool.pop() ?? new Rig([this.frame("g:rect|white"), this.frame("h:none|0"), this.frame("scarf")], Texture.WHITE);
+    const r = this.rigPool.pop() ?? new Rig([this.frame("g:rect|white"), this.frame("h:none|0"), this.frame("scarf"), this.frame("keys")], Texture.WHITE);
     r.person = p;
     r.params = params;
     r.textKey = "";
     r.text.texture = Texture.EMPTY;
-    r.sign.texture = this.frame(`g:${signKey(params.signShape, p.signColor)}`);
+    // Bez cedule: sprite cedule i textu skrytý, tyče se nekreslí (applyFigure dostane prázdné poles).
+    r.sign.visible = hasSign(p.signColor);
+    if (hasSign(p.signColor)) r.sign.texture = this.frame(`g:${signKey(params.signShape, p.signColor)}`);
     r.head.texture = this.frame(`h:${headKey(params.hair, params.glasses)}`);
     r.scarf.visible = params.scarf;
     const ink = this.colors.ink;
@@ -867,6 +1056,7 @@ export class CrowdEngine {
     r.c.position.set(pos.x, pos.y);
     r.c.scale.set(pos.scale);
     r.c.zIndex = pos.y;
+    r.c.alpha = 1;
     this.rigLayer.addChild(r.c);
     return r;
   }
@@ -879,15 +1069,17 @@ export class CrowdEngine {
   }
 
   private assignText(r: Rig) {
+    const color = r.person.signColor;
+    if (!hasSign(color)) return;
     const text = this.signTextOf(r.person);
     if (!text) return;
-    const key = `${r.params.signShape}|${r.person.signColor}|${text}`;
-    r.text.texture = this.textTexture(text, r.params.signShape, r.person.signColor);
+    const key = `${r.params.signShape}|${color}|${text}`;
+    r.text.texture = this.textTexture(text, r.params.signShape, color);
     r.textKey = key;
   }
 
   private poseRig(r: Rig, t: number | undefined) {
-    const fig = figureGeometry(r.params, poseAt(r.params, r.person.pose, t));
+    const fig = figureGeometry(r.params, poseAt(r.params, r.person.pose, t, hasSign(r.person.signColor)));
     this.applyFigure(r, fig);
   }
 
@@ -896,15 +1088,17 @@ export class CrowdEngine {
     for (let k = 0; k < 2; k++) setLine(r.lines[k]!, segs[k] ?? null);
     for (let k = 0; k < 11; k++) setLine(r.lines[2 + k]!, fig.body[k]!);
     const sg = fig.sign;
-    const ang = (sg.angle * Math.PI) / 180;
-    r.sign.position.set(sg.x, sg.y);
-    r.sign.rotation = ang;
-    r.sign.scale.set(fig.scale / PART_RES);
-    if (r.text.visible) {
-      r.text.position.set(sg.x, sg.y);
-      r.text.rotation = ang;
-      r.text.scale.set(fig.scale / TEXT_RES);
-    }
+    if (sg) {
+      const ang = (sg.angle * Math.PI) / 180;
+      r.sign.position.set(sg.x, sg.y);
+      r.sign.rotation = ang;
+      r.sign.scale.set(fig.scale / PART_RES);
+      if (r.text.visible) {
+        r.text.position.set(sg.x, sg.y);
+        r.text.rotation = ang;
+        r.text.scale.set(fig.scale / TEXT_RES);
+      }
+    } else r.text.visible = false;
     const h = fig.head;
     r.head.position.set(h.x, h.y);
     r.head.rotation = (h.angle * Math.PI) / 180;
@@ -916,6 +1110,12 @@ export class CrowdEngine {
       r.fist.width = fig.fist.size;
       r.fist.height = fig.fist.size;
     } else r.fist.visible = false;
+    if (fig.keys) {
+      r.keys.visible = true;
+      r.keys.position.set(fig.keys.x, fig.keys.y);
+      r.keys.rotation = (fig.keys.angle * Math.PI) / 180;
+      r.keys.scale.set(fig.scale / PART_RES);
+    } else r.keys.visible = false;
     if (fig.scarf) {
       r.scarf.position.set(fig.scarf.x, fig.scarf.y);
       r.scarf.rotation = (fig.scarf.angle * Math.PI) / 180;
@@ -925,8 +1125,9 @@ export class CrowdEngine {
 
   // ---------- Smyčka ----------
 
+  /** Spustí smyčku rAF (po init, po návratu na kartu, při probuzení). */
   start() {
-    if (this.running || this.destroyed) return;
+    if (this.running || this.destroyed || !this.ready || document.hidden) return;
     this.running = true;
     this.fpsT0 = performance.now();
     this.fpsFrames = 0;
@@ -936,13 +1137,15 @@ export class CrowdEngine {
     this.running = false;
     cancelAnimationFrame(this.raf);
   }
+  /** Něco se změnilo: překreslit a případně znovu spustit zastavenou smyčku. */
   private wake() {
     this.renderDirty = true;
+    this.start();
   }
 
   private tick = (now: number) => {
     if (!this.running) return;
-    this.raf = requestAnimationFrame(this.tick);
+    this.frameNo++;
     if (this.tween) {
       const k = Math.min(1, (now - this.tween.t0) / this.tween.ms);
       const e = 1 - Math.pow(1 - k, 3);
@@ -953,10 +1156,18 @@ export class CrowdEngine {
       this.applyCamera();
     }
     if (this.viewDirty) this.rebuildView();
+    const dotsLeft = this.dotQueue.size > 0 && this.drainDots();
     this.updateBgThickness();
+    const popping = this.markAnchor !== null && !this.reducedMotion && now - this.markT0 < MARK_POP_MS + 20;
+    if (popping) {
+      this.placeMark(now);
+      this.renderDirty = true;
+    }
     const animate = !this.reducedMotion && this.rigs.size > 0;
     if (animate) {
-      for (const [i, r] of this.rigs) if (this.animated.has(i)) this.poseRig(r, now);
+      // Blízké postavy každý snímek, střední střídavě (polovina práce, pohyb je malý).
+      const odd = this.frameNo & 1;
+      for (const [i, r] of this.rigs) if (r.near || (i & 1) === odd) this.poseRig(r, now);
       this.renderDirty = true;
     }
     if (this.renderDirty) {
@@ -973,6 +1184,12 @@ export class CrowdEngine {
       this.lastStats = now;
       this.o.onStats?.(this.stats());
     }
+    // V klidu (bez animace, letu, přestavby) smyčka skončí; probudí ji vstup nebo data.
+    if (this.tween || animate || popping || dotsLeft || this.viewDirty || this.renderDirty) this.raf = requestAnimationFrame(this.tick);
+    else {
+      this.running = false;
+      this.o.onStats?.(this.stats());
+    }
   };
 
   stats(): CrowdStats {
@@ -982,6 +1199,7 @@ export class CrowdEngine {
       visible: this.visibleCount,
       rigs: this.rigs.size,
       statics: this.statics?.particleChildren.length ?? 0,
+      running: this.running,
       count: this.extent,
       renderer: this.rendererName,
       tiles: this.tiles.size,
@@ -1023,3 +1241,19 @@ function setLine(s: Sprite, g: { x1: number; y1: number; x2: number; y2: number 
   s.width = Math.hypot(dx, dy) + STROKE;
   s.height = STROKE;
 }
+
+interface DotTile {
+  pc: ParticleContainer;
+  parts: Particle[];
+  /** První zobrazený index (hranice teček); −1 = ještě nepostaveno. */
+  from: number;
+  shown: boolean;
+  box: Rect;
+}
+
+/** ParticleContainer bez dynamických vlastností (data se nahrají jen po update()). */
+function staticParticles(texture: Texture): ParticleContainer {
+  return new ParticleContainer({ texture, dynamicProperties: { position: false, color: false, vertex: false, uvs: false, rotation: false } });
+}
+
+const intersects = (a: Rect, b: Rect) => a.x0 < b.x1 && a.x1 > b.x0 && a.y0 < b.y1 && a.y1 > b.y0;

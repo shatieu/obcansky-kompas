@@ -1,29 +1,37 @@
 # Dopis senátorovi / senátorce mého obvodu (SPEC §9.2). Struktura a stupně viz poslanec.yaml.
 type: senator
-version: 1
+version: 2
 label: Můj senátor
+# Funkce do adresy (okénko obálky) podle pohlaví adresáta.
+funkce:
+  m: senátor
+  z: senátorka
 positions:
   osloveni:
     - id: osl-1
       forma: [1]
       delka: [1, 2, 3]
-      text: Dobrý den,
+      text:
+        m: Dobrý den, pane senátore,
+        z: Dobrý den, paní senátorko,
     - id: osl-2
-      forma: [1, 2]
-      delka: [1, 2]
-      text: Dobrý den, paní senátorko, pane senátore,
-    - id: osl-3
-      forma: [2, 3]
+      forma: [1, 2, 3]
       delka: [1, 2, 3]
-      text: Vážená paní senátorko, vážený pane senátore,
-    - id: osl-4
+      text:
+        m: Vážený pane senátore,
+        z: Vážená paní senátorko,
+    - id: osl-3
       forma: [3]
       delka: [1, 2, 3]
-      text: Ctěná paní senátorko, ctěný pane senátore,
-    - id: osl-5
+      text:
+        m: Ctěný pane senátore,
+        z: Ctěná paní senátorko,
+    - id: osl-4
       forma: [1, 2]
       delka: [3]
-      text: Paní senátorko, pane senátore,
+      text:
+        m: Pane senátore,
+        z: Paní senátorko,
 
   uvod:
     - id: uvod-1
@@ -39,9 +47,16 @@ positions:
     - id: uvod-3
       forma: [2, 3]
       delka: [1, 2, 3]
-      text: >-
-        Obracím se na Vás, protože v Senátu zastupujete i můj obvod. Jde mi
-        o financování České televize a Českého rozhlasu.
+      text:
+        m: >-
+          Obracím se na Vás, protože jste byl zvolen v mém senátním obvodu. Jde
+          mi o financování České televize a Českého rozhlasu.
+        z: >-
+          Obracím se na Vás, protože jste byla zvolena v mém senátním obvodu.
+          Jde mi o financování České televize a Českého rozhlasu.
+        n: >-
+          Obracím se na Vás, protože v Senátu zastupujete i můj obvod. Jde mi
+          o financování České televize a Českého rozhlasu.
     - id: uvod-4
       forma: [3]
       delka: [1, 2, 3]

@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect } from "react";
 import { questionsFile, t, ui } from "@/lib/content";
 import type { Demographics as DemographicsValue } from "@/lib/compose/types";
 import { AnswerOption } from "@/components/ui/answer";
@@ -11,11 +12,18 @@ export function Demographics({
   value,
   onChange,
   headingRef,
+  focusOnMount = false,
 }: {
   value: DemographicsValue;
   onChange: (v: DemographicsValue) => void;
   headingRef: React.RefObject<HTMLHeadingElement | null>;
+  /** Načteno líně po navigaci: fokus z `goTo` přišel dřív, než byl nadpis v DOM. */
+  focusOnMount?: boolean;
 }) {
+  useEffect(() => {
+    if (focusOnMount) headingRef.current?.focus();
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- jen při připojení
+  }, []);
   const d = questionsFile.demographics;
   const set = (patch: Partial<DemographicsValue>) => {
     const next = { ...value, ...patch };

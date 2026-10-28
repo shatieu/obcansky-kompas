@@ -6,6 +6,10 @@ import { runMigrations } from "@/lib/db/migrate";
 import {
   aiEnabled,
   anthropicProvider,
+  buildAnthropicRequest,
+  DEFAULT_MODERATION_MODEL,
+  moderationEffort,
+  moderationModel,
   ANTHROPIC_URL,
   dataBlock,
   getModerationProvider,
@@ -14,7 +18,7 @@ import {
   type ModerationProvider,
 } from "./ai";
 import { AI_PROMPT } from "./prompt.generated";
-import { backoffSeconds, enqueueModeration, initialModerationStatus, processModerationJobs, textHash, tileTag } from "./queue";
+import { backoffSeconds, enqueueModeration, initialModerationStatus, processModerationJobs, textHash, tileTag, WARN_ATTEMPTS } from "./queue";
 import { enqueueRecheck, runRecheck } from "./recheck";
 import { scriptCheck, type ModerationField } from "./script";
 
@@ -81,19 +85,38 @@ function mockProvider(fn: (text: string, field: ModerationField) => Classificati
 const OK: Classification = { verdict: "ok", category: null };
 
 describe("zapnutí AI (env)", () => {
-  it("aiEnabled jen s anthropic + klíčem", () => {
+  it("aiEnabled: stačí klíč (poskytovatel výchozí anthropic), none výslovně vypne", () => {
     expect(aiEnabled({})).toBe(false);
+    expect(aiEnabled({ MODERATION_API_KEY: "k" })).toBe(true);
+    expect(aiEnabled({ MODERATION_PROVIDER: "", MODERATION_API_KEY: "k" })).toBe(true);
+    expect(aiEnabled({ MODERATION_PROVIDER: " Anthropic ", MODERATION_API_KEY: "k" })).toBe(true);
     expect(aiEnabled({ MODERATION_PROVIDER: "none", MODERATION_API_KEY: "k" })).toBe(false);
+    expect(aiEnabled({ MODERATION_PROVIDER: "openai", MODERATION_API_KEY: "k" })).toBe(false);
     expect(aiEnabled({ MODERATION_PROVIDER: "anthropic" })).toBe(false);
     expect(aiEnabled({ MODERATION_PROVIDER: "anthropic", MODERATION_API_KEY: "  " })).toBe(false);
-    expect(aiEnabled({ MODERATION_PROVIDER: "anthropic", MODERATION_API_KEY: "k" })).toBe(true);
   });
-  it("getModerationProvider: vypnuto = null, bez modelu = chyba (žádný výchozí model v kódu)", () => {
+  it("model: MODERATION_MODEL, jinak výchozí claude-haiku-5-5", () => {
+    expect(DEFAULT_MODERATION_MODEL).toBe("claude-haiku-5-5");
+    expect(moderationModel({})).toBe("claude-haiku-5-5");
+    expect(moderationModel({ MODERATION_MODEL: "  " })).toBe("claude-haiku-5-5");
+    expect(moderationModel({ MODERATION_MODEL: "m" })).toBe("m");
     expect(getModerationProvider({})).toBeNull();
-    expect(() => getModerationProvider({ MODERATION_PROVIDER: "anthropic", MODERATION_API_KEY: "k" })).toThrow(ModerationError);
-    expect(getModerationProvider({ MODERATION_PROVIDER: "anthropic", MODERATION_API_KEY: "k", MODERATION_MODEL: "m" })?.name).toBe(
-      "anthropic",
-    );
+    expect(getModerationProvider({ MODERATION_PROVIDER: "none", MODERATION_API_KEY: "k" })).toBeNull();
+    expect(getModerationProvider({ MODERATION_API_KEY: "k" })?.name).toBe("anthropic");
+  });
+  it("effort: MODERATION_EFFORT, bez hodnoty se pole vynechá", async () => {
+    expect(moderationEffort({})).toBeUndefined();
+    expect(moderationEffort({ MODERATION_EFFORT: " LOW " })).toBe("low");
+    expect(moderationEffort({ MODERATION_EFFORT: "lo w" })).toBeUndefined();
+    expect(buildAnthropicRequest("m", "x", "slogan").output_config).not.toHaveProperty("effort");
+    expect(buildAnthropicRequest("m", "x", "slogan", "low").output_config).toMatchObject({ effort: "low" });
+  });
+  it("prompt výslovně pokrývá nenávist a sexuální obsah (i ostatní kategorie)", () => {
+    for (const c of ["vulgarita", "nenavist", "vyhruzka", "utok_na_osobu", "sexualni", "reklama", "podvrzene_jmeno", "nesrozumitelne"])
+      expect(AI_PROMPT).toContain("`" + c + "`");
+    expect(AI_PROMPT).toMatch(/nenávistné slogany/);
+    expect(AI_PROMPT).toMatch(/sexuálnímu násilí/);
+    expect(AI_PROMPT).toMatch(/sexualizace dětí/);
   });
 });
 
@@ -109,6 +132,7 @@ describe("bez klíče", () => {
   });
   it("s klíčem je výchozí stav pending", () => {
     expect(initialModerationStatus({ MODERATION_PROVIDER: "anthropic", MODERATION_API_KEY: "k" })).toBe("pending");
+    expect(initialModerationStatus({ MODERATION_API_KEY: "k" })).toBe("pending");
   });
 });
 
@@ -123,7 +147,7 @@ describe("fronta s mockovaným AI", () => {
 
     const { p, calls } = mockProvider(() => OK);
     const tags: string[] = [];
-    const out = await processModerationJobs({ sql, provider: p, revalidate: (i) => tags.push(tileTag(i)) });
+    const out = await processModerationJobs({ sql, provider: p, revalidate: (i) => void tags.push(tileTag(i)) });
     expect(out).toMatchObject({ claimed: 1, approved: 1, rejected: 0, failed: 0 });
     expect(calls).toEqual([{ text: "Ruce pryč od médií", field: "slogan" }]);
     expect((await state(d.id)).slogan_status).toBe("approved");
@@ -137,7 +161,7 @@ describe("fronta s mockovaným AI", () => {
     await enqueueModeration(sql, d.id, "name", "Babišek");
     const { p, calls } = mockProvider(() => ({ verdict: "reject", category: "podvrzene_jmeno" }));
     const tags: number[] = [];
-    const out = await processModerationJobs({ sql, provider: p, revalidate: (i) => tags.push(i) });
+    const out = await processModerationJobs({ sql, provider: p, revalidate: (i) => void tags.push(i) });
     expect(out).toMatchObject({ approved: 0, rejected: 1 });
     expect(calls[0]).toEqual({ text: "Babišek", field: "name" });
     expect((await state(d.id)).name_status).toBe("rejected");
@@ -184,19 +208,29 @@ describe("fronta s mockovaným AI", () => {
     expect([1, 2, 3, 4, 5, 9].map(backoffSeconds)).toEqual([60, 180, 540, 1620, 4860, 4860]);
   });
 
-  it("zapnuté AI bez MODERATION_MODEL: úlohy zůstanou pending s chybou not_configured", async () => {
-    const prev = { ...process.env };
-    Object.assign(process.env, { MODERATION_PROVIDER: "anthropic", MODERATION_API_KEY: "k", MODERATION_MODEL: "" });
+  it("po 5 neúspěších úlohy jednou varování", async () => {
+    const d = await makeDemonstrator();
+    await enqueueModeration(sql, d.id, "slogan", "Ruce pryč od médií");
+    const failing = mockProvider(() => {
+      throw new ModerationError("výpadek", "http_400");
+    });
+    const warns: string[] = [];
+    const orig = console.warn;
+    const origErr = console.error;
+    console.warn = (m: string) => void warns.push(String(m));
+    console.error = () => {};
     try {
-      const d = await makeDemonstrator();
-      await enqueueModeration(sql, d.id, "slogan", "Ruce pryč od médií");
-      const out = await processModerationJobs({ sql, revalidate: () => {} });
-      expect(out).toMatchObject({ claimed: 1, failed: 1 });
-      expect(await jobsOf(d.id)).toMatchObject([{ status: "pending", last_error: "not_configured" }]);
-      expect((await state(d.id)).slogan_status).toBe("pending");
+      for (let i = 0; i < WARN_ATTEMPTS + 2; i++) {
+        await sql`update app.moderation_job set next_attempt_at = now() where demonstrator_id = ${d.id}`;
+        await processModerationJobs({ sql, provider: failing.p, revalidate: () => {} });
+      }
     } finally {
-      process.env = prev;
+      console.warn = orig;
+      console.error = origErr;
     }
+    expect((await jobsOf(d.id))[0]).toMatchObject({ status: "pending", attempts: WARN_ATTEMPTS + 2 });
+    expect(warns.filter((w) => w.includes("WARNING"))).toHaveLength(1);
+    expect((await state(d.id)).slogan_status).toBe("pending");
   });
 
   it("text změněný po zařazení: verdikt se nepoužije (stale)", async () => {

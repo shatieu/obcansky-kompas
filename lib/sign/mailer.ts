@@ -1,8 +1,11 @@
 import type postgres from "postgres";
 import { decrypt, randomToken, sha256Hex } from "@/lib/crypto";
 import { consoleProvider, EmailError, fillTemplate, getEmailProvider, type EmailMessage, type EmailProvider } from "@/lib/email";
+import { composeStatement } from "@/lib/compose";
+import type { Answers } from "@/lib/compose/types";
 import { flags } from "@/lib/env";
 import { EDIT_TTL_MS, editUrl, verifyUrl, VERIFY_TTL_MS } from "./http";
+import { formatShortId } from "./short-id";
 import { signTexts } from "./texts";
 
 /**
@@ -18,10 +21,17 @@ export function backoffSeconds(previousAttempts: number): number {
 
 export type JobKind = "verify" | "edit";
 
-export function buildMessage(kind: JobKind, to: string, url: string): EmailMessage {
+/**
+ * `statement` = prostý text k podpisu se štítky (composeStatement(...).text). Do ověřovacího
+ * e-mailu jde pod nadpisem `statement_heading`; prázdný = sekce se vynechá.
+ * `shortId` = číslo podpisu (XXXX-XXXX) pro načtení odpovědí na jiném zařízení; prázdné = vynechá se.
+ */
+export function buildMessage(kind: JobKind, to: string, url: string, statement = "", shortId = ""): EmailMessage {
   const t = signTexts().email;
+  const block = statement ? `\n${t.statement_heading}\n\n${statement}\n` : "";
+  const code = shortId ? `\n${fillTemplate(t.short_id_line, { code: formatShortId(shortId) })}\n` : "";
   return kind === "verify"
-    ? { kind, to, subject: t.verify_subject, text: fillTemplate(t.verify_body, { url }) }
+    ? { kind, to, subject: t.verify_subject, text: fillTemplate(t.verify_body, { url, statement: block, short_id: code }) }
     : { kind, to, subject: t.edit_subject, text: fillTemplate(t.edit_body, { url }) };
 }
 
@@ -43,9 +53,19 @@ async function markResult(sql: postgres.Sql, jobId: string, error: string | null
   }
 }
 
-async function recipient(sql: postgres.Sql, signerId: string): Promise<string | null> {
-  const [row] = await sql<{ email_enc: string }[]>`select email_enc from app.signer where id = ${signerId}`;
-  return row ? decrypt(row.email_enc) : null;
+async function recipient(sql: postgres.Sql, signerId: string): Promise<{ to: string; statement: string; shortId: string } | null> {
+  const [row] = await sql<{ email_enc: string; answers: Answers; content_version: string; short_id: string }[]>`
+    select r.email_enc, s.answers, s.content_version, s.short_id
+    from app.signer r join app.signature s on s.id = r.signature_id
+    where r.id = ${signerId}`;
+  if (!row) return null;
+  let statement = "";
+  try {
+    statement = composeStatement(row.answers, row.content_version).text;
+  } catch {
+    statement = ""; // neznámá verze obsahu – e-mail bez textu
+  }
+  return { to: decrypt(row.email_enc), statement, shortId: row.short_id };
 }
 
 /** Pošle úlohu s už vydaným tokenem (volá se z after() hned po zápisu). */
@@ -54,10 +74,10 @@ export async function deliverJob(
   job: { id: string; signerId: string; kind: JobKind; token: string; baseUrl: string },
 ): Promise<boolean> {
   try {
-    const to = await recipient(sql, job.signerId);
-    if (!to) return false;
+    const r = await recipient(sql, job.signerId);
+    if (!r) return false;
     const url = job.kind === "verify" ? verifyUrl(job.baseUrl, job.token) : editUrl(job.baseUrl, job.token);
-    await mailer().send(buildMessage(job.kind, to, url));
+    await mailer().send(buildMessage(job.kind, r.to, url, r.statement, r.shortId));
     await markResult(sql, job.id, null);
     console.info(`[email] sent kind=${job.kind}`);
     return true;

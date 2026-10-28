@@ -214,6 +214,8 @@
     font-family: var(--font-wide); font-size: 15px; line-height: 20px; font-weight: 800; letter-spacing: -0.01em;
     color: inherit; text-decoration: none;
   }
+  /* Vlajka ve značce se nikdy nezmenší pod 24 × 16 (flag-min), ani když je hlavička plná. */
+  .k-wordmark > .k-flag { flex: none; }
 
   /* SelectMark: empty ring off, white disc with a whole 3:2 flag on */
   .k-mark {
@@ -574,6 +576,16 @@
   @media (min-width: 768px) { .k-appbar__nav { display: flex; gap: 8px; } }
   .k-appbar__nav a { display: inline-flex; align-items: center; min-height: 48px; padding: 0 8px; color: inherit; font-weight: 600; text-decoration: none; }
   .k-appbar__nav a:hover { text-decoration: underline; }
+  /* Mobil: jeden odkaz místo navigace (cíl 48 px). S odznakem ukázky se vše musí vejít na 360 px:
+     menší mezery, odznak se zalomí na dva řádky. */
+  .k-appbar__quick a { display: inline-flex; align-items: center; min-height: 48px; color: inherit; font-size: 14px; font-weight: 600; text-decoration: underline; text-underline-offset: 3px; }
+  @media (max-width: 767px) {
+    .k-appbar__in:has(.k-appbar__quick) { gap: 8px; }
+    .k-appbar__in:has(.k-appbar__quick) .k-wordmark { gap: 6px; }
+    .k-appbar__end:has(.k-appbar__quick) { gap: 6px; }
+    .k-appbar__end:has(.k-appbar__quick) .k-badge { white-space: normal; max-width: 9em; padding: 4px; letter-spacing: 0.02em; }
+  }
+  @media (min-width: 768px) { .k-appbar__quick { display: none; } }
   .k-appbar.k-night { border-bottom-color: transparent; }
   /* A page that opens with a night poster plane gets a night app bar (pure CSS, no router chunk). */
   body:has([data-night-top]) .k-appbar {

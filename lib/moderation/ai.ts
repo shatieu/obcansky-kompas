@@ -5,8 +5,9 @@ import type { ModerationField } from "./script";
 /**
  * Stupeň 2 moderace: AI kontrola přes adaptér (SPEC-demonstrace §4.2). Jen server.
  *
- * `MODERATION_PROVIDER=none|anthropic`, `MODERATION_API_KEY`, `MODERATION_MODEL` (model jen
- * v env, v .env.example navržený rychlý levný model). Anthropic se volá přes fetch na
+ * Zapne ji samotný `MODERATION_API_KEY` (poskytovatel pak výchozí `anthropic`, model výchozí
+ * `claude-haiku-5-5`); `MODERATION_PROVIDER=none` ji vypne, `MODERATION_MODEL` a volitelně
+ * `MODERATION_EFFORT` ji ladí. Anthropic se volá přes fetch na
  * Messages API (bez SDK) se strukturovaným výstupem (output_config.format = JSON schema);
  * odpověď se navíc validuje zodem. Text uživatele jde v samostatném bloku zprávy jako
  * JSON řetězec mezi značkami – nikdy jako instrukce (instrukce jsou v system promptu).
@@ -50,9 +51,27 @@ export class ModerationError extends Error {
   }
 }
 
-/** AI kontrola je zapnutá jen s poskytovatelem anthropic a klíčem (§4.2, §10). */
+/**
+ * Poskytovatel AI kontroly (§4.2, §10, rozhodnutí vlastníka 2026-10-28): stačí nastavit
+ * `MODERATION_API_KEY` – bez `MODERATION_PROVIDER` se pak použije `anthropic`.
+ * `MODERATION_PROVIDER=none` AI výslovně vypne i s klíčem. Neznámá hodnota = vypnuto.
+ */
+export function moderationProviderName(env: Record<string, string | undefined> = process.env): "anthropic" | "none" {
+  if (!env.MODERATION_API_KEY?.trim()) return "none";
+  const p = (env.MODERATION_PROVIDER ?? "").trim().toLowerCase();
+  return p === "" || p === "anthropic" ? "anthropic" : "none";
+}
+
+/** AI kontrola je zapnutá s klíčem a poskytovatelem anthropic (výchozí, když je klíč). */
 export function aiEnabled(env: Record<string, string | undefined> = process.env): boolean {
-  return (env.MODERATION_PROVIDER ?? "").trim().toLowerCase() === "anthropic" && Boolean(env.MODERATION_API_KEY?.trim());
+  return moderationProviderName(env) === "anthropic";
+}
+
+/** Výchozí model, když `MODERATION_MODEL` chybí: rychlý levný Claude Haiku 5.5. */
+export const DEFAULT_MODERATION_MODEL = "claude-haiku-5-5";
+
+export function moderationModel(env: Record<string, string | undefined> = process.env): string {
+  return env.MODERATION_MODEL?.trim() || DEFAULT_MODERATION_MODEL;
 }
 
 export const ANTHROPIC_URL = "https://api.anthropic.com/v1/messages";
@@ -80,12 +99,21 @@ export function dataBlock(text: string): string {
   return `${START}\n${JSON.stringify(safe)}\n${END}`;
 }
 
-export function buildAnthropicRequest(model: string, text: string, field: ModerationField) {
+/**
+ * `MODERATION_EFFORT` (např. `low`) → output_config.effort. Bez hodnoty se pole vynechá –
+ * ne každý model effort podporuje a neznámé pole by požadavek odmítlo (400).
+ */
+export function moderationEffort(env: Record<string, string | undefined> = process.env): string | undefined {
+  const v = env.MODERATION_EFFORT?.trim().toLowerCase();
+  return v && /^[a-z]{1,16}$/.test(v) ? v : undefined;
+}
+
+export function buildAnthropicRequest(model: string, text: string, field: ModerationField, effort?: string) {
   return {
     model,
     max_tokens: 2048,
     system: AI_PROMPT,
-    output_config: { effort: "low", format: { type: "json_schema", schema: OUTPUT_SCHEMA } },
+    output_config: { ...(effort ? { effort } : {}), format: { type: "json_schema", schema: OUTPUT_SCHEMA } },
     messages: [
       {
         role: "user",
@@ -106,7 +134,13 @@ interface AnthropicResponse {
   content?: { type: string; text?: string }[];
 }
 
-export function anthropicProvider(opts: { apiKey: string; model: string; fetchImpl?: typeof fetch; timeoutMs?: number }): ModerationProvider {
+export function anthropicProvider(opts: {
+  apiKey: string;
+  model: string;
+  effort?: string;
+  fetchImpl?: typeof fetch;
+  timeoutMs?: number;
+}): ModerationProvider {
   return {
     name: "anthropic",
     async classify(text, field) {
@@ -119,7 +153,7 @@ export function anthropicProvider(opts: { apiKey: string; model: string; fetchIm
             "anthropic-version": ANTHROPIC_VERSION,
             "content-type": "application/json",
           },
-          body: JSON.stringify(buildAnthropicRequest(opts.model, text, field)),
+          body: JSON.stringify(buildAnthropicRequest(opts.model, text, field, opts.effort)),
           signal: AbortSignal.timeout(opts.timeoutMs ?? 30_000),
         });
       } catch {
@@ -153,7 +187,5 @@ export function anthropicProvider(opts: { apiKey: string; model: string; fetchIm
 /** Poskytovatel podle env; null = AI kontrola vypnutá. */
 export function getModerationProvider(env: Record<string, string | undefined> = process.env): ModerationProvider | null {
   if (!aiEnabled(env)) return null;
-  const model = env.MODERATION_MODEL?.trim();
-  if (!model) throw new ModerationError("Chybí MODERATION_MODEL", "not_configured");
-  return anthropicProvider({ apiKey: env.MODERATION_API_KEY!.trim(), model });
+  return anthropicProvider({ apiKey: env.MODERATION_API_KEY!.trim(), model: moderationModel(env), effort: moderationEffort(env) });
 }

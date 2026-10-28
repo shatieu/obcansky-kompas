@@ -11,6 +11,8 @@ import { pagesTextsSchema } from "../lib/org/texts";
 import { loadDemoSlogans, REQUIRED_PRESET_IDS } from "../lib/demo/slogans-schema";
 import { demoTextsSchema } from "../components/demonstrace/join/texts";
 import { crowdTextsSchema } from "../lib/crowd/texts";
+import { lookupTextsSchema } from "../lib/sign/lookup-texts";
+import { loadLinks } from "../lib/content/links-schema";
 
 const LIMITS = {
   question: { words: 8 },
@@ -95,6 +97,8 @@ try {
   if (!demo.success) err("ui.demonstrace", demo.error.issues.map((i) => `${i.path.join(".")}: ${i.message}`).join("; "));
   const crowd = crowdTextsSchema.safeParse(c.ui.demonstrace_crowd);
   if (!crowd.success) err("ui.demonstrace_crowd", crowd.error.issues.map((i) => `${i.path.join(".")}: ${i.message}`).join("; "));
+  const lookup = lookupTextsSchema.safeParse(c.ui.lookup);
+  if (!lookup.success) err("ui.lookup", lookup.error.issues.map((i) => `${i.path.join(".")}: ${i.message}`).join("; "));
 
   // Online demonstrace: předvolby sloganů (max. 40 znaků hlídá schéma) jdou do kontroly výrazů.
   try {
@@ -105,6 +109,28 @@ try {
       displayed.push({ where: `demonstrace/slogans.${p.id}`, text: p.text, severity: mandated.has(p.id) ? "warn" : "error" });
   } catch (e) {
     err("content/demonstrace/slogans.yaml", (e as Error).message);
+  }
+
+  // Odkazy a čtení (content/links.yaml): nadpisy a názvy položek = nadpis, popisy = text pod nadpisem.
+  try {
+    const l = loadLinks();
+    checkHeading("links.title", l.title);
+    checkLead("links.lead", l.lead);
+    displayed.push({ where: "links.title", text: l.title }, { where: "links.lead", text: l.lead });
+    checkButton("links.method_link", l.method_link);
+    checkButton("links.stance_link", l.stance_link);
+    for (const [g, group] of [["reading", l.reading], ["initiatives", l.initiatives]] as const) {
+      checkHeading(`links.${g}.title`, group.title);
+      checkLead(`links.${g}.lead`, group.lead);
+      displayed.push({ where: `links.${g}.lead`, text: group.lead });
+      for (const it of group.items) {
+        checkHeading(`links.${g}.${it.id}.title`, it.title);
+        checkLead(`links.${g}.${it.id}.description`, it.description);
+        displayed.push({ where: `links.${g}.${it.id}`, text: `${it.title} ${it.description}` });
+      }
+    }
+  } catch (e) {
+    err("content/links.yaml", (e as Error).message);
   }
 
   checkHeading("stance.title", c.stance.title);

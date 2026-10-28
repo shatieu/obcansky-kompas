@@ -3,6 +3,8 @@ import { LettersTool } from "@/components/akce/letters-tool";
 import { loadAkceDirectories } from "@/components/akce/load-directories";
 import { loadUiAkce } from "@/components/akce/load-texts";
 import { ShareArrival } from "@/components/share/share-arrival";
+import { AnswersLoaderRemount } from "@/components/lookup/answers-loader-link";
+import { lookupTexts } from "@/lib/sign/lookup-texts";
 import { loadLettersContent } from "@/lib/letters/load";
 import { shareMetadata } from "@/lib/share/metadata";
 import { parseRecipients } from "@/lib/share/moments";
@@ -33,12 +35,15 @@ export default function AkcePage() {
   return (
     <>
       <ShareArrival />
-      <LettersTool
-        texts={loadUiAkce().akce}
-        letters={loadLettersContent()}
-        dirs={loadAkceDirectories()}
-        share={{ panel: sharePanelTexts(), image: s.image, recipients: s.recipients }}
-      />
+      {/* „Načíst moje odpovědi“ (číslo podpisu / odkaz z e-mailu): po načtení se nástroj znovu připojí. */}
+      <AnswersLoaderRemount texts={lookupTexts()}>
+        <LettersTool
+          texts={loadUiAkce().akce}
+          letters={loadLettersContent()}
+          dirs={loadAkceDirectories()}
+          share={{ panel: sharePanelTexts(), image: s.image, recipients: s.recipients }}
+        />
+      </AnswersLoaderRemount>
     </>
   );
 }

@@ -19,7 +19,16 @@ function readJsonFile<T>(file: string): T | null {
 }
 
 export function staticMeta(): MetaResponse {
-  return readJsonFile<MetaResponse>("meta.json") ?? { count: 0, tiles: 0, tileSize: 1000, demo: true };
+  const m = readJsonFile<Partial<MetaResponse>>("meta.json");
+  if (!m) return { count: 0, tiles: 0, tileSize: 1000, minIndex: null, maxIndex: null, demo: true };
+  return {
+    count: m.count ?? 0,
+    tiles: m.tiles ?? 0,
+    tileSize: m.tileSize ?? 1000,
+    minIndex: m.minIndex ?? (m.count ? 0 : null),
+    maxIndex: m.maxIndex ?? (m.count ? m.count - 1 : null),
+    demo: m.demo ?? true,
+  };
 }
 
 export function staticTile(n: number): TileResponse {

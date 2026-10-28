@@ -2,6 +2,7 @@ import type { ShareCard } from "./card";
 import { layoutCard, type ClientFormat, type DrawOp, type FontKind } from "./layout";
 import { COLORS, FORMATS } from "./style";
 import { CROWD_PALETTE, FG_PALETTE, type Placed } from "./demonstrace";
+import { hasSign } from "@/lib/demo/constants";
 import { drawFigure } from "@/lib/stickman/canvas";
 import { figureGeometry } from "@/lib/stickman/geometry";
 import { generateStickman } from "@/lib/stickman/params";
@@ -79,13 +80,15 @@ function drawPhoto(ctx: Ctx, photo: CanvasImageSource & { width: number; height:
 /** Panáček demonstrace: tělo přes lib/stickman/canvas, text cedule písmem obrázku. */
 function drawStickman(ctx: Ctx, p: Placed) {
   const params = generateStickman(p.seed);
-  const fig = figureGeometry(params, poseAt(params, p.pose));
+  const fig = figureGeometry(params, poseAt(params, p.pose, undefined, hasSign(p.signColor)));
   const pal = p.layer === "fg" ? FG_PALETTE : CROWD_PALETTE;
   ctx.save();
   ctx.translate(p.x, p.y);
   ctx.scale(p.scale, p.scale);
   drawFigure(ctx, fig, p.signColor, pal);
-  if (p.signText.trim()) {
+  const sign = fig.sign;
+  if (sign && hasSign(p.signColor) && p.signText.trim()) {
+    const paint = p.signColor;
     // Rozložení textu nechá v kontextu prostrkání z měření nadpisu – cedule ho mít nesmí.
     if ("letterSpacing" in ctx) ctx.letterSpacing = "0px";
     const measure = (t: string, size: number) => {
@@ -96,9 +99,9 @@ function drawStickman(ctx: Ctx, p: Placed) {
     const lay = layoutSignText(p.signText, params.signShape, measure);
     const fs = lay.fontSize * fig.scale;
     const lh = lay.lineHeight * fig.scale;
-    ctx.translate(fig.sign.x, fig.sign.y);
-    ctx.rotate((fig.sign.angle * Math.PI) / 180);
-    ctx.fillStyle = pal.signText[p.signColor];
+    ctx.translate(sign.x, sign.y);
+    ctx.rotate((sign.angle * Math.PI) / 180);
+    ctx.fillStyle = pal.signText[paint];
     ctx.textAlign = "center";
     ctx.textBaseline = "middle";
     if ("letterSpacing" in ctx) ctx.letterSpacing = "0px";

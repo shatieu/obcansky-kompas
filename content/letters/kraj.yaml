@@ -1,31 +1,23 @@
 # Dopis zastupitelstvu mého kraje (SPEC §9.2). Struktura a stupně viz poslanec.yaml.
 type: kraj
-version: 1
+version: 2
 label: Zastupitelstvo mého kraje
 positions:
+  # Zastupitelstvo nemá pohlaví: všechna oslovení stojí na jedné ustálené formuli
+  # „Vážené zastupitelky, vážení zastupitelé“ (žádné dvojice paní/pane).
   osloveni:
     - id: osl-1
       forma: [1]
       delka: [1, 2, 3]
-      text: Dobrý den,
+      text: Dobrý den, vážené zastupitelky, vážení zastupitelé,
     - id: osl-2
-      forma: [1, 2]
-      delka: [1, 2]
-      text: Dobrý den, vážené zastupitelky a zastupitelé,
-    - id: osl-3
-      forma: [2, 3]
+      forma: [1, 2, 3]
       delka: [1, 2, 3]
       text: Vážené zastupitelky, vážení zastupitelé,
-    - id: osl-4
+    - id: osl-3
       forma: [3]
       delka: [1, 2, 3]
-      text: >-
-        Vážená paní hejtmanko, vážený pane hejtmane, vážené členky a členové
-        zastupitelstva kraje,
-    - id: osl-5
-      forma: [1, 2]
-      delka: [3]
-      text: Zastupitelky a zastupitelé našeho kraje,
+      text: Vážené zastupitelky, vážení zastupitelé našeho kraje,
 
   uvod:
     - id: uvod-1

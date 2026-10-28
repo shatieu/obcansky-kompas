@@ -3,6 +3,8 @@ import {
   TILE_SIZE,
   type MetaResponse,
   type ModerationStatus,
+  type OwnDetail,
+  type OwnDetailResponse,
   type PersonResponse,
   type Pose,
   type SignColor,
@@ -40,10 +42,18 @@ export interface ShapeOpts {
   isPresetId: (id: string) => boolean;
 }
 
-/** Veřejný slogan: "t:<schválený text>" nebo "p:<předvolba>". */
-export function publicSlogan(r: Pick<DemoRow, "slogan_preset_id" | "slogan_custom" | "slogan_status" | "hidden_at">, o: ShapeOpts): string {
+/**
+ * Veřejný slogan: "t:<schválený text>", "p:<předvolba>", nebo "" (bez sloganu). Panáček s cedulí
+ * má vždy nějaký text (jinak výchozí předvolba); panáček bez cedule (`none`) se slogan jen
+ * zobrazí na kartě, takže bez sloganu nebo s neschváleným textem je slogan prázdný.
+ */
+export function publicSlogan(
+  r: Pick<DemoRow, "slogan_preset_id" | "slogan_custom" | "slogan_status" | "hidden_at"> & { sign_color?: SignColor },
+  o: ShapeOpts,
+): string {
   if (r.slogan_custom && r.slogan_status === "approved" && !r.hidden_at) return `t:${r.slogan_custom}`;
   if (!r.slogan_custom && r.slogan_preset_id && o.isPresetId(r.slogan_preset_id)) return `p:${r.slogan_preset_id}`;
+  if (r.sign_color === "none") return "";
   return `p:${o.defaultPresetId}`;
 }
 
@@ -89,13 +99,18 @@ export async function queryPersonRow(sql: postgres.Sql, id: string, includeSeed:
   return rows[0] ?? null;
 }
 
-/** Počet účastníků a dlaždic. Dlaždice se počítají z nejvyššího indexu (mezery po odvolání zůstávají). */
+/**
+ * Počet účastníků, dlaždic a rozsah indexů. Dlaždice se počítají z nejvyššího indexu (mezery po
+ * odvolání zůstávají); bez DEMO_MODE chybí seedoví účastníci, takže indexy nemusí začínat 0.
+ */
 export async function queryMeta(sql: postgres.Sql, includeSeed: boolean): Promise<Omit<MetaResponse, "demo">> {
-  const [row] = await sql.unsafe<{ n: number; max: number | null }[]>(
-    `select count(*)::int as n, max(position_index) as max from app.demonstrator ${includeSeed ? "" : "where not is_seed"}`,
+  const [row] = await sql.unsafe<{ n: number; min: number | null; max: number | null }[]>(
+    `select count(*)::int as n, min(position_index) as min, max(position_index) as max
+     from app.demonstrator ${includeSeed ? "" : "where not is_seed"}`,
   );
-  const max = row?.max;
-  return { count: row?.n ?? 0, tiles: max === null || max === undefined ? 0 : Math.floor(Number(max) / TILE_SIZE) + 1, tileSize: TILE_SIZE };
+  const max = row?.max === null || row?.max === undefined ? null : Number(row.max);
+  const min = row?.min === null || row?.min === undefined ? null : Number(row.min);
+  return { count: row?.n ?? 0, tiles: max === null ? 0 : Math.floor(max / TILE_SIZE) + 1, tileSize: TILE_SIZE, minIndex: min, maxIndex: max };
 }
 
 export interface OwnRow {
@@ -105,14 +120,19 @@ export interface OwnRow {
   first_name: string | null;
   name_status: ModerationStatus;
   reroll_count: number;
+  hidden: boolean;
 }
 
 /** Soukromá část karty jen pro vlastníka (štítek „Čeká na kontrolu“ / „Text neprošel kontrolou“). */
-export async function queryOwn(sql: postgres.Sql, id: string, signatureId: string): Promise<PersonResponse["own"] | null> {
+export async function queryOwn(sql: postgres.Sql, id: string, signatureId: string): Promise<OwnDetail | null> {
   const [r] = await sql<OwnRow[]>`
-    select slogan_preset_id, slogan_custom, slogan_status, first_name, name_status, reroll_count
+    select slogan_preset_id, slogan_custom, slogan_status, first_name, name_status, reroll_count,
+      hidden_at is not null as hidden
     from app.demonstrator where id = ${id} and signature_id = ${signatureId}`;
-  if (!r) return null;
+  return r ? ownFromRow(r) : null;
+}
+
+function ownFromRow(r: OwnRow): OwnDetail {
   return {
     sloganPresetId: r.slogan_preset_id,
     sloganCustom: r.slogan_custom,
@@ -120,5 +140,21 @@ export async function queryOwn(sql: postgres.Sql, id: string, signatureId: strin
     firstName: r.first_name,
     nameStatus: r.name_status,
     rerollCount: r.reroll_count,
+    hidden: Boolean(r.hidden),
   };
+}
+
+/**
+ * Vlastní panáček podle podpisu včetně soukromé části (GET /api/demonstrace/me/detail). Čte přímo
+ * z DB (ne z cache) – po úpravě musí autor hned vidět svůj stav. Jen neodvolaný podpis.
+ */
+export async function queryOwnDetail(sql: postgres.Sql, signatureId: string): Promise<OwnDetailResponse | null> {
+  const [r] = await sql<(OwnRow & { id: string; position_index: number; seed: number | string; pose: Pose; sign_color: SignColor })[]>`
+    select d.id, d.position_index, d.seed, d.pose, d.sign_color,
+      d.slogan_preset_id, d.slogan_custom, d.slogan_status, d.first_name, d.name_status, d.reroll_count,
+      d.hidden_at is not null as hidden
+    from app.demonstrator d join app.signature s on s.id = d.signature_id
+    where d.signature_id = ${signatureId} and s.withdrawn_at is null`;
+  if (!r) return null;
+  return { id: r.id, index: r.position_index, seed: Number(r.seed), pose: r.pose, signColor: r.sign_color, own: ownFromRow(r) };
 }

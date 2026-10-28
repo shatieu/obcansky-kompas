@@ -14,8 +14,11 @@ export const crowdTextsSchema = z.object({
   count_few: s,
   count_many: s,
   join_button: s,
+  edit_button: s,
+  home_aria: s,
   list_button: s,
   find_me_button: s,
+  minimap_button: s,
   start_button: s,
   end_button: s,
   zoom_in: s,
@@ -37,8 +40,10 @@ export const crowdTextsSchema = z.object({
     copied: s,
     reported: s,
     report_error: s,
+    report_verify: s,
     close: s,
     figure_label: s,
+    figure_label_no_sign: s,
   }),
 });
 export type CrowdTexts = z.infer<typeof crowdTextsSchema>;

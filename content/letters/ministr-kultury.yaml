@@ -1,29 +1,37 @@
 # Dopis ministru / ministryni kultury (SPEC §9.2). Struktura a stupně viz poslanec.yaml.
 type: ministr-kultury
-version: 1
+version: 2
 label: Ministr kultury
+# Funkce do adresy (okénko obálky) podle pohlaví adresáta.
+funkce:
+  m: ministr kultury
+  z: ministryně kultury
 positions:
   osloveni:
     - id: osl-1
       forma: [1]
       delka: [1, 2, 3]
-      text: Dobrý den,
+      text:
+        m: Dobrý den, pane ministře,
+        z: Dobrý den, paní ministryně,
     - id: osl-2
-      forma: [1, 2]
-      delka: [1, 2]
-      text: Dobrý den, paní ministryně, pane ministře,
-    - id: osl-3
-      forma: [2, 3]
+      forma: [1, 2, 3]
       delka: [1, 2, 3]
-      text: Vážená paní ministryně, vážený pane ministře,
-    - id: osl-4
+      text:
+        m: Vážený pane ministře,
+        z: Vážená paní ministryně,
+    - id: osl-3
       forma: [3]
       delka: [1, 2, 3]
-      text: Ctěná paní ministryně, ctěný pane ministře,
-    - id: osl-5
+      text:
+        m: Ctěný pane ministře,
+        z: Ctěná paní ministryně,
+    - id: osl-4
       forma: [1, 2]
       delka: [3]
-      text: Paní ministryně, pane ministře,
+      text:
+        m: Pane ministře,
+        z: Paní ministryně,
 
   uvod:
     - id: uvod-1

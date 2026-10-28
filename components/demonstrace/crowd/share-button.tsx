@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import type { CrowdPerson } from "@/lib/crowd/data";
 import { useDemoShare } from "@/components/share/demonstrace-share-context";
 
-// SharePanel + kreslení obrázků jen s otevřenou kartou (rozpočet JS stránky davu).
+// SharePanel + kreslení obrázků až po klepnutí na „Sdílet“ (rozpočet JS /demonstrace/[id], kde je karta otevřená hned).
 const DemoShare = lazy(() => import("@/components/share/demonstrace-share"));
 
 /**
@@ -24,11 +24,18 @@ export interface CrowdShareProps {
 export function CrowdShareButton(props: CrowdShareProps) {
   // Plné sdílení (obrázek Story/čtverec, sítě) – texty dodá stránka přes DemoShareProvider.
   const share = useDemoShare();
+  const [want, setWant] = useState(false);
+  if (share && want)
+    return (
+      <Suspense fallback={<Button variant="primary" block icon="share" aria-busy>{props.label}</Button>}>
+        <DemoShare person={props.person} url={props.url} label={props.label} defaultOpen />
+      </Suspense>
+    );
   if (share)
     return (
-      <Suspense fallback={<CopyShareButton {...props} />}>
-        <DemoShare person={props.person} url={props.url} label={props.label} />
-      </Suspense>
+      <Button variant="primary" block icon="share" onClick={() => setWant(true)} onPointerEnter={() => void import("@/components/share/demonstrace-share")}>
+        {props.label}
+      </Button>
     );
   return <CopyShareButton {...props} />;
 }

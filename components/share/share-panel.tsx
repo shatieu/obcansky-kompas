@@ -32,6 +32,7 @@ export function SharePanel({
   photo,
   sticky = true,
   variant = "primary",
+  defaultOpen = false,
 }: {
   card: ShareCard;
   /** Odkaz ke sdílení (cesta nebo absolutní URL), `?s=<moment>` se doplní. */
@@ -43,8 +44,10 @@ export function SharePanel({
   sticky?: boolean;
   /** "secondary" = textové tlačítko (na stránkách, kde je primární akce jiná). */
   variant?: Extract<ButtonVariant, "primary" | "secondary">;
+  /** Otevřít hned (panel načtený až klepnutím na „Sdílet“, např. karta v davu). */
+  defaultOpen?: boolean;
 }) {
-  const [open, setOpen] = useState(false);
+  const [open, setOpen] = useState(defaultOpen);
   const [link, setLink] = useState("");
   const [images, setImages] = useState<Rendered | null>(null);
   const [failed, setFailed] = useState(false);

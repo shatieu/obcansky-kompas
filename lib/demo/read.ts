@@ -24,14 +24,17 @@ export async function loadMeta(): Promise<MetaResponse> {
   return { ...m, demo: flags.showDemoBar() };
 }
 
-/** `last` = poslední (rostoucí) dlaždice → krátká platnost; plné dlaždice drží do zneplatnění tagem. */
+/**
+ * `last` = poslední (rostoucí) dlaždice → krátká platnost; ostatní drží do zneplatnění tagem, nejdéle
+ * 10 min (pojistka pro zásahy z CLI bez vzdálené revalidace).
+ */
 export async function loadTile(n: number, last: boolean): Promise<TileResponse> {
   if (flags.staticDemo()) return staticTile(n);
   const seed = includeSeed();
   return unstable_cache(
     async () => ({ n, items: (await queryTileRows(getSql(), n, seed)).map((r) => shapeTileItem(r, shapeOpts)) }),
     ["demo-tile", String(n), String(seed), last ? "last" : "full"],
-    { tags: [tileTag(n)], revalidate: last ? 30 : 86400 },
+    { tags: [tileTag(n)], revalidate: last ? 30 : 600 },
   )();
 }
 
@@ -44,6 +47,6 @@ export async function loadPerson(id: string): Promise<PersonResponse | null> {
       return row ? shapePerson(row, shapeOpts) : null;
     },
     ["demo-person", id, String(seed)],
-    { tags: [personTag(id)], revalidate: 3600 },
+    { tags: [personTag(id)], revalidate: 600 },
   )();
 }

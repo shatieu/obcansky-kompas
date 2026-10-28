@@ -12,7 +12,9 @@ import { hit } from "@/lib/rate-limit";
 import { createOrReplaceSignature, requestEditLink, verifySignature, withdrawSignature, type SignData } from "@/lib/sign/service";
 import { scriptCheck } from "@/lib/moderation/script";
 import { POSES, SIGN_COLORS, TILE_SIZE, type TileItem } from "./constants";
-import { OWNER_COOKIE, getOwnerSignatureId, signOwnerValue, verifyOwnerValue } from "./owner";
+import { hmac } from "@/lib/crypto";
+import { OWNER_COOKIE, bumpOwnerEpoch, getOwnerClaim, getOwnerSignatureId, ownerEpoch, parseOwnerValue, signOwnerValue, verifyOwnerValue } from "./owner";
+import { ipNetworkKey } from "./http";
 import { demoInputSchema } from "./input";
 import {
   editDemonstrator,
@@ -37,17 +39,22 @@ const shapeOpts = { defaultPresetId: slogans.default, isPresetId: (id: string) =
 
 describe("owner cookie ok_owner", () => {
   const id = "0b7c8a3e-2f7d-4c1b-9a51-8d3c2e1f0a9b";
-  it("podepsaná hodnota se ověří na id podpisu", () => {
+  it("podepsaná hodnota se ověří na id podpisu a epochu", () => {
     expect(verifyOwnerValue(signOwnerValue(id))).toBe(id);
-    expect(getOwnerSignatureId({ get: (n) => (n === OWNER_COOKIE ? { value: signOwnerValue(id) } : undefined) })).toBe(id);
-    expect(getOwnerSignatureId({ cookies: { get: () => undefined } })).toBeNull();
+    expect(parseOwnerValue(signOwnerValue(id, 7))).toEqual({ signatureId: id, epoch: 7 });
+    expect(getOwnerClaim({ get: (n) => (n === OWNER_COOKIE ? { value: signOwnerValue(id, 2) } : undefined) })).toEqual({ signatureId: id, epoch: 2 });
+    expect(getOwnerClaim({ cookies: { get: () => undefined } })).toBeNull();
   });
-  it("podvržené id, poškozený podpis i prošlá cookie neprojdou", () => {
-    const v = signOwnerValue(id);
-    const [, exp, sig] = v.split(".");
-    expect(verifyOwnerValue(`1b7c8a3e-2f7d-4c1b-9a51-8d3c2e1f0a9b.${exp}.${sig}`)).toBeNull();
-    expect(verifyOwnerValue(`${id}.${exp}.${"0".repeat(64)}`)).toBeNull();
-    expect(verifyOwnerValue(`${id}.${Number(exp) + 1}.${sig}`)).toBeNull();
+  it("podvržené id, epocha, poškozený podpis i prošlá cookie neprojdou", () => {
+    const v = signOwnerValue(id, 3);
+    const [, epoch, exp, sig] = v.split(".");
+    expect(epoch).toBe("3");
+    expect(verifyOwnerValue(`1b7c8a3e-2f7d-4c1b-9a51-8d3c2e1f0a9b.${epoch}.${exp}.${sig}`)).toBeNull();
+    expect(verifyOwnerValue(`${id}.4.${exp}.${sig}`)).toBeNull();
+    expect(verifyOwnerValue(`${id}.${epoch}.${exp}.${"0".repeat(64)}`)).toBeNull();
+    expect(verifyOwnerValue(`${id}.${epoch}.${Number(exp) + 1}.${sig}`)).toBeNull();
+    // podpis v2 nejde vydávat za v1 (bez epochy)
+    expect(verifyOwnerValue(`${id}.${exp}.${sig}`)).toBeNull();
     expect(verifyOwnerValue(v, Date.now() + 366 * 24 * 3600 * 1000)).toBeNull();
     expect(verifyOwnerValue("garbage")).toBeNull();
     expect(verifyOwnerValue(undefined)).toBeNull();
@@ -144,7 +151,7 @@ describe("seed generátor a statický export", () => {
     const items = generateDemoSeed(1500, slogans);
     expect(writeStaticExport(items, slogans, dir).tiles).toBe(2);
     const meta = JSON.parse(readFileSync(path.join(dir, "meta.json"), "utf8"));
-    expect(meta).toEqual({ count: 1500, tiles: 2, tileSize: TILE_SIZE, demo: true });
+    expect(meta).toEqual({ count: 1500, tiles: 2, tileSize: TILE_SIZE, minIndex: 0, maxIndex: 1499, demo: true });
     const t1 = JSON.parse(readFileSync(path.join(dir, "1.json"), "utf8")) as { n: number; items: TileItem[] };
     expect(t1.items).toHaveLength(500);
     expect(t1.items[0]![0]).toBe(1000);
@@ -320,6 +327,100 @@ describe("nahlášení (§4.3)", () => {
   });
 });
 
+describe("bezpečnostní review: nahlášení po sítích, strop skrytí, vlastník, souhlas", () => {
+  it("klíč sítě: IPv4 celá adresa, IPv6 prefix /64", () => {
+    expect(ipNetworkKey("203.0.113.7")).toBe("203.0.113.7");
+    expect(ipNetworkKey("::ffff:203.0.113.7")).toBe("203.0.113.7");
+    expect(ipNetworkKey("2001:db8:1:2:aaaa::1")).toBe("2001:db8:1:2::/64");
+    expect(ipNetworkKey("2001:0db8:0001:0002:ffff:ffff:ffff:fffe")).toBe("2001:db8:1:2::/64");
+    expect(ipNetworkKey("[2001:db8:1:2::5]")).toBe("2001:db8:1:2::/64");
+    expect(ipNetworkKey("2001:db8:1:3::5")).not.toBe(ipNetworkKey("2001:db8:1:2::5"));
+    expect(ipNetworkKey("unknown")).toBe("unknown");
+  });
+
+  it("panáček bez vlastního textu a jména se neskrývá (strop se neplýtvá)", async () => {
+    const j = await joinDemonstration(sql, await verifiedSignature(), write(), noAi);
+    if (j.status !== "ok") throw new Error(j.status);
+    for (const ip of ["n-a", "n-b", "n-c"]) await reportDemonstrator(sql, j.id, ip);
+    const [row] = await sql`select hidden_at, report_count from app.demonstrator where id = ${j.id}`;
+    expect(row).toMatchObject({ hidden_at: null, report_count: 3 });
+  });
+
+  it("globální strop automatických skrytí za hodinu: nad ním deferred + log hide_deferred, bez skrytí", async () => {
+    const make = async (t: string) => {
+      const j = await joinDemonstration(sql, await verifiedSignature(), write({ sloganPresetId: null, sloganCustom: t }), noAi);
+      if (j.status !== "ok") throw new Error(j.status);
+      return j.id;
+    };
+    const [used] = await sql<{ n: number }[]>`
+      select count(*)::int as n from app.moderation_log where actor = 'reports' and action = 'hide' and created_at > now() - interval '1 hour'`;
+    const cap = used!.n + 1;
+    const a = await make("Strop A");
+    const b = await make("Strop B");
+    for (const ip of ["c-1", "c-2"]) {
+      await reportDemonstrator(sql, a, ip, { hideCap: cap });
+      await reportDemonstrator(sql, b, ip, { hideCap: cap });
+    }
+    expect(await reportDemonstrator(sql, a, "c-3", { hideCap: cap })).toMatchObject({ status: "ok", newlyHidden: true, deferred: false });
+    expect(await reportDemonstrator(sql, b, "c-3", { hideCap: cap })).toMatchObject({ status: "ok", hidden: false, newlyHidden: false, deferred: true });
+    expect(await reportDemonstrator(sql, b, "c-4", { hideCap: cap })).toMatchObject({ deferred: true });
+    const [rb] = await sql`select hidden_at from app.demonstrator where id = ${b}`;
+    expect(rb!.hidden_at).toBeNull();
+    expect(await sql`select action, actor from app.moderation_log where demonstrator_id = ${b}`).toEqual([{ action: "hide_deferred", actor: "reports" }]);
+    expect((await listReported(sql)).find((r) => r.id === b)).toMatchObject({ hidden: false, reportCount: 4 });
+  });
+
+  it("vlastník vidí svůj skrytý text se stavem hidden", async () => {
+    const sig = await verifiedSignature();
+    const j = await joinDemonstration(sql, sig, write({ sloganPresetId: null, sloganCustom: "Skrytý můj", firstName: "Iva" }), noAi);
+    if (j.status !== "ok") throw new Error(j.status);
+    expect(await queryOwn(sql, j.id, sig)).toMatchObject({ hidden: false });
+    await moderateDemonstrator(sql, j.id, "hide");
+    expect(await queryOwn(sql, j.id, sig)).toMatchObject({ sloganCustom: "Skrytý můj", firstName: "Iva", hidden: true });
+  });
+
+  it("epocha vlastníka: cookie platí jen s aktuální epochou; odhlášení (bump) ji zneplatní", async () => {
+    const id = await verifiedSignature();
+    const jar = (v: string) => ({ get: (k: string) => (k === OWNER_COOKIE ? { value: v } : undefined) });
+    expect(await ownerEpoch(sql, id)).toBe(0);
+    const c0 = signOwnerValue(id, 0);
+    expect(await getOwnerSignatureId(jar(c0), sql)).toBe(id);
+    // starší cookie v1 (bez epochy) = epocha 0
+    const exp = Math.floor(Date.now() / 1000) + 3600;
+    const legacy = `${id}.${exp}.${hmac(`owner-cookie:v1:${id}.${exp}`)}`;
+    expect(await getOwnerSignatureId(jar(legacy), sql)).toBe(id);
+    await bumpOwnerEpoch(sql, id);
+    expect(await getOwnerSignatureId(jar(c0), sql)).toBeNull();
+    expect(await getOwnerSignatureId(jar(legacy), sql)).toBeNull();
+    expect(await getOwnerSignatureId(jar(signOwnerValue(id, await ownerEpoch(sql, id))), sql)).toBe(id);
+  });
+
+  it("odvolání zvýší epochu → cookie přestane platit", async () => {
+    const d = signData();
+    const r = await createOrReplaceSignature(sql, d, { poc: false });
+    await verifySignature(sql, r.verifyToken);
+    const jar = { get: () => ({ value: signOwnerValue(r.signatureId, 0) }) };
+    expect(await getOwnerSignatureId(jar, sql)).toBe(r.signatureId);
+    const link = (await requestEditLink(sql, d.email, { poc: false }))!;
+    expect((await withdrawSignature(sql, link.editToken)).status).toBe("ok");
+    expect(await ownerEpoch(sql, r.signatureId)).toBe(1);
+    expect(await getOwnerSignatureId(jar, sql)).toBeNull();
+  });
+
+  it("consent_version se uloží při připojení a s consent_at obnoví při úpravě", async () => {
+    const sig = await verifiedSignature();
+    const j = await joinDemonstration(sql, sig, write(), { ...noAi, consentVersion: "v-old" });
+    if (j.status !== "ok") throw new Error(j.status);
+    const [a] = await sql<{ consent_version: string; consent_at: Date }[]>`select consent_version, consent_at from app.demonstrator where id = ${j.id}`;
+    expect(a!.consent_version).toBe("v-old");
+    await new Promise((r) => setTimeout(r, 5));
+    await editDemonstrator(sql, j.id, sig, write({ pose: "skace" }), { ...noAi, consentVersion: "v-new" });
+    const [b] = await sql<{ consent_version: string; consent_at: Date }[]>`select consent_version, consent_at from app.demonstrator where id = ${j.id}`;
+    expect(b!.consent_version).toBe("v-new");
+    expect(new Date(b!.consent_at).getTime()).toBeGreaterThan(new Date(a!.consent_at).getTime());
+  });
+});
+
 describe("rate limit připojení", () => {
   it("10/h na podpis, 20/h na IP", async () => {
     const now = new Date("2026-10-28T10:00:00Z");
@@ -342,8 +443,8 @@ describe("seed v DB", () => {
       const items = generateDemoSeed(1200, slogans);
       const r = await insertDemoSeed(s2, items);
       expect(r).toEqual({ inserted: 1200, extraSignatures: 1199 });
-      expect(await queryMeta(s2, true)).toEqual({ count: 1200, tiles: 2, tileSize: TILE_SIZE });
-      expect(await queryMeta(s2, false)).toEqual({ count: 0, tiles: 0, tileSize: TILE_SIZE });
+      expect(await queryMeta(s2, true)).toEqual({ count: 1200, tiles: 2, tileSize: TILE_SIZE, minIndex: 0, maxIndex: 1199 });
+      expect(await queryMeta(s2, false)).toEqual({ count: 0, tiles: 0, tileSize: TILE_SIZE, minIndex: null, maxIndex: null });
       const t0 = await queryTileRows(s2, 0, true);
       expect(t0.map((x) => x.position_index)).toEqual(Array.from({ length: 1000 }, (_, i) => i));
       expect(t0[0]!.id).toBe(items[0]!.id);

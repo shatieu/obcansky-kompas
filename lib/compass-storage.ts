@@ -35,6 +35,17 @@ export function applyAnswer(s: CompassState, qid: QuestionId, value: AnswerValue
   return { ...s, answers: ev.cleaned, invalidated: QUESTION_IDS.filter((q) => invalidated.has(q)) };
 }
 
+/**
+ * Odpovědi načtené z podpisu („Načíst moje odpovědi“, číslo podpisu / odkaz z e-mailu) nahradí
+ * odpovědi v prohlížeči. Tvar stavu se nemění (žádná migrace); demografie a „Vynechat Nevím“
+ * zůstanou, zvýraznění zrušených odpovědí se vynuluje. Neznámé otázky se zahodí, větvení se přepočítá.
+ */
+export function withLoadedAnswers(s: CompassState, loaded: Answers): CompassState {
+  const known: Answers = {};
+  for (const q of QUESTION_IDS) if (loaded[q] !== undefined) known[q] = loaded[q];
+  return { ...s, answers: evaluate(known, questionsFile).cleaned, invalidated: [] };
+}
+
 export function loadCompassState(): CompassState {
   try {
     const raw = window.localStorage.getItem(STORAGE_KEY);

@@ -3,7 +3,7 @@ import path from "node:path";
 import type postgres from "postgres";
 import { CONTENT_VERSION } from "@/lib/content";
 import { mulberry32, SEED_EPOCH } from "@/lib/seed/generate";
-import { POSES, SIGN_COLORS, TILE_SIZE, U32_MAX, type MetaResponse, type Pose, type SignColor, type TileResponse } from "./constants";
+import { POSES, SIGN_PAINTS, TILE_SIZE, U32_MAX, type MetaResponse, type Pose, type SignColor, type TileResponse } from "./constants";
 import type { DemoSlogansFile } from "./slogans-schema";
 import { shapeTileItem, type DemoRow } from "./tiles";
 
@@ -11,7 +11,11 @@ import { shapeTileItem, type DemoRow } from "./tiles";
  * Ukázkový dav (SPEC-demonstrace §9): deterministický – stejný počet = stejní panáčci se stejnými
  * id, takže statický export pro STATIC_DEMO sedí s tím, co `pnpm seed:demonstrace` zapíše do DB.
  * Všechny pózy a barvy, předvolby, pár desítek vlastních neutrálních sloganů, fiktivní křestní jména.
+ * Asi třetina panáčků je bez cedule (sign_color `none`), z nich asi polovina i bez sloganu.
  */
+
+/** Podíl panáčků bez cedule v ukázkovém davu. */
+export const NO_SIGN_SHARE = 1 / 3;
 
 export const DEMO_SEED = 20261029;
 export const DEMO_SEED_COUNT = 500;
@@ -55,18 +59,33 @@ function joinedAt(i: number): number {
 
 export function generateDemoSeed(count: number, slogans: DemoSlogansFile): SeedDemonstrator[] {
   const rng = mulberry32(DEMO_SEED);
+  // Cedule ano/ne a slogan bez cedule z vlastního proudu – hlavní proud (id, seedy, pózy) zůstává
+  // stejný jako před zavedením panáčků bez cedule, takže id ukázkových panáčků se nezměnila.
+  const signRng = mulberry32(DEMO_SEED ^ 0x5eed);
   const pick = <T>(xs: readonly T[]) => xs[Math.floor(rng() * xs.length)]!;
+  const cyc = POSES.length * SIGN_PAINTS.length;
   const out: SeedDemonstrator[] = [];
   for (let i = 0; i < count; i++) {
     const custom = rng() < 0.12;
+    const id = uuidFrom(rng);
+    const seed = Math.floor(rng() * (U32_MAX + 1));
+    // Pózy a barvy cyklicky + náhodně: každá kombinace (i bez cedule) se v prvních desítkách objeví.
+    // Dalších POSES.length je bez cedule v každé póze; volání rng() zůstávají stejná.
+    const picked = i < cyc ? POSES[i % POSES.length]! : pick(POSES);
+    const pose = i < cyc + POSES.length ? POSES[i % POSES.length]! : picked;
+    const paint = i < cyc ? SIGN_PAINTS[Math.floor(i / POSES.length)]! : pick(SIGN_PAINTS);
+    const noSign = i < cyc ? false : i < cyc + POSES.length ? true : signRng() < NO_SIGN_SHARE;
+    const signColor: SignColor = noSign ? "none" : paint;
+    const presetId = custom ? null : pick(slogans.presets).id;
+    const customText = custom ? pick(slogans.custom_seed_examples) : null;
+    const noSlogan = noSign && signRng() < 0.5;
     out.push({
-      id: uuidFrom(rng),
-      seed: Math.floor(rng() * (U32_MAX + 1)),
-      // Pózy a barvy cyklicky + náhodně: každá kombinace se v prvních desítkách objeví.
-      pose: i < POSES.length * SIGN_COLORS.length ? POSES[i % POSES.length]! : pick(POSES),
-      signColor: i < POSES.length * SIGN_COLORS.length ? SIGN_COLORS[Math.floor(i / POSES.length)]! : pick(SIGN_COLORS),
-      sloganPresetId: custom ? null : pick(slogans.presets).id,
-      sloganCustom: custom ? pick(slogans.custom_seed_examples) : null,
+      id,
+      seed,
+      pose,
+      signColor,
+      sloganPresetId: noSlogan ? null : presetId,
+      sloganCustom: noSlogan ? null : customText,
       firstName: rng() < 0.45 ? pick(FIRST_NAMES) : null,
       rerollCount: Math.floor(rng() * 4),
       createdAt: new Date(joinedAt(i)).toISOString(),
@@ -88,7 +107,14 @@ export function writeStaticExport(items: SeedDemonstrator[], slogans: DemoSlogan
     };
     writeFileSync(path.join(dir, `${n}.json`), JSON.stringify(tile) + "\n", "utf8");
   }
-  const meta: MetaResponse = { count: items.length, tiles, tileSize: TILE_SIZE, demo: true };
+  const meta: MetaResponse = {
+    count: items.length,
+    tiles,
+    tileSize: TILE_SIZE,
+    minIndex: items.length ? 0 : null,
+    maxIndex: items.length ? items.length - 1 : null,
+    demo: true,
+  };
   writeFileSync(path.join(dir, "meta.json"), JSON.stringify(meta) + "\n", "utf8");
   return { tiles };
 }

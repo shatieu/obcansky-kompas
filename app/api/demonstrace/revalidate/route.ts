@@ -19,6 +19,6 @@ export async function POST(req: Request): Promise<Response> {
     /* prázdné tělo */
   }
   if (!tags.length) return demoJson({ ok: false, error: "invalid" }, 400);
-  revalidateDemoTags(tags);
+  await revalidateDemoTags(tags);
   return demoJson({ ok: true, tags });
 }

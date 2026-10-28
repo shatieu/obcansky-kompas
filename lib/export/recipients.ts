@@ -1,4 +1,4 @@
-import type { AddresseeType } from "@/lib/letters";
+import type { AddresseeType, Gender } from "@/lib/letters";
 import { personName, slugify, splitAddress } from "./text";
 
 /**
@@ -15,6 +15,10 @@ export interface DirPoslanec {
   titul_pred: string | null;
   titul_za: string | null;
   kraj_code: string;
+  /** "M" | "Z" z otevřených dat PSP (osoby.unl). */
+  pohlavi?: Gender | null;
+  /** Celý název klubu („Poslanecký klub ANO 2011“). */
+  klub?: string | null;
   klub_zkratka: string | null;
   kandidatka?: string | null;
   email: string | null;
@@ -26,6 +30,8 @@ export interface DirSenator {
   id: number;
   jmeno: string;
   jmeno_s_tituly: string;
+  /** "M" | "Z" ze senat.cz (role ve výborech), případně odvozené ze jména. */
+  pohlavi?: Gender | null;
   strana?: string | null;
   email: string | null;
 }
@@ -59,8 +65,18 @@ export interface DirObec {
   casti?: DirObecCast[];
 }
 
+/** Současný držitel úřadu (ministr kultury, prezident) – data/directories/static.json `osoba`. */
+export interface DirOfficeHolder {
+  jmeno: string;
+  prijmeni: string;
+  titul_pred: string | null;
+  titul_za: string | null;
+  pohlavi: Gender;
+}
+
 export interface DirStaticEntry {
   adresat: string;
+  osoba?: DirOfficeHolder | null;
   urad: string;
   address: string | null;
   address_podatelna?: string | null;
@@ -83,6 +99,8 @@ export interface Recipient {
   name: string;
   /** Doplňující řádek pro UI (klub, obvod, úřad). */
   detail: string | null;
+  /** Pohlaví adresáta-osoby (oslovení, shoda); null = zastupitelstvo nebo neznámé. */
+  gender: Gender | null;
   /** Řádky adresy do okénka obálky (včetně jména). */
   postal: string[];
   email: string | null;
@@ -103,31 +121,45 @@ export interface PostalTexts {
   senator_detail: string;
 }
 
+/** Funkce pod jménem v adrese podle pohlaví (content/letters `funkce`). */
+export type RoleTexts = { m: string; z: string } | null | undefined;
+const roleLine = (roles: RoleTexts, g: Gender | null): string[] => (roles && g ? [g === "Z" ? roles.z : roles.m] : []);
+
+/** Strana poslance pro UI: název klubu bez „Poslanecký klub“, jinak zkratka nebo kandidátka. */
+export function poslanecParty(p: Pick<DirPoslanec, "klub" | "klub_zkratka" | "kandidatka">): string | null {
+  const klub = p.klub?.replace(/^Poslanecký klub\s+/i, "").trim();
+  return klub || p.klub_zkratka || p.kandidatka || null;
+}
+
 const fill = (tpl: string, vars: Record<string, string | number>) =>
   tpl.replace(/\{(\w+)\}/g, (m, k: string) => (k in vars ? String(vars[k]) : m));
 
-export function poslanecRecipient(p: DirPoslanec, t: PostalTexts): Recipient {
+export function poslanecRecipient(p: DirPoslanec, t: PostalTexts, roles?: RoleTexts): Recipient {
   const name = personName(p);
+  const gender = p.pohlavi ?? null;
   return {
     key: `poslanec:${p.id}`,
     type: "poslanec",
     name,
-    detail: p.klub_zkratka ?? p.kandidatka ?? null,
-    postal: [name, t.poslanec_org, ...splitAddress(t.poslanec_address)],
+    detail: poslanecParty(p),
+    gender,
+    postal: [name, ...roleLine(roles, gender), t.poslanec_org, ...splitAddress(t.poslanec_address)],
     email: p.email,
     dataBox: null,
     fileBase: `dopis-${slugify(`${p.prijmeni} ${p.jmeno}`)}`,
   };
 }
 
-export function senatorRecipient(s: DirSenator, t: PostalTexts): Recipient {
+export function senatorRecipient(s: DirSenator, t: PostalTexts, roles?: RoleTexts): Recipient {
   const name = s.jmeno_s_tituly || s.jmeno;
+  const gender = s.pohlavi ?? null;
   return {
     key: `senator:${s.id}`,
     type: "senator",
     name,
     detail: fill(t.senator_detail, { n: s.obvod_cislo, name: s.obvod_nazev }),
-    postal: [name, t.senator_org, ...splitAddress(t.senator_address)],
+    gender,
+    postal: [name, ...roleLine(roles, gender), t.senator_org, ...splitAddress(t.senator_address)],
     email: s.email,
     dataBox: null,
     fileBase: `dopis-senator-${slugify(s.jmeno)}`,
@@ -141,6 +173,7 @@ export function krajRecipient(k: DirKraj, t: PostalTexts): Recipient {
     type: "kraj",
     name: k.name,
     detail: office.name,
+    gender: null,
     postal: [t.kraj_recipient, office.name, ...splitAddress(office.address)],
     email: null,
     dataBox: office.datova_schranka,
@@ -156,6 +189,7 @@ export function obecRecipient(o: { kod: number; nazev: string; urad: DirOffice |
     type: "obec",
     name: o.nazev,
     detail: officeName,
+    gender: null,
     postal: [t.obec_recipient, officeName, ...splitAddress(o.urad?.address)],
     email: null,
     dataBox: o.urad?.datova_schranka ?? null,
@@ -163,13 +197,20 @@ export function obecRecipient(o: { kod: number; nazev: string; urad: DirOffice |
   };
 }
 
-export function staticRecipient(type: "ministr-kultury" | "prezident", s: DirStaticEntry): Recipient {
+/** Ministr kultury / prezident: se jménem současného držitele úřadu, když ho adresář má. */
+export function staticRecipient(type: "ministr-kultury" | "prezident", s: DirStaticEntry, roles?: RoleTexts): Recipient {
+  const address = splitAddress(s.address_podatelna ?? s.address);
+  const o = s.osoba;
+  if (!o) return { key: type, type, name: s.adresat, detail: s.urad, gender: null, postal: [s.adresat, s.urad, ...address], email: s.email, dataBox: s.datova_schranka, fileBase: `dopis-${type}` };
+  const name = personName(o);
+  const role = roleLine(roles, o.pohlavi);
   return {
     key: type,
     type,
-    name: s.adresat,
-    detail: s.urad,
-    postal: [s.adresat, s.urad, ...splitAddress(s.address_podatelna ?? s.address)],
+    name,
+    detail: role[0] ? `${role[0]} · ${s.urad}` : s.urad,
+    gender: o.pohlavi,
+    postal: [name, ...role, s.urad, ...address],
     email: s.email,
     dataBox: s.datova_schranka,
     fileBase: `dopis-${type}`,

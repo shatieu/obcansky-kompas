@@ -1,13 +1,16 @@
 "use client";
 
-import { lazy, Suspense, useCallback, useEffect, useId, useRef, useState, type KeyboardEvent } from "react";
+import { lazy, Suspense, useCallback, useEffect, useId, useRef, useState, useSyncExternalStore, type KeyboardEvent } from "react";
 import { ButtonLink, IconButton, StickyBar } from "@/components/ui/button";
 import { SampleBanner } from "@/components/ui/sample";
+import Link from "next/link";
+import { Icon } from "@/components/ui/icon";
 import { parseCamera, withCamera, type Camera } from "@/lib/crowd/camera";
 import { fixtureSource, httpSource, type CrowdPerson, type CrowdSource } from "@/lib/crowd/data";
 import type { CrowdEngine, CrowdStats } from "@/lib/crowd/engine";
 import { czPlural, fill, formatCount } from "@/lib/crowd/format";
 import { isMobileDevice } from "@/lib/crowd/lod";
+import { hasInCrowdHint, serverInCrowd, subscribeInCrowd } from "@/lib/demo/in-crowd";
 import type { CrowdTexts } from "@/lib/crowd/texts";
 import { Minimap, type MinimapHandle } from "./minimap";
 
@@ -76,6 +79,13 @@ export function CrowdView({
   const [me, setMe] = useState<{ id: string; index: number } | null>(null);
   const [notFound, setNotFound] = useState(false);
   const [headerH, setHeaderH] = useState(58);
+  /** Už v davu (nápověda ok_in_crowd hned po hydrataci, potvrdí /me) → „Upravit panáčka“. */
+  const hint = useSyncExternalStore(subscribeInCrowd, hasInCrowdHint, serverInCrowd);
+  const [meKnown, setMeKnown] = useState<boolean | null>(null);
+  const inCrowd = meKnown ?? hint;
+  /** Minimapa na mobilu jen na požádání (zakrývala dav). */
+  const [mapOpen, setMapOpen] = useState(false);
+  const topRef = useRef<HTMLDivElement>(null);
 
   // Dav vyplní okno pod hlavičkou (na mobilu může mít hlavička dva řádky).
   useEffect(() => {
@@ -130,6 +140,13 @@ export function CrowdView({
         initialCamera: parseCamera(window.location.search),
         focusIndex: focus?.index ?? null,
         insetBottom: window.innerWidth < 768 ? 64 : 96,
+        // Při otevřené kartě: nahoře překryv s počtem, dole list karty (max. 85dvh, typicky ~half).
+        focusInsets: () => {
+          const hostTop = host.getBoundingClientRect().top;
+          const top = topRef.current ? topRef.current.getBoundingClientRect().bottom - hostTop + 8 : 0;
+          const vh = host.clientHeight;
+          return { top: Math.max(0, top), bottom: Math.min(vh * 0.55, 400) };
+        },
         onSelect: (p) => setSelected(p),
         onMeta: (c, d) => {
           setCount(c);
@@ -168,7 +185,12 @@ export function CrowdView({
       }
       source
         .me()
-        .then((m) => !cancelled && setMe(m))
+        .then((m) => {
+          if (cancelled) return;
+          setMe(m);
+          // /me zároveň nastaví nebo smaže cookie ok_in_crowd (lib/demo/in-crowd).
+          setMeKnown(!!m);
+        })
         .catch(() => undefined);
     })();
 
@@ -183,6 +205,12 @@ export function CrowdView({
     // Engine se staví jednou na stránku (a znovu po „Zkusit znovu“).
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [attempt, focusId]);
+
+  // Zvýraznění vybrané postavy (popředí + průhledné překrývající postavy) jen s otevřenou kartou:
+  // klepnutí, „Najdi mě“, /demonstrace/[id]. Zavřením karty se zruší.
+  useEffect(() => {
+    engineRef.current?.setFocus(selected?.index ?? null);
+  }, [selected, status]);
 
   const onKey = (e: KeyboardEvent<HTMLDivElement>) => {
     const en = engineRef.current;
@@ -222,7 +250,7 @@ export function CrowdView({
     if (en) en.setCamera({ ...en.camera, x, y });
   }, []);
 
-  const report = useCallback(async (id: string) => (sourceRef.current ? sourceRef.current.report(id) : false), []);
+  const report = useCallback(async (id: string, token: string) => (sourceRef.current ? sourceRef.current.report(id, token) : false), []);
 
   const countText = count === null ? "" : fill(czPlural(count, texts.count_one, texts.count_few, texts.count_many), { count: formatCount(count) });
   const toolBtn = "inline-flex min-h-[48px] items-center border-2 border-ink bg-surface px-1 text-caption font-semibold text-ink hover:bg-blue-tint";
@@ -248,14 +276,21 @@ export function CrowdView({
           {texts.canvas_help} {countText}
         </p>
 
-        <div className="pointer-events-none absolute left-2 top-2 flex max-w-[calc(100%-136px)] flex-col gap-1 md:max-w-[calc(100%-200px)]">
-          <div className="pointer-events-auto self-start border-2 border-ink bg-surface px-1 py-1 md:px-2">
-            <h1 id={`${helpId}-h`} className="k-kicker m-0">
+        <div className="pointer-events-none absolute left-2 top-2 flex max-w-[calc(100%-32px)] flex-col gap-1 md:max-w-[calc(100%-200px)]">
+          {/* Mobil: jen jeden řádek s počtem (nadpis pro čtečky), ať překryv nezakrývá dav. */}
+          <div ref={topRef} className="pointer-events-auto flex items-stretch gap-1 self-start">
+          {/* Cesta domů vždy po ruce (hlavička s logem zůstává nad davem, tohle je výslovné tlačítko). */}
+          <Link href="/" prefetch={false} aria-label={texts.home_aria} title={texts.home_aria} className="k-iconbtn bg-surface">
+            <Icon name="chevron-left" />
+          </Link>
+          <div className="border-2 border-ink bg-surface px-1 py-0.5 md:px-2 md:py-1">
+            <h1 id={`${helpId}-h`} className="k-kicker m-0 max-md:sr-only">
               {texts.kicker}
             </h1>
-            <p className="k-stat-m m-0" aria-live="polite">
+            <p className="k-stat-m m-0 max-md:text-caption max-md:leading-6" aria-live="polite">
               {countText || " "}
             </p>
+          </div>
           </div>
           {(sample.show || demo) && (
             <div className="pointer-events-auto max-w-[360px] max-md:hidden">
@@ -264,27 +299,50 @@ export function CrowdView({
           )}
         </div>
 
-        <div className="absolute right-2 top-2">
+        {/* Minimapa: na desktopu vždy, na mobilu jen po klepnutí na „Mapa davu“. */}
+        <div id={`${helpId}-map`} className={mapOpen ? "absolute right-2 top-2" : "absolute right-2 top-2 max-md:hidden"}>
           <Minimap handle={minimapRef} onPick={onPick} label={texts.minimap_label} />
         </div>
 
-        <div className="absolute right-2 top-1/2 flex -translate-y-1/2 flex-col gap-1 bg-surface">
+        <div className="absolute right-2 top-1/2 flex -translate-y-1/2 flex-col gap-1 bg-surface max-md:hidden">
           <IconButton icon="plus" label={texts.zoom_in} onClick={() => engineRef.current?.zoomBy(1.4)} />
           <IconButton icon="minus" label={texts.zoom_out} onClick={() => engineRef.current?.zoomBy(1 / 1.4)} />
         </div>
 
-        <div className="absolute bottom-2 left-2 flex flex-wrap gap-1">
-          <button type="button" className={toolBtn} onClick={() => engineRef.current?.goStart()}>
-            {texts.start_button}
-          </button>
-          <button type="button" className={toolBtn} onClick={() => engineRef.current?.goEnd()}>
-            {texts.end_button}
-          </button>
-          {me && (
-            <button type="button" className={toolBtn} onClick={findMe}>
-              {texts.find_me_button}
+        {/* Spodní lišta: vlevo skoky v davu, vpravo (jen mobil) mapa a přiblížení – střed zůstane volný. */}
+        <div className="pointer-events-none absolute inset-x-2 bottom-2 flex flex-wrap items-end gap-1">
+          <div className="pointer-events-auto flex flex-wrap gap-1">
+            <button type="button" className={toolBtn} onClick={() => engineRef.current?.goStart()}>
+              {texts.start_button}
             </button>
-          )}
+            <button type="button" className={toolBtn} onClick={() => engineRef.current?.goEnd()}>
+              {texts.end_button}
+            </button>
+            {me && (
+              <button type="button" className={toolBtn} onClick={findMe}>
+                {texts.find_me_button}
+              </button>
+            )}
+          </div>
+          <div className="pointer-events-auto ml-auto flex gap-1 bg-surface md:hidden">
+            <button
+              type="button"
+              className={toolBtn}
+              aria-expanded={mapOpen}
+              aria-controls={`${helpId}-map`}
+              onClick={() => {
+                setMapOpen((o) => !o);
+                requestAnimationFrame(() => {
+                  const en = engineRef.current;
+                  if (en) minimapRef.current?.draw(en.minimapState());
+                });
+              }}
+            >
+              {texts.minimap_button}
+            </button>
+            <IconButton icon="minus" label={texts.zoom_out} onClick={() => engineRef.current?.zoomBy(1 / 1.4)} />
+            <IconButton icon="plus" label={texts.zoom_in} onClick={() => engineRef.current?.zoomBy(1.4)} />
+          </div>
         </div>
 
         {(status !== "ready" || count === 0 || notFound) && (
@@ -308,8 +366,9 @@ export function CrowdView({
 
       <div className="px-2 md:absolute md:bottom-2 md:right-2 md:border-2 md:border-ink md:bg-surface md:py-1">
         <StickyBar>
-          <ButtonLink href={joinHref} block iconEnd="arrow-right">
-            {texts.join_button}
+          {/* Kdo už v davu stojí, dostane úpravu místo připojení (stejné místo, bez posunu). */}
+          <ButtonLink href={inCrowd ? `${joinHref}?edit=1` : joinHref} block iconEnd="arrow-right">
+            {inCrowd ? texts.edit_button : texts.join_button}
           </ButtonLink>
           <a className="k-btn k-btn--secondary" href={listHref}>
             {texts.list_button}

@@ -57,6 +57,8 @@ export interface AkceTexts {
   private_hint: string;
   letters_title: string;
   letters_empty: string;
+  /** Pro čtečky před osloveném (to se ukazuje u každého adresáta hned). */
+  salutation_label: string;
   show_letter: string;
   hide_letter: string;
   copy_button: string;

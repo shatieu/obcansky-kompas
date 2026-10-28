@@ -53,7 +53,14 @@ function statementSentences(src: Source): string[] {
   } catch {
     st = composeStatement(src.answers, currentContentVersion(), { hideUnknown: true });
   }
-  return st.parts.filter((p) => p.questionId !== null).map((p) => p.text);
+  // Dopisy: jen věty bloků, bez štítků a bez úvodu/závěru (formální text).
+  return st.blocks.map((b) => b.text);
+}
+
+/** Adresát a jeho vlastní dopis (oslovení a shoda podle pohlaví adresáta). */
+interface RecipientLetter {
+  r: Recipient;
+  letter: ComposedLetter;
 }
 
 interface TypeBlock {
@@ -103,6 +110,9 @@ export function LettersTool({
         if (s) {
           setSource({ kind: "signature", answers: s.answers, contentVersion: s.contentVersion ?? currentContentVersion() });
           if (s.region && dirs.kraje.some((k) => k.code === s.region)) setPrefs((cur) => (cur.kraj ? cur : { ...cur, kraj: s.region }));
+          // Podepsaný se zveřejněným jménem: jméno rovnou pod dopis (vlastní zápis má přednost).
+          const name = s.name;
+          if (name) setPrefs((cur) => (cur.senderName.trim() ? cur : { ...cur, senderName: name }));
         } else setSource(browser);
         setReady(true);
       });
@@ -134,7 +144,10 @@ export function LettersTool({
   const obvod = prefs.obec ? resolveObvod(prefs.obec, prefs.castKod, prefs.obvodPick) : null;
   const choice = prefs.obec ? senateChoice(prefs.obec, prefs.castKod) : null;
 
+  const roles = (t: AddresseeType) => letters.types[t].funkce;
+
   const blocks: TypeBlock[] = useMemo(() => {
+    const roles = (t: AddresseeType) => letters.types[t].funkce;
     return prefs.types.map((type): TypeBlock => {
       switch (type) {
         case "poslanec":
@@ -142,7 +155,7 @@ export function LettersTool({
           if (poslanciKraje.length === 0) return { type, recipients: [], blocked: texts.poslanci_none };
           return {
             type,
-            recipients: poslanciKraje.filter((p) => !prefs.poslanciOff.includes(p.id)).map((p) => poslanecRecipient(p, texts.postal)),
+            recipients: poslanciKraje.filter((p) => !prefs.poslanciOff.includes(p.id)).map((p) => poslanecRecipient(p, texts.postal, roles(type))),
             blocked: null,
           };
         case "senator": {
@@ -150,7 +163,7 @@ export function LettersTool({
           if (!prefs.obec) return { type, recipients: [], blocked: texts.needs_obec };
           if (obvod === null) return { type, recipients: [], blocked: texts.needs_obvod };
           const s = dirs.senatori.find((x) => x.obvod_cislo === obvod);
-          return s ? { type, recipients: [senatorRecipient(s, texts.postal)], blocked: null } : { type, recipients: [], blocked: texts.senator_missing };
+          return s ? { type, recipients: [senatorRecipient(s, texts.postal, roles(type))], blocked: null } : { type, recipients: [], blocked: texts.senator_missing };
         }
         case "kraj":
           return kraj ? { type, recipients: [krajRecipient(kraj, texts.postal)], blocked: null } : { type, recipients: [], blocked: texts.needs_region };
@@ -158,39 +171,46 @@ export function LettersTool({
           if (!kraj) return { type, recipients: [], blocked: texts.needs_region };
           return prefs.obec ? { type, recipients: [obecRecipient(prefs.obec, texts.postal)], blocked: null } : { type, recipients: [], blocked: texts.needs_obec };
         case "ministr-kultury":
-          return { type, recipients: [staticRecipient(type, dirs.static.ministr_kultury)], blocked: null };
+          return { type, recipients: [staticRecipient(type, dirs.static.ministr_kultury, roles(type))], blocked: null };
         case "prezident":
-          return { type, recipients: [staticRecipient(type, dirs.static.prezident)], blocked: null };
+          return { type, recipients: [staticRecipient(type, dirs.static.prezident, roles(type))], blocked: null };
       }
     });
-  }, [prefs, kraj, poslanciKraje, obvod, dirs, texts]);
+  }, [prefs, kraj, poslanciKraje, obvod, dirs, texts, letters]);
 
+  /** Jeden dopis na adresáta: oslovení, funkce a shoda podle jeho pohlaví (klíč = Recipient.key). */
   const composed = useMemo(() => {
-    const out = new Map<AddresseeType, ComposedLetter>();
+    const out = new Map<string, ComposedLetter>();
     if (sentences.length === 0) return out;
-    for (const b of blocks) {
-      out.set(
-        b.type,
-        composeLetter(
-          {
-            addressee: b.type,
-            statementSentences: sentences,
-            forma: style.forma,
-            delka: style.delka,
-            seed: style.seed,
-            includeProcessBlock: prefs.process,
-            customSentence: prefs.custom.trim() || undefined,
-            includeFooter: prefs.footer,
-            senderName: prefs.senderName.trim() || undefined,
-          },
-          letters,
-        ),
-      );
-    }
+    for (const b of blocks)
+      for (const r of b.recipients)
+        out.set(
+          r.key,
+          composeLetter(
+            {
+              addressee: b.type,
+              gender: r.gender,
+              statementSentences: sentences,
+              forma: style.forma,
+              delka: style.delka,
+              seed: style.seed,
+              includeProcessBlock: prefs.process,
+              customSentence: prefs.custom.trim() || undefined,
+              includeFooter: prefs.footer,
+              senderName: prefs.senderName.trim() || undefined,
+            },
+            letters,
+          ),
+        );
     return out;
   }, [blocks, sentences, style, prefs.process, prefs.custom, prefs.footer, prefs.senderName, letters]);
 
-  const allRecipients = blocks.flatMap((b) => (composed.has(b.type) ? b.recipients.map((r) => ({ r, letter: composed.get(b.type)! })) : []));
+  const lettersOf = (b: TypeBlock): RecipientLetter[] =>
+    b.recipients.flatMap((r) => {
+      const letter = composed.get(r.key);
+      return letter ? [{ r, letter }] : [];
+    });
+  const allRecipients = blocks.flatMap(lettersOf);
 
   /* Sdílení: počty připravených dopisů podle typu adresáta (?r=poslanec:3,…), žádná jména ani adresy. */
   const counts: RecipientCounts = {};
@@ -248,15 +268,15 @@ export function LettersTool({
       for (const t of new Set(allRecipients.map((x) => x.r.type))) reportLetterPrepared(t);
     });
 
-  const copy = async (type: AddresseeType, text: string) => {
+  const copy = async (r: Recipient, text: string) => {
     try {
       await navigator.clipboard.writeText(text);
-      setCopied(type);
-      setTimeout(() => setCopied((c) => (c === type ? null : c)), 2500);
-      reportLetterPrepared(type);
+      setCopied(r.key);
+      setTimeout(() => setCopied((c) => (c === r.key ? null : c)), 2500);
+      reportLetterPrepared(r.type);
     } catch {
       setCopied(null);
-      setOpenPreview((o) => ({ ...o, [type]: true }));
+      setOpenPreview((o) => ({ ...o, [r.key]: true }));
       setError(texts.copy_failed);
     }
   };
@@ -345,7 +365,7 @@ export function LettersTool({
                             )}
                           </div>
                           {poslanciKraje.map((p) => {
-                            const r = poslanecRecipient(p, texts.postal);
+                            const r = poslanecRecipient(p, texts.postal, roles(type));
                             const on = !prefs.poslanciOff.includes(p.id);
                             return (
                               <Checkbox
@@ -458,67 +478,73 @@ export function LettersTool({
           {blocks.length === 0 && <p className="mt-1">{texts.letters_empty}</p>}
           <div className="mt-2 flex flex-col gap-4">
             {blocks.map((b) => {
-              const letter = composed.get(b.type);
+              const items = lettersOf(b);
               return (
                 <article key={b.type} aria-labelledby={`akce-typ-${b.type}`}>
                   <h3 id={`akce-typ-${b.type}`} className="k-h3">
                     {typeLabel(b.type)}
                   </h3>
                   {b.blocked && <p className="mt-1">{b.blocked}</p>}
-                  {letter && b.recipients.length > 0 && (
+                  {items.length > 0 && (
                     <>
-                      <ActionList className="mt-1">
-                        <ActionButton
-                          iconEnd={openPreview[b.type] ? "minus" : "plus"}
-                          aria-expanded={Boolean(openPreview[b.type])}
-                          aria-controls={`akce-text-${b.type}`}
-                          onClick={() => setOpenPreview((o) => ({ ...o, [b.type]: !o[b.type] }))}
-                        >
-                          {openPreview[b.type] ? texts.hide_letter : texts.show_letter}
-                        </ActionButton>
-                        {openPreview[b.type] && (
-                          <li id={`akce-text-${b.type}`} className="k-letter whitespace-pre-wrap">
-                            {letter.text}
-                          </li>
-                        )}
-                        <ActionButton iconEnd="copy" onClick={() => copy(b.type, letter.text)}>
-                          <span aria-live="polite">{copied === b.type ? texts.copied : texts.copy_button}</span>
-                        </ActionButton>
-                      </ActionList>
-                      <ul className="mt-2 flex flex-col gap-2">
-                        {b.recipients.map((r) => (
-                          <li key={r.key} className="border-t-4 border-ink pt-1.5">
-                            <p className="font-semibold">{r.name}</p>
-                            {r.detail && <p className="k-cap">{r.detail}</p>}
-                            <ActionList className="mt-1">
-                              {r.email ? (
-                                <ActionLink iconEnd="mail" href={mailtoHref(r.email, texts.mail_subject, letter.text)} onClick={() => reportLetterPrepared(r.type)}>
-                                  {texts.mail_button}
-                                </ActionLink>
-                              ) : (
-                                r.dataBox === null && <li className="py-1.5 text-small">{texts.no_email}</li>
-                              )}
-                              <ActionButton
-                                iconEnd="download"
-                                aria-busy={busy === `pdf:${r.key}` || undefined}
-                                disabled={busy !== null}
-                                onClick={() => downloadPdf(r, letter)}
-                              >
-                                {busy === `pdf:${r.key}` ? texts.working : texts.pdf_button}
-                              </ActionButton>
-                              {r.dataBox && (
-                                <li className="py-1.5">
-                                  <p className="k-num font-semibold">{fill(texts.databox_label, { id: r.dataBox })}</p>
-                                  <ol className="mt-0.5 list-decimal pl-3 text-small">
-                                    {texts.databox_howto.map((line) => (
-                                      <li key={line}>{line}</li>
-                                    ))}
-                                  </ol>
-                                </li>
-                              )}
-                            </ActionList>
-                          </li>
-                        ))}
+                      <ul className="mt-1 flex flex-col gap-2">
+                        {items.map(({ r, letter }) => {
+                          const open = Boolean(openPreview[r.key]);
+                          const textId = `akce-text-${r.key.replace(/[^a-z0-9-]/gi, "-")}`;
+                          return (
+                            <li key={r.key} className="border-t-4 border-ink pt-1.5" data-recipient={r.key}>
+                              <p className="font-semibold">{r.name}</p>
+                              {r.detail && <p className="k-cap">{r.detail}</p>}
+                              <p className="k-letter mt-1 whitespace-pre-wrap" data-testid="akce-salutation">
+                                <span className="sr-only">{texts.salutation_label} </span>
+                                {letter.salutation}
+                              </p>
+                              <ActionList className="mt-1">
+                                <ActionButton
+                                  iconEnd={open ? "minus" : "plus"}
+                                  aria-expanded={open}
+                                  aria-controls={textId}
+                                  onClick={() => setOpenPreview((o) => ({ ...o, [r.key]: !o[r.key] }))}
+                                >
+                                  {open ? texts.hide_letter : texts.show_letter}
+                                </ActionButton>
+                                {open && (
+                                  <li id={textId} className="k-letter whitespace-pre-wrap">
+                                    {letter.text}
+                                  </li>
+                                )}
+                                <ActionButton iconEnd="copy" onClick={() => copy(r, letter.text)}>
+                                  <span aria-live="polite">{copied === r.key ? texts.copied : texts.copy_button}</span>
+                                </ActionButton>
+                                {r.email ? (
+                                  <ActionLink iconEnd="mail" href={mailtoHref(r.email, texts.mail_subject, letter.text)} onClick={() => reportLetterPrepared(r.type)}>
+                                    {texts.mail_button}
+                                  </ActionLink>
+                                ) : (
+                                  r.dataBox === null && <li className="py-1.5 text-small">{texts.no_email}</li>
+                                )}
+                                <ActionButton
+                                  iconEnd="download"
+                                  aria-busy={busy === `pdf:${r.key}` || undefined}
+                                  disabled={busy !== null}
+                                  onClick={() => downloadPdf(r, letter)}
+                                >
+                                  {busy === `pdf:${r.key}` ? texts.working : texts.pdf_button}
+                                </ActionButton>
+                                {r.dataBox && (
+                                  <li className="py-1.5">
+                                    <p className="k-num font-semibold">{fill(texts.databox_label, { id: r.dataBox })}</p>
+                                    <ol className="mt-0.5 list-decimal pl-3 text-small">
+                                      {texts.databox_howto.map((line) => (
+                                        <li key={line}>{line}</li>
+                                      ))}
+                                    </ol>
+                                  </li>
+                                )}
+                              </ActionList>
+                            </li>
+                          );
+                        })}
                       </ul>
                       <p className="k-cap mt-1.5">{texts.post_hint}</p>
                     </>

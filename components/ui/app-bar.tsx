@@ -5,7 +5,8 @@ import { Icon } from "./icon";
 import { SampleBadge } from "./sample";
 
 /**
- * Hlavička: Wordmark (nebo „Zpět“) + SampleBadge v ukázkovém režimu. `nav` = odkazy od 768 px.
+ * Hlavička: Wordmark (nebo „Zpět“) + SampleBadge v ukázkovém režimu. `nav` = odkazy od 768 px,
+ * `quick` = jeden kompaktní odkaz jen pod 768 px (tam se `nav` nevejde).
  * Stránka, která začíná noční plochou s atributem `data-night-top`, dostane noční hlavičku přes CSS.
  */
 export function AppBar({
@@ -15,6 +16,7 @@ export function AppBar({
   backHref,
   night = false,
   nav,
+  quick,
   wordmarkLabel,
   wordmarkAria,
 }: {
@@ -25,6 +27,7 @@ export function AppBar({
   backHref?: string;
   night?: boolean;
   nav?: ReactNode;
+  quick?: ReactNode;
   wordmarkLabel?: string;
   wordmarkAria?: string;
 }) {
@@ -40,6 +43,7 @@ export function AppBar({
           <Wordmark label={wordmarkLabel} ariaLabel={wordmarkAria} />
         )}
         <div className="k-appbar__end">
+          {quick && <div className="k-appbar__quick">{quick}</div>}
           {nav && <nav className="k-appbar__nav">{nav}</nav>}
           {sample && <SampleBadge>{sampleLabel}</SampleBadge>}
         </div>

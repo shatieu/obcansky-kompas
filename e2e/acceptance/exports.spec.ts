@@ -79,6 +79,20 @@ test.describe("§9.2 /akce – dopisy", () => {
     await expect.poll(() => page.locator("main").innerText(), { timeout: 15_000 }).toBe(text);
   });
 
+  test("dopis konkrétnímu adresátovi: jméno a oslovení podle pohlaví hned vidět", async ({ page }) => {
+    const st = JSON.parse(readFileSync("data/directories/static.json", "utf8")) as {
+      ministr_kultury: { osoba: { jmeno: string; prijmeni: string; pohlavi: "M" | "Z" } | null };
+    };
+    const o = st.ministr_kultury.osoba;
+    test.skip(!o, "adresář nemá jméno ministra");
+    await page.goto("/akce?f=2&d=2");
+    await page.getByLabel(letterLabel("ministr-kultury")).first().check();
+    const item = page.locator('[data-recipient="ministr-kultury"]');
+    await expect(item.getByText(`${o!.jmeno} ${o!.prijmeni}`).first()).toBeVisible();
+    await expect(item.getByTestId("akce-salutation")).toContainText(o!.pohlavi === "Z" ? "Vážená paní ministryně," : "Vážený pane ministře,");
+    await expect(item.getByTestId("akce-salutation")).not.toContainText(o!.pohlavi === "Z" ? "pane" : "paní");
+  });
+
   test("úřady: ID datové schránky a krátký návod", async ({ page }) => {
     await page.goto("/akce");
     await page.getByLabel(letterLabel("kraj")).first().check();

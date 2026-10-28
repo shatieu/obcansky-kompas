@@ -3,6 +3,7 @@ import type { Answers } from "@/lib/compose/types";
 import { emailHmac, encrypt, randomToken, sha256Hex } from "@/lib/crypto";
 import { deleteForSignature } from "@/lib/demo/service";
 import { EDIT_TTL_MS, VERIFY_TTL_MS } from "./http";
+import { generateShortId } from "./short-id";
 
 /**
  * Zápisy podpisu (SPEC §7, §14.1–§14.3). Každá operace = jedna transakce. Osobní údaje jen
@@ -27,6 +28,8 @@ export interface SignData {
 
 export interface SignResult {
   signatureId: string;
+  /** Krátké číslo podpisu (kanonický tvar, lib/sign/short-id.ts). */
+  shortId: string;
   signerId: string;
   jobId: string;
   /** Surový ověřovací token – jen do e-mailu / na obrazovku v POC, do DB jde hash. */
@@ -63,12 +66,17 @@ async function insertJob(tx: Tx, signerId: string, kind: "verify" | "edit", poc:
 async function signOnce(sql: postgres.Sql, d: SignData, poc: boolean): Promise<SignResult> {
   return sql.begin(async (tx) => {
     const hmac = emailHmac(d.email);
-    const [existing] = await tx<{ signer_id: string; signature_id: string }[]>`
-      select id as signer_id, signature_id from app.signer where email_hmac = ${hmac} for update`;
+    const [existing] = await tx<{ signer_id: string; signature_id: string; short_id: string }[]>`
+      select r.id as signer_id, r.signature_id, s.short_id
+      from app.signer r join app.signature s on s.id = r.signature_id
+      where r.email_hmac = ${hmac} for update of r`;
 
     let signatureId: string;
     let signerId: string;
+    let shortId: string;
     if (existing) {
+      // Číslo podpisu se nemění (stejně jako UUID).
+      shortId = existing.short_id;
       // Jeden e-mail = jeden aktivní podpis: nový podpis nahradí starý, historie do signature_version.
       signatureId = existing.signature_id;
       signerId = existing.signer_id;
@@ -88,9 +96,10 @@ async function signOnce(sql: postgres.Sql, d: SignData, poc: boolean): Promise<S
           address_enc = ${d.address ? encrypt(d.address) : null}, consent_at = now()
         where id = ${signerId}`;
     } else {
+      shortId = generateShortId();
       const [sig] = await tx<{ id: string }[]>`
-        insert into app.signature (answers, content_version, region, age_group, municipality_size, comment, is_poc)
-        values (${asJson(tx, d.answers)}, ${d.contentVersion}, ${d.region}, ${d.ageGroup}, ${d.municipalitySize}, ${d.comment}, ${poc})
+        insert into app.signature (answers, content_version, region, age_group, municipality_size, comment, is_poc, short_id)
+        values (${asJson(tx, d.answers)}, ${d.contentVersion}, ${d.region}, ${d.ageGroup}, ${d.municipalitySize}, ${d.comment}, ${poc}, ${shortId})
         returning id`;
       signatureId = sig!.id;
       const [signer] = await tx<{ id: string }[]>`
@@ -102,23 +111,26 @@ async function signOnce(sql: postgres.Sql, d: SignData, poc: boolean): Promise<S
     }
     const verifyToken = await issueToken(tx, signerId, "verify", VERIFY_TTL_MS);
     const jobId = await insertJob(tx, signerId, "verify", poc);
-    return { signatureId, signerId, jobId, verifyToken, replaced: Boolean(existing) };
+    return { signatureId, shortId, signerId, jobId, verifyToken, replaced: Boolean(existing) };
   });
 }
 
 export async function createOrReplaceSignature(sql: postgres.Sql, d: SignData, opts: { poc: boolean }): Promise<SignResult> {
-  try {
-    return await signOnce(sql, d, opts.poc);
-  } catch (e) {
-    // Souběh dvou prvních podpisů se stejným e-mailem: druhý narazí na unique email_hmac → nahradí.
-    if ((e as { code?: string }).code === "23505") return signOnce(sql, d, opts.poc);
-    throw e;
+  for (let attempt = 0; ; attempt++) {
+    try {
+      return await signOnce(sql, d, opts.poc);
+    } catch (e) {
+      // 23505: souběh dvou prvních podpisů se stejným e-mailem (unique email_hmac → nahradí),
+      // nebo – zcela výjimečně – kolize náhodného čísla podpisu (nové číslo při dalším pokusu).
+      if ((e as { code?: string }).code === "23505" && attempt < 3) continue;
+      throw e;
+    }
   }
 }
 
 export type TokenOutcome =
-  | { status: "ok"; signatureId: string }
-  | { status: "used"; signatureId: string }
+  | { status: "ok"; signatureId: string; shortId: string }
+  | { status: "used"; signatureId: string; shortId: string }
   | { status: "expired" }
   | { status: "invalid" };
 
@@ -126,6 +138,7 @@ interface TokenRow {
   id: string;
   signer_id: string;
   signature_id: string;
+  short_id: string;
   expires_at: Date;
   used_at: Date | null;
   withdrawn_at: Date | null;
@@ -133,7 +146,7 @@ interface TokenRow {
 
 async function lockToken(tx: Tx, token: string, purpose: "verify" | "edit"): Promise<TokenRow | undefined> {
   const [row] = await tx<TokenRow[]>`
-    select t.id, t.signer_id, r.signature_id, t.expires_at, t.used_at, s.withdrawn_at
+    select t.id, t.signer_id, r.signature_id, s.short_id, t.expires_at, t.used_at, s.withdrawn_at
     from app.email_token t
     join app.signer r on r.id = t.signer_id
     join app.signature s on s.id = r.signature_id
@@ -147,7 +160,7 @@ export async function verifySignature(sql: postgres.Sql, token: string): Promise
   return sql.begin(async (tx) => {
     const row = await lockToken(tx, token, "verify");
     if (!row || row.withdrawn_at) return { status: "invalid" } as const;
-    if (row.used_at) return { status: "used", signatureId: row.signature_id } as const;
+    if (row.used_at) return { status: "used", signatureId: row.signature_id, shortId: row.short_id } as const;
     if (new Date(row.expires_at).getTime() <= Date.now()) return { status: "expired" } as const;
     await tx`update app.email_token set used_at = now() where id = ${row.id}`;
     await tx`
@@ -155,7 +168,7 @@ export async function verifySignature(sql: postgres.Sql, token: string): Promise
         verification_level = case when verification_level = 'unverified' then 'email'::app.verification_level else verification_level end,
         verified_at = coalesce(verified_at, now())
       where id = ${row.signature_id}`;
-    return { status: "ok", signatureId: row.signature_id } as const;
+    return { status: "ok", signatureId: row.signature_id, shortId: row.short_id } as const;
   });
 }
 
@@ -183,6 +196,7 @@ export async function requestEditLink(sql: postgres.Sql, email: string, opts: { 
 
 export interface EditableSignature {
   signatureId: string;
+  shortId: string;
   answers: Answers;
   contentVersion: string;
   region: string | null;
@@ -197,6 +211,7 @@ export async function loadEditable(sql: postgres.Sql, token: string): Promise<Ed
   const [row] = await sql<
     {
       signature_id: string;
+      short_id: string;
       answers: Answers;
       content_version: string;
       region: string | null;
@@ -206,7 +221,7 @@ export async function loadEditable(sql: postgres.Sql, token: string): Promise<Ed
       show_name: boolean;
     }[]
   >`
-    select s.id as signature_id, s.answers, s.content_version, s.region, s.age_group, s.municipality_size, s.comment, r.show_name
+    select s.id as signature_id, s.short_id, s.answers, s.content_version, s.region, s.age_group, s.municipality_size, s.comment, r.show_name
     from app.email_token t
     join app.signer r on r.id = t.signer_id
     join app.signature s on s.id = r.signature_id
@@ -215,6 +230,7 @@ export async function loadEditable(sql: postgres.Sql, token: string): Promise<Ed
   if (!row) return null;
   return {
     signatureId: row.signature_id,
+    shortId: row.short_id,
     answers: row.answers,
     contentVersion: row.content_version,
     region: row.region,
@@ -282,7 +298,8 @@ export async function withdrawSignature(sql: postgres.Sql, token: string): Promi
     const c = await consumeEditToken(tx, token);
     if ("fail" in c) return c.fail;
     const id = c.row.signature_id;
-    await tx`update app.signature set withdrawn_at = now(), comment = null where id = ${id}`;
+    // owner_epoch + 1: všechny cookie ok_owner tohoto podpisu přestanou platit (lib/demo/owner.ts).
+    await tx`update app.signature set withdrawn_at = now(), comment = null, owner_epoch = owner_epoch + 1 where id = ${id}`;
     await tx`delete from app.signer where id = ${c.row.signer_id}`;
     // Odvolání odstraní i panáčka z online demonstrace (SPEC-demonstrace §3); route zneplatní dlaždici.
     const demonstrator = await deleteForSignature(tx, id);

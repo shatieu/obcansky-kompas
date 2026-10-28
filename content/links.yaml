@@ -1,0 +1,148 @@
+# Stránka /souvisejici „Odkazy a čtení“ (požadavek vlastníka 2026-10-28). Validuje
+# lib/content/links-schema.ts (content:build), limity textu hlídá `pnpm lint:content`:
+#   title položky = nadpis (max. 8 slov), description = jedna věta, max. 120 znaků.
+# Dvě oddělené skupiny:
+#   reading     – „K přečtení“: nestranné, faktické zdroje (zákony, návrh, ČT/ČRo, zahraničí).
+#                 Odkazuje se na ni z /metodika a z patičky.
+#   initiatives – „Související iniciativy“: patří ke kontextu postoje spolku („Kde stojíme my“),
+#                 NE ke kompasu. Odkazuje se na ni jen z bloku postoje. Nikdy z kompasu,
+#                 vysvětlivek ani statistik (SPEC §1).
+# checked_at = den, kdy adresa vrátila 200 (nebo rozumné přesměrování) a obsah odpovídal popisu.
+# added_by: owner = vybral vlastník; research = dohledal agent, vlastník má zkontrolovat.
+
+meta_title: Odkazy a čtení – Občanský kompas
+kicker: Odkazy
+title: Odkazy a čtení
+lead: Zákony, návrh vlády a zdroje o ČT a ČRo, ze kterých si uděláš vlastní obrázek.
+external_note: (otevře jiný web)
+publisher_label: Vydává
+method_link: Odkazy k přečtení
+stance_link: Související iniciativy
+
+types:
+  navrh: Návrh zákona
+  zakon: Zákon
+  instituce: ČT a ČRo
+  zahranici: Zahraničí
+  iniciativa: Iniciativa
+
+reading:
+  title: K přečtení
+  lead: Úřední texty a stránky institucí, bez komentáře a bez hodnocení.
+  items:
+    - id: tisk-231
+      title: Návrh vlády ve Sněmovně (tisk 231)
+      description: Jak daleko je projednávání vládního návrhu a odkazy na jeho plné znění.
+      url: https://www.psp.cz/sqw/historie.sqw?o=10&t=231
+      publisher: Poslanecká sněmovna
+      type: navrh
+      checked_at: "2026-10-28"
+    - id: tisk-231-text
+      title: Plné znění návrhu i s vysvětlením
+      description: Text vládního návrhu, jak ho vláda poslala do Sněmovny, i s vysvětlením důvodů.
+      url: https://www.psp.cz/sqw/text/orig2.sqw?idd=277415
+      publisher: Poslanecká sněmovna
+      type: navrh
+      checked_at: "2026-10-28"
+    - id: zakon-348-2005
+      title: Zákon o rozhlasových a televizních poplatcích
+      description: Platný zákon č. 348/2005 Sb., podle kterého se dnes platí poplatky za televizi a rozhlas.
+      url: https://www.zakonyprolidi.cz/cs/2005-348
+      publisher: Zákony pro lidi
+      type: zakon
+      checked_at: "2026-10-28"
+    - id: zakon-483-1991
+      title: Zákon o České televizi
+      description: Zákon č. 483/1991 Sb. o úkolech, řízení a financování České televize.
+      url: https://www.zakonyprolidi.cz/cs/1991-483
+      publisher: Zákony pro lidi
+      type: zakon
+      checked_at: "2026-10-28"
+    - id: zakon-484-1991
+      title: Zákon o Českém rozhlasu
+      description: Zákon č. 484/1991 Sb. o úkolech, řízení a financování Českého rozhlasu.
+      url: https://www.zakonyprolidi.cz/cs/1991-484
+      publisher: Zákony pro lidi
+      type: zakon
+      checked_at: "2026-10-28"
+    - id: ct-hospodareni
+      title: Hospodaření České televize
+      description: Rozpočet, výroční zprávy a vybrané údaje o hospodaření České televize.
+      url: https://www.ceskatelevize.cz/vse-o-ct/hospodareni-a-financni-situace/
+      publisher: Česká televize
+      type: instituce
+      checked_at: "2026-10-28"
+    - id: cro-hospodareni
+      title: Hospodaření Českého rozhlasu
+      description: Rozpočet, výroční zprávy a údaje o vybírání poplatků Českého rozhlasu.
+      url: https://informace.rozhlas.cz/ekonomika-a-hospodareni-ceskeho-rozhlasu-7959165
+      publisher: Český rozhlas
+      type: instituce
+      checked_at: "2026-10-28"
+    - id: rada-ct
+      title: Rada České televize
+      description: Orgán, přes který veřejnost dohlíží na Českou televizi; členové, zápisy a projednané materiály.
+      url: https://www.ceskatelevize.cz/vse-o-ct/rada-ct/
+      publisher: Česká televize
+      type: instituce
+      checked_at: "2026-10-28"
+    - id: rada-cro
+      title: Rada Českého rozhlasu
+      description: Orgán, přes který veřejnost dohlíží na Český rozhlas; členové, zápisy a záznamy ze zasedání.
+      url: https://rada.rozhlas.cz/
+      publisher: Český rozhlas
+      type: instituce
+      checked_at: "2026-10-28"
+    # Zahraniční modely: stejné adresy jako zdroje vysvětlivek (content/explainers/*.yaml).
+    - id: finsko-yle
+      title: Jak se financuje Yle (Finsko)
+      description: Finská veřejná televize a rozhlas o tom, odkud mají peníze a kolik stojí.
+      url: https://yle.fi/aihe/about-yle/finances
+      publisher: Yle
+      type: zahranici
+      checked_at: "2026-10-28"
+    - id: svedsko-skatteverket
+      title: Poplatek za veřejnou službu (Švédsko)
+      description: Švédský finanční úřad o poplatku, který se platí spolu s daní z příjmu.
+      url: https://www.skatteverket.se/publicserviceavgift
+      publisher: Skatteverket
+      type: zahranici
+      checked_at: "2026-10-28"
+    - id: nemecko-rundfunkbeitrag
+      title: Rozhlasový příspěvek (Německo)
+      description: Služba, která v Německu vybírá příspěvek na veřejnoprávní televizi a rozhlas.
+      url: https://www.rundfunkbeitrag.de/
+      publisher: ARD ZDF Deutschlandradio Beitragsservice
+      type: zahranici
+      checked_at: "2026-10-28"
+    - id: nemecko-kef
+      title: Komise KEF (Německo)
+      description: Nezávislá komise, která v Německu posuzuje, kolik peněz veřejná televize a rozhlas potřebují.
+      url: https://kef-online.de/kommission/zur-arbeit-der-kommission
+      publisher: KEF
+      type: zahranici
+      checked_at: "2026-10-28"
+
+# TODO(owner): seznam iniciativ sestavuje a schvaluje vlastník (OPEN_QUESTIONS.md, „Seznam
+# souvisejících iniciativ“). Položky s added_by: research dohledal agent – ponechat, nebo smazat.
+initiatives:
+  kicker: Kde stojíme my
+  title: Související iniciativy
+  lead: Tyhle iniciativy patří k postoji našeho spolku, ne ke kompasu, který zůstává nestranný.
+  items:
+    - id: ruce-pryc-od-medii
+      title: Ruce pryč od médií
+      description: Výzva k podpisu, která žádá stažení vládního návrhu zákona o ČT a ČRo; provozuje ji spolek Milion Chvilek.
+      url: https://ruceprycodmedii.cz/
+      publisher: Milion Chvilek, z. s.
+      type: iniciativa
+      added_by: owner
+      checked_at: "2026-10-28"
+    - id: verejnopravne
+      title: Veřejnoprávně
+      description: Prohlášení pracovníků České televize a Českého rozhlasu, ke kterému se dá připojit podpisem.
+      url: https://www.verejnopravne.cz/
+      publisher: Pracovníci ČT a ČRo
+      type: iniciativa
+      added_by: research
+      checked_at: "2026-10-28"

@@ -28,7 +28,8 @@ describe("normalizace", () => {
   });
   it("leetspeak a symboly", () => {
     expect(joined("k3r3t3n $v@ť")[0]).toBe("keretensvat");
-    expect(joined("1d10t")).toEqual(["idiot", "ldlot"]);
+    // všechny kombinace čtení dvojznačných znaků (1 = i/l)
+    expect(new Set(joined("1d10t"))).toEqual(new Set(["idiot", "ldiot", "idlot", "ldlot"]));
   });
   it("cyrilice vizuálně i foneticky, řečtina", () => {
     expect(joined("курва")).toContain("kurva");
@@ -218,6 +219,7 @@ describe("blocklist – obcházecí pokusy", () => {
 // Neutrální slogany – všechny musí projít (allowlist nesmí blokovat běžná slova).
 const NEUTRAL = [
   "Ruce pryč od veřejnoprávních médií",
+  "Veřejnoprávní média mi nejsou jedno",
   "Nezávislá média jsou základ demokracie",
   "Česká televize patří nám všem",
   "Rozhlas není hračka vlády",

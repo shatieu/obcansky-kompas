@@ -33,6 +33,11 @@ vi.mock("next/server", async (orig) => {
     },
   };
 });
+// Turnstile: platný jen token "ts-ok" (siteverify se nevolá).
+vi.mock("@/lib/turnstile", () => ({
+  verifyTurnstile: async (t: unknown) => (t === "ts-ok" ? { ok: true } : { ok: false, reason: t ? "rejected" : "missing-token" }),
+}));
+const TS = { turnstileToken: "ts-ok" };
 const revalidated = vi.hoisted(() => [] as string[]);
 vi.mock("next/cache", async (orig) => ({
   ...(await orig<Record<string, unknown>>()),
@@ -49,6 +54,7 @@ const routes = {
   person: () => import("@/app/api/demonstrace/[id]/route"),
   report: () => import("@/app/api/demonstrace/[id]/report/route"),
   me: () => import("@/app/api/demonstrace/me/route"),
+  meDetail: () => import("@/app/api/demonstrace/me/detail/route"),
   meta: () => import("@/app/api/demonstrace/meta/route"),
   tile: () => import("@/app/api/demonstrace/tile/[n]/route"),
   owner: () => import("@/app/api/demonstrace/owner/route"),
@@ -66,7 +72,7 @@ interface Res {
 
 async function call(
   route: keyof typeof routes,
-  method: "GET" | "POST" | "PATCH",
+  method: "GET" | "POST" | "PATCH" | "DELETE",
   opts: { body?: unknown; cookie?: string; ip?: string; params?: Record<string, string>; headers?: Record<string, string> } = {},
 ): Promise<Res> {
   const mod = (await routes[route]()) as unknown as Record<string, Handler>;
@@ -77,7 +83,7 @@ async function call(
   const req = new NextRequest(`https://kompas.test/api/demonstrace/${route}`, {
     method,
     headers,
-    body: method === "GET" ? undefined : JSON.stringify(opts.body ?? {}),
+    body: method === "GET" || method === "DELETE" ? undefined : JSON.stringify(opts.body ?? {}),
   });
   const res = await handler(req, { params: Promise.resolve(opts.params ?? {}) });
   const text = await res.text();
@@ -245,9 +251,15 @@ describe("dlaždice, meta, karta (§6.4)", () => {
       expect(mine[4]).toBe("p:nejsou-jedno");
       expect(mine[5]).toBeNull();
 
-      const own = await call("person", "GET", { params: { id: j.json.id as string }, cookie: o.cookie });
-      expect(own.json).toMatchObject({ id: j.json.id, slogan: "p:nejsou-jedno", name: null, own: { sloganCustom: "Čeká na kontrolu", sloganStatus: "pending", nameStatus: "pending" } });
+      // Soukromá část jen z /me/detail; veřejné GET [id] je i pro autora stejné (CDN bez Vary: Cookie).
+      const own = await call("meDetail", "GET", { cookie: o.cookie });
+      expect(own.json).toMatchObject({ id: j.json.id, own: { sloganCustom: "Čeká na kontrolu", sloganStatus: "pending", nameStatus: "pending" } });
       expect(own.headers.get("cache-control")).toContain("no-store");
+      expect(own.headers.get("set-cookie")).toContain("ok_in_crowd=1");
+      const authorPub = await call("person", "GET", { params: { id: j.json.id as string }, cookie: o.cookie });
+      expect(authorPub.json).toMatchObject({ id: j.json.id, slogan: "p:nejsou-jedno", name: null });
+      expect(authorPub.json.own).toBeUndefined();
+      expect(authorPub.headers.get("vercel-cache-tag")).toBe(`demo-person:${j.json.id}`);
       const stranger = await owner();
       const pub = await call("person", "GET", { params: { id: j.json.id as string }, cookie: stranger.cookie });
       expect(pub.json.own).toBeUndefined();
@@ -283,13 +295,13 @@ describe("nahlášení (§4.3)", () => {
     const j = await call("join", "POST", { body: body({ sloganPresetId: undefined, sloganCustom: "Sporný slogan", firstName: "Karel" }), cookie: o.cookie, ip: nextIp() });
     const id = j.json.id as string;
     const ipA = nextIp();
-    expect((await call("report", "POST", { params: { id }, ip: ipA })).status).toBe(202);
-    expect((await call("report", "POST", { params: { id }, ip: ipA })).status).toBe(202);
-    await call("report", "POST", { params: { id }, ip: nextIp() });
+    expect((await call("report", "POST", { params: { id }, ip: ipA, body: TS })).status).toBe(202);
+    expect((await call("report", "POST", { params: { id }, ip: ipA, body: TS })).status).toBe(202);
+    await call("report", "POST", { params: { id }, ip: nextIp(), body: TS });
     let tile = await call("tile", "GET", { params: { n: "0" } });
     expect(JSON.stringify(tile.json)).toContain("Sporný slogan");
     revalidated.length = 0;
-    await call("report", "POST", { params: { id }, ip: nextIp() });
+    await call("report", "POST", { params: { id }, ip: nextIp(), body: TS });
     expect(revalidated).toContain("demo-tile:0");
     tile = await call("tile", "GET", { params: { n: "0" } });
     expect(JSON.stringify(tile.json)).not.toContain("Sporný slogan");
@@ -298,7 +310,7 @@ describe("nahlášení (§4.3)", () => {
     expect(row).toMatchObject({ report_count: 3, hidden: true });
     const dump = JSON.stringify(await db.sql`select * from app.demonstrator_report`);
     expect(dump).not.toMatch(/203\.0\.113/);
-    expect((await call("report", "POST", { params: { id: "00000000-0000-4000-8000-000000000000" }, ip: nextIp() })).status).toBe(404);
+    expect((await call("report", "POST", { params: { id: "00000000-0000-4000-8000-000000000000" }, ip: nextIp(), body: TS })).status).toBe(404);
   });
 });
 
@@ -318,8 +330,56 @@ describe("vlastnictví přes odkaz pro úpravu, odvolání (§3)", () => {
     expect(w.status).toBe(200);
     expect(revalidated).toEqual(expect.arrayContaining([`demo-tile:0`, `demo-person:${j.json.id}`, "demo-meta"]));
     expect((await call("person", "GET", { params: { id: j.json.id as string } })).status).toBe(404);
-    expect((await call("me", "GET", { cookie })).status).toBe(404);
-    expect((await call("join", "POST", { body: body(), cookie, ip: nextIp() })).status).toBe(403);
+    // Odvolání zvýšilo epochu vlastníka → cookie už neplatí vůbec.
+    expect((await call("me", "GET", { cookie })).status).toBe(401);
+    expect((await call("join", "POST", { body: body(), cookie, ip: nextIp() })).status).toBe(401);
+  });
+
+  it("cookie jiného podpisu se tiše nepřepíše (409 owner_conflict), replace: true ji nahradí; DELETE odhlásí", async () => {
+    const a = await owner();
+    const b = await owner();
+    const linkB = (await requestEditLink(db.sql, b.email, { poc: false }))!;
+    const conflict = await call("owner", "POST", { body: { token: linkB.editToken }, cookie: a.cookie, ip: nextIp() });
+    expect(conflict.status).toBe(409);
+    expect(conflict.json.error).toBe("owner_conflict");
+    expect(conflict.headers.get("set-cookie")).toBeNull();
+    // stejný podpis = bez dotazu
+    const same = await call("owner", "POST", { body: { token: linkB.editToken }, cookie: b.cookie, ip: nextIp() });
+    expect(same.status).toBe(200);
+    const replaced = await call("owner", "POST", { body: { token: linkB.editToken, replace: true }, cookie: a.cookie, ip: nextIp() });
+    expect(replaced.status).toBe(200);
+    const cookieB = (replaced.headers.get("set-cookie") ?? "").split(";")[0]!;
+    expect((await call("me", "GET", { cookie: cookieB })).status).not.toBe(401);
+
+    const out = await call("owner", "DELETE", { cookie: cookieB });
+    expect(out.status).toBe(200);
+    expect(out.headers.get("set-cookie")).toMatch(/ok_owner=;/);
+    // odhlášení zneplatní cookie podpisu B všude (i tu původní z ověření)
+    expect((await call("me", "GET", { cookie: cookieB })).status).toBe(401);
+    expect((await call("me", "GET", { cookie: b.cookie })).status).toBe(401);
+    expect((await call("me", "GET", { cookie: a.cookie })).status).not.toBe(401);
+  });
+});
+
+describe("nahlášení – bezpečnostní review", () => {
+  it("bez platného Turnstile tokenu 400, nic se nezapíše", async () => {
+    const o = await owner();
+    const j = await call("join", "POST", { body: body({ sloganPresetId: undefined, sloganCustom: "Bez tokenu" }), cookie: o.cookie, ip: nextIp() });
+    const id = j.json.id as string;
+    expect((await call("report", "POST", { params: { id }, ip: nextIp() })).status).toBe(400);
+    expect((await call("report", "POST", { params: { id }, ip: nextIp(), body: { turnstileToken: "spatny" } })).json.error).toBe("turnstile");
+    const [row] = await db.sql`select report_count from app.demonstrator where id = ${id}`;
+    expect(row!.report_count).toBe(0);
+  });
+
+  it("IPv6 ze stejné /64 se počítá jako jedna síť", async () => {
+    const o = await owner();
+    const j = await call("join", "POST", { body: body({ sloganPresetId: undefined, sloganCustom: "IPv6 rotace" }), cookie: o.cookie, ip: nextIp() });
+    const id = j.json.id as string;
+    for (const ip of ["2001:db8:77:1::1", "2001:db8:77:1::2", "2001:db8:77:1:ffff::9", "2001:db8:77:1:abcd:1:2:3"])
+      expect((await call("report", "POST", { params: { id }, ip, body: TS })).status).toBe(202);
+    const [row] = await db.sql`select report_count, hidden_at from app.demonstrator where id = ${id}`;
+    expect(row).toMatchObject({ report_count: 1, hidden_at: null });
   });
 });
 

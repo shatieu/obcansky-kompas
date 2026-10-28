@@ -3,8 +3,8 @@ import type { Answers } from "@/lib/compose/types";
 /**
  * HOOK(signature-api): odpovědi podpisu pro /akce?sig=<uuid> a /v/<uuid>/zakon v prohlížeči.
  *
- * Endpoint: GET /api/signature/[uuid] → { answers, content_version } (jen neodvolaný podpis,
- * žádné osobní údaje, 404 když neexistuje, 503 bez DB). Když selže, volající použije odpovědi z prohlížeče.
+ * Endpoint: GET /api/signature/[uuid] → { answers, content_version, name } (jen neodvolaný podpis;
+ * `name` jen se souhlasem se zveřejněním jména, jinak null; 404 když neexistuje, 503 bez DB). Když selže, volající použije odpovědi z prohlížeče.
  */
 export const SIGNATURE_ANSWERS_URL = (uuid: string) => `/api/signature/${encodeURIComponent(uuid)}`;
 
@@ -12,6 +12,8 @@ export interface SignatureAnswers {
   answers: Answers;
   contentVersion: string | null;
   region: string | null;
+  /** Zveřejněné jméno podepsaného (show_name), jinak null – předvyplní se pod dopis. */
+  name: string | null;
 }
 
 const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
@@ -27,6 +29,7 @@ export function parseSignatureAnswers(json: unknown): SignatureAnswers | null {
     answers: o.answers as Answers,
     contentVersion: typeof cv === "string" ? cv : null,
     region: typeof o.region === "string" ? o.region : null,
+    name: typeof o.name === "string" && o.name.trim() ? o.name.trim().slice(0, 120) : null,
   };
 }
 

@@ -166,6 +166,30 @@ describe("composeStatement (SPEC §6)", () => {
   it("věty Nevím lze skrýt", () => {
     const s = composeStatement({ q2: "q2-nevim", q3: "q3-opt1" }, v, { hideUnknown: true });
     expect(s.parts.map((p) => p.questionId)).toEqual([null, "q3", null]);
+    expect(s.blocks.map((b) => b.questionId)).toEqual(["q3"]);
+  });
+
+  it("strukturovaný výsledek: úvod, blok se štítkem za každou otázku v pořadí zobrazení, závěr", () => {
+    const s = composeStatement({ q8: "q8-opt2", q1: 8.5, q2: "q2-opt1", q3: "q3-nevim" }, v);
+    expect(s.intro).toEqual(s.parts[0]);
+    expect(s.outro).toEqual(s.parts.at(-1));
+    expect(s.blocks.map((b) => b.questionId)).toEqual(["q2", "q3", "q8", "q1"]);
+    for (const b of s.blocks) expect(b.label).toBe(questionsFile.questions.find((q) => q.id === b.questionId)!.short);
+    // Nevím je vlastní blok se štítkem své otázky (ne skupina) – odstavec odpovídá řádku odpovědi.
+    expect(s.blocks.map((b) => b.nevim)).toEqual([false, true, false, false]);
+    // Bloky nesou tytéž věty jako parts (dopisy dál berou věty bez štítků).
+    expect(s.blocks.map((b) => b.text)).toEqual(s.parts.slice(1, -1).map((p) => p.text));
+  });
+
+  it("prostý text: odstavce oddělené prázdným řádkem, bloky „Štítek: věta“", () => {
+    const s = composeStatement({ q2: "q2-opt1", q1: 8.5 }, v);
+    const paras = s.text.split("\n\n");
+    expect(paras).toHaveLength(4);
+    expect(paras[0]).toBe(s.intro.text);
+    expect(paras[1]).toBe(`Odkud peníze: ${s.blocks[0]!.text}`);
+    expect(paras[2]!.startsWith("Kolik peněz: ")).toBe(true);
+    expect(paras[3]).toBe(s.outro.text);
+    expect(composeStatement({}, v).text).toBe(`${s.intro.text}\n\n${s.outro.text}`);
   });
 
   it("předvyplněné odpovědi se propíšou, odpadlé otázky ne", () => {

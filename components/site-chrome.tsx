@@ -7,6 +7,9 @@ export function isSampleEnv(): boolean {
   return flags.demoMode() || flags.pocMode() || flags.staticDemo();
 }
 
+/** Online demonstrace – v navigaci i jako jediný odkaz v mobilní hlavičce (požadavek vlastníka 2026-10-28). */
+const DEMO_HREF = "/demonstrace";
+
 export function SiteHeader() {
   return (
     <AppBar
@@ -14,10 +17,12 @@ export function SiteHeader() {
       sampleLabel={ui.demo.badge}
       wordmarkLabel={ui.site.name}
       wordmarkAria={ui.site.home_aria}
+      quick={<a href={DEMO_HREF}>{ui.nav.demo}</a>}
       nav={
         <>
           {/* Obyčejné odkazy místo next/link: ušetří chunk routeru na /kompas (SPEC §4.6, 150 kB). */}
           <a href="/kompas">{ui.nav.compass}</a>
+          <a href={DEMO_HREF}>{ui.nav.demo}</a>
           <a href="/statistiky">{ui.nav.stats}</a>
           <a href="/hnuti">{ui.nav.parties}</a>
         </>
@@ -28,8 +33,10 @@ export function SiteHeader() {
 
 export function SiteFooter() {
   const links = [
+    { href: "/demonstrace", label: ui.footer.demo },
     { href: "/hnuti", label: ui.footer.parties },
     { href: "/metodika", label: ui.footer.method },
+    { href: "/souvisejici#k-precteni", label: ui.footer.reading },
     { href: "/o-projektu", label: ui.footer.about },
     { href: "/soukromi", label: ui.footer.privacy },
   ];

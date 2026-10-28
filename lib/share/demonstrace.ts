@@ -1,4 +1,4 @@
-import { POSES, SIGN_COLORS, type Pose, type SignColor } from "@/lib/demo/constants";
+import { hasSign, POSES, SIGN_COLORS, type Pose, type SignColor } from "@/lib/demo/constants";
 import { hash32, mulberry32 } from "@/lib/stickman/prng";
 import type { StickmanPalette } from "@/lib/stickman/sign";
 import { VIEWBOX } from "@/lib/stickman/geometry";
@@ -52,7 +52,8 @@ export function demonstraceCard(p: DemoPersonInput, count: number | null, img: D
     items: [],
     numbered: false,
     name: p.name,
-    figure: { seed: p.seed >>> 0, pose: p.pose, signColor: p.signColor, signText: p.signText, crowd: (p.crowd ?? []).slice(0, CROWD_MAX) },
+    // Bez cedule jen věta sdílení – žádný text cedule (ani slogan) na obrázku.
+    figure: { seed: p.seed >>> 0, pose: p.pose, signColor: p.signColor, signText: hasSign(p.signColor) ? p.signText : "", crowd: (p.crowd ?? []).slice(0, CROWD_MAX) },
   };
 }
 

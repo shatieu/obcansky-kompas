@@ -29,6 +29,8 @@ export function loadAkceDirectories(): AkceDirectories {
     titul_pred: p.titul_pred,
     titul_za: p.titul_za,
     kraj_code: p.kraj_code,
+    pohlavi: p.pohlavi ?? null,
+    klub: p.klub ?? null,
     klub_zkratka: p.klub_zkratka,
     kandidatka: p.kandidatka ?? null,
     email: p.email,
@@ -39,12 +41,16 @@ export function loadAkceDirectories(): AkceDirectories {
     id: s.id,
     jmeno: s.jmeno,
     jmeno_s_tituly: s.jmeno_s_tituly,
+    pohlavi: s.pohlavi ?? null,
     strana: s.strana ?? null,
     email: s.email,
   }));
   const st = read<DirStatic>("static.json");
   const pick = (e: DirStatic["prezident"]) => ({
     adresat: e.adresat,
+    osoba: e.osoba
+      ? { jmeno: e.osoba.jmeno, prijmeni: e.osoba.prijmeni, titul_pred: e.osoba.titul_pred, titul_za: e.osoba.titul_za, pohlavi: e.osoba.pohlavi }
+      : null,
     urad: e.urad,
     address: e.address,
     address_podatelna: e.address_podatelna ?? null,

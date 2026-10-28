@@ -1,15 +1,19 @@
 import type { Metadata } from "next";
 import { cookies } from "next/headers";
-import { notFound } from "next/navigation";
+import { notFound, permanentRedirect } from "next/navigation";
 import { ActionLink, ActionList } from "@/components/ui/action-list";
 import { ButtonLink } from "@/components/ui/button";
 import { Icon } from "@/components/ui/icon";
 import { SampleBadge } from "@/components/ui/sample";
+import { StatementText } from "@/components/ui/statement-text";
 import { StanceBlock } from "@/components/stance-block";
 import { Kicker, Notice, ScreenHeading, SectionTitle } from "@/components/ui/typography";
 import { ShareArrival } from "@/components/share/share-arrival";
 import { SharePanel } from "@/components/share/share-panel";
 import { ManageLinkForm, ReportForm } from "@/components/sign/signature-actions";
+import { ShortIdBadge } from "@/components/lookup/short-id-badge";
+import { shortIdTexts } from "@/lib/sign/lookup-texts";
+import { shortLinkTarget } from "@/lib/sign/short-link";
 import { podpisCard } from "@/lib/share/card";
 import { lookupSignature } from "@/lib/share/data";
 import { momentFromSearch, shareMetadata, signatureVersion } from "@/lib/share/metadata";
@@ -24,7 +28,7 @@ import { signTexts, type SignTexts } from "@/lib/sign/texts";
 import { turnstileSiteKey } from "@/lib/turnstile";
 import { demoTexts } from "@/components/demonstrace/join/texts";
 import { getSql } from "@/lib/db/client";
-import { getOwnerSignatureId } from "@/lib/demo/owner";
+import { getOwnerClaim, getOwnerSignatureId } from "@/lib/demo/owner";
 import { findBySignature } from "@/lib/demo/service";
 
 /**
@@ -76,9 +80,12 @@ type DemoState = { kind: "invite" } | { kind: "mine"; id: string };
  */
 async function demoState(signatureId: string): Promise<DemoState | null> {
   if (flags.staticDemo()) return null;
-  const owner = getOwnerSignatureId(await cookies());
-  if (owner !== signatureId) return { kind: "invite" };
+  const jar = await cookies();
+  // Rychlá cesta bez DB: cizí stránka (cookie jiného podpisu nebo žádná).
+  if (getOwnerClaim(jar)?.signatureId !== signatureId) return { kind: "invite" };
   try {
+    const owner = await getOwnerSignatureId(jar);
+    if (owner !== signatureId) return { kind: "invite" };
     const mine = await findBySignature(getSql(), owner);
     return mine ? { kind: "mine", id: mine.id } : { kind: "invite" };
   } catch {
@@ -130,7 +137,12 @@ export default async function SignaturePage({ params }: { params: Promise<{ uuid
       </Shell>
     );
   }
-  if (!UUID_RE.test(uuid)) notFound();
+  if (!UUID_RE.test(uuid)) {
+    // /v/<číslo podpisu> (XXXX-XXXX) = krátký odkaz → 308 na /v/<uuid>.
+    const target = await shortLinkTarget(uuid);
+    if (target) permanentRedirect(target);
+    notFound();
+  }
 
   let sig: PublicSignature | null;
   try {
@@ -185,12 +197,13 @@ export default async function SignaturePage({ params }: { params: Promise<{ uuid
           {statement && (
             <div className="k-letter mt-2">
               <p className="k-letter__meta">{t.kicker}</p>
-              <p className="mt-1">{statement.text}</p>
+              <StatementText statement={statement} className="mt-1" />
             </div>
           )}
           <p className="k-cap mt-1 break-words">
             {signer} · {t.level_label}: {levelLabel}
           </p>
+          {sig.shortId && <ShortIdBadge className="mt-3" shortId={sig.shortId} texts={shortIdTexts()} />}
 
           <ActionList className="mt-4">
             <ActionLink href={`/v/${sig.id}/srovnani`} icon="compare">

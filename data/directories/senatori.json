@@ -6,6 +6,8 @@
     "jmeno": "Věra Procházková",
     "jmeno_s_tituly": "MUDr. Věra Procházková",
     "strana": "ANO 2011",
+    "pohlavi": "Z",
+    "pohlavi_zdroj": "senat.cz",
     "email": "prochazkovav@senat.cz",
     "web": "https://veraprochazkova.cz",
     "profile_url": "https://www.senat.cz/senatori/index.php?lng=cz&par_3=356"
@@ -17,6 +19,8 @@
     "jmeno": "Jana Mračková Vildumetzová",
     "jmeno_s_tituly": "Mgr. Jana Mračková Vildumetzová",
     "strana": "ANO 2011",
+    "pohlavi": "Z",
+    "pohlavi_zdroj": "senat.cz",
     "email": "vildumetzovaj@senat.cz",
     "web": null,
     "profile_url": "https://www.senat.cz/senatori/index.php?lng=cz&par_3=370"
@@ -28,6 +32,8 @@
     "jmeno": "Miroslav Plevný",
     "jmeno_s_tituly": "prof. Dr. Ing. Miroslav Plevný",
     "strana": "BEZPP",
+    "pohlavi": "M",
+    "pohlavi_zdroj": "odvozeno",
     "email": null,
     "web": "https://www.plevny.cz",
     "profile_url": "https://www.senat.cz/senatori/index.php?lng=cz&par_3=336"
@@ -39,6 +45,8 @@
     "jmeno": "Jan Paparega",
     "jmeno_s_tituly": "Mgr. Jan Paparega",
     "strana": "ProMOST",
+    "pohlavi": "M",
+    "pohlavi_zdroj": "senat.cz",
     "email": "paparegaj@senat.cz",
     "web": null,
     "profile_url": "https://www.senat.cz/senatori/index.php?lng=cz&par_3=357"
@@ -50,6 +58,8 @@
     "jmeno": "Přemysl Rabas",
     "jmeno_s_tituly": "MVDr. Přemysl Rabas",
     "strana": "BEZPP",
+    "pohlavi": "M",
+    "pohlavi_zdroj": "senat.cz",
     "email": "rabasp@senat.cz",
     "web": "http://www.premyslrabas.cz",
     "profile_url": "https://www.senat.cz/senatori/index.php?lng=cz&par_3=315"
@@ -61,6 +71,8 @@
     "jmeno": "Ivo Trešl",
     "jmeno_s_tituly": "MUDr. Ivo Trešl",
     "strana": "BEZPP",
+    "pohlavi": "M",
+    "pohlavi_zdroj": "senat.cz",
     "email": null,
     "web": "https://ivotresl.cz",
     "profile_url": "https://www.senat.cz/senatori/index.php?lng=cz&par_3=337"
@@ -72,6 +84,8 @@
     "jmeno": "Daniela Kovářová",
     "jmeno_s_tituly": "JUDr. Daniela Kovářová",
     "strana": "BEZPP",
+    "pohlavi": "Z",
+    "pohlavi_zdroj": "senat.cz",
     "email": "kovarovad@senat.cz",
     "web": "https://www.normalnidaniela.cz",
     "profile_url": "https://www.senat.cz/senatori/index.php?lng=cz&par_3=358"
@@ -83,6 +97,8 @@
     "jmeno": "Miroslav Kroc",
     "jmeno_s_tituly": "Ing. Mgr. Miroslav Kroc",
     "strana": "BEZPP",
+    "pohlavi": "M",
+    "pohlavi_zdroj": "senat.cz",
     "email": "krocm@senat.cz",
     "web": "https://miroslavkroc.cz",
     "profile_url": "https://www.senat.cz/senatori/index.php?lng=cz&par_3=461"
@@ -94,6 +110,8 @@
     "jmeno": "Karel Řehka",
     "jmeno_s_tituly": "Karel Řehka",
     "strana": "BEZPP",
+    "pohlavi": "M",
+    "pohlavi_zdroj": "senat.cz",
     "email": null,
     "web": null,
     "profile_url": "https://www.senat.cz/senatori/index.php?lng=cz&par_3=486"
@@ -105,6 +123,8 @@
     "jmeno": "Tomáš Jirsa",
     "jmeno_s_tituly": "Ing. Tomáš Jirsa, MBA",
     "strana": "ODS",
+    "pohlavi": "M",
+    "pohlavi_zdroj": "senat.cz",
     "email": "jirsat@senat.cz",
     "web": "http://www.tomasjirsa.cz",
     "profile_url": "https://www.senat.cz/senatori/index.php?lng=cz&par_3=171"
@@ -116,6 +136,8 @@
     "jmeno": "Jan Látka",
     "jmeno_s_tituly": "Jan Látka",
     "strana": "ANO 2011",
+    "pohlavi": "M",
+    "pohlavi_zdroj": "senat.cz",
     "email": "latkaj@senat.cz",
     "web": null,
     "profile_url": "https://www.senat.cz/senatori/index.php?lng=cz&par_3=260"
@@ -127,6 +149,8 @@
     "jmeno": "Tomáš Fiala",
     "jmeno_s_tituly": "MUDr. Bc. Tomáš Fiala, MBA",
     "strana": "NČ",
+    "pohlavi": "M",
+    "pohlavi_zdroj": "senat.cz",
     "email": "tomasf@senat.cz",
     "web": "http://www.tomasfiala.cz",
     "profile_url": "https://www.senat.cz/senatori/index.php?lng=cz&par_3=339"
@@ -138,6 +162,8 @@
     "jmeno": "Marek Slabý",
     "jmeno_s_tituly": "MUDr. Marek Slabý",
     "strana": "BEZPP",
+    "pohlavi": "M",
+    "pohlavi_zdroj": "senat.cz",
     "email": "slabym@senat.cz",
     "web": "https://marekslaby.cz",
     "profile_url": "https://www.senat.cz/senatori/index.php?lng=cz&par_3=359"
@@ -149,6 +175,8 @@
     "jmeno": "Zbyněk Sýkora",
     "jmeno_s_tituly": "Bc. Zbyněk Sýkora, MBA",
     "strana": "ODS",
+    "pohlavi": "M",
+    "pohlavi_zdroj": "senat.cz",
     "email": "sykoraz@senat.cz",
     "web": null,
     "profile_url": "https://www.senat.cz/senatori/index.php?lng=cz&par_3=463"
@@ -160,6 +188,8 @@
     "jmeno": "Ladislav Med",
     "jmeno_s_tituly": "Ladislav Med",
     "strana": "ODS",
+    "pohlavi": "M",
+    "pohlavi_zdroj": "senat.cz",
     "email": null,
     "web": null,
     "profile_url": "https://www.senat.cz/senatori/index.php?lng=cz&par_3=487"
@@ -171,6 +201,8 @@
     "jmeno": "Jiří Oberfalzer",
     "jmeno_s_tituly": "Jiří Oberfalzer",
     "strana": "ODS",
+    "pohlavi": "M",
+    "pohlavi_zdroj": "senat.cz",
     "email": "oberfalzerj@senat.cz",
     "web": "http://www.jirioberfalzer.cz",
     "profile_url": "https://www.senat.cz/senatori/index.php?lng=cz&par_3=172"
@@ -182,6 +214,8 @@
     "jmeno": "Pavel Fischer",
     "jmeno_s_tituly": "Pavel Fischer",
     "strana": "BEZPP",
+    "pohlavi": "M",
+    "pohlavi_zdroj": "senat.cz",
     "email": "fischerp@senat.cz",
     "web": "https://www.pavelfischer.cz",
     "profile_url": "https://www.senat.cz/senatori/index.php?lng=cz&par_3=319"
@@ -193,6 +227,8 @@
     "jmeno": "Petr Štěpánek",
     "jmeno_s_tituly": "Petr Štěpánek",
     "strana": "STAN",
+    "pohlavi": "M",
+    "pohlavi_zdroj": "senat.cz",
     "email": null,
     "web": null,
     "profile_url": "https://www.senat.cz/senatori/index.php?lng=cz&par_3=341"
@@ -204,6 +240,8 @@
     "jmeno": "Hana Kordová Marvanová",
     "jmeno_s_tituly": "JUDr. Hana Kordová Marvanová",
     "strana": "BEZPP",
+    "pohlavi": "Z",
+    "pohlavi_zdroj": "senat.cz",
     "email": "marvanovah@senat.cz",
     "web": "https://www.hanamarvanova.cz",
     "profile_url": "https://www.senat.cz/senatori/index.php?lng=cz&par_3=362"
@@ -215,6 +253,8 @@
     "jmeno": "Jiří Drahoš",
     "jmeno_s_tituly": "prof. Ing. Jiří Drahoš, DrSc.",
     "strana": "BEZPP",
+    "pohlavi": "M",
+    "pohlavi_zdroj": "senat.cz",
     "email": "drahosj@senat.cz",
     "web": "http://www.jiridrahos.cz",
     "profile_url": "https://www.senat.cz/senatori/index.php?lng=cz&par_3=313"
@@ -226,6 +266,8 @@
     "jmeno": "Václav Láska",
     "jmeno_s_tituly": "Mgr. Václav Láska",
     "strana": "SEN 21",
+    "pohlavi": "M",
+    "pohlavi_zdroj": "senat.cz",
     "email": "laskav@senat.cz",
     "web": "http://www.vaclavlaska.cz",
     "profile_url": "https://www.senat.cz/senatori/index.php?lng=cz&par_3=278"
@@ -237,6 +279,8 @@
     "jmeno": "Jan Pirk",
     "jmeno_s_tituly": "prof. MUDr. Jan Pirk, Dr.Sc.",
     "strana": "BEZPP",
+    "pohlavi": "M",
+    "pohlavi_zdroj": "senat.cz",
     "email": "pirkj@senat.cz",
     "web": "https://janpirk.cz",
     "profile_url": "https://www.senat.cz/senatori/index.php?lng=cz&par_3=361"
@@ -248,6 +292,8 @@
     "jmeno": "Vladimíra Ludková",
     "jmeno_s_tituly": "Mgr. Vladimíra Ludková",
     "strana": "ODS",
+    "pohlavi": "Z",
+    "pohlavi_zdroj": "senat.cz",
     "email": "ludkovav@senat.cz",
     "web": null,
     "profile_url": "https://www.senat.cz/senatori/index.php?lng=cz&par_3=465"
@@ -259,6 +305,8 @@
     "jmeno": "David Smoljak",
     "jmeno_s_tituly": "David Smoljak",
     "strana": "BEZPP",
+    "pohlavi": "M",
+    "pohlavi_zdroj": "senat.cz",
     "email": "smoljakd@senat.cz",
     "web": "https://www.davidsmoljak.cz",
     "profile_url": "https://www.senat.cz/senatori/index.php?lng=cz&par_3=334"
@@ -270,6 +318,8 @@
     "jmeno": "Jiří Růžička",
     "jmeno_s_tituly": "Mgr. Jiří Růžička",
     "strana": "BEZPP",
+    "pohlavi": "M",
+    "pohlavi_zdroj": "senat.cz",
     "email": "ruzickaj@senat.cz",
     "web": "http://www.jiri-ruzicka.cz",
     "profile_url": "https://www.senat.cz/senatori/index.php?lng=cz&par_3=298"
@@ -281,6 +331,8 @@
     "jmeno": "Miroslav Bárta",
     "jmeno_s_tituly": "prof. Mgr. Dr. Miroslav Bárta",
     "strana": "BEZPP",
+    "pohlavi": "M",
+    "pohlavi_zdroj": "senat.cz",
     "email": "bartam@senat.cz",
     "web": "https://www.miroslavbarta.cz/",
     "profile_url": "https://www.senat.cz/senatori/index.php?lng=cz&par_3=466"
@@ -292,6 +344,8 @@
     "jmeno": "Jiří Padevět",
     "jmeno_s_tituly": "PhDr. Jiří Padevět",
     "strana": "BEZPP",
+    "pohlavi": "M",
+    "pohlavi_zdroj": "senat.cz",
     "email": null,
     "web": null,
     "profile_url": "https://www.senat.cz/senatori/index.php?lng=cz&par_3=488"
@@ -303,6 +357,8 @@
     "jmeno": "Jarmila Smotlachová",
     "jmeno_s_tituly": "Ing. Jarmila Smotlachová",
     "strana": "ODS",
+    "pohlavi": "Z",
+    "pohlavi_zdroj": "senat.cz",
     "email": "smotlachovaj@senat.cz",
     "web": null,
     "profile_url": "https://www.senat.cz/senatori/index.php?lng=cz&par_3=363"
@@ -314,6 +370,8 @@
     "jmeno": "Ondřej Štěrba",
     "jmeno_s_tituly": "MUDr. Ondřej Štěrba",
     "strana": "ANO 2011",
+    "pohlavi": "M",
+    "pohlavi_zdroj": "senat.cz",
     "email": "sterbao@senat.cz",
     "web": null,
     "profile_url": "https://www.senat.cz/senatori/index.php?lng=cz&par_3=467"
@@ -325,6 +383,8 @@
     "jmeno": "Petr Paták",
     "jmeno_s_tituly": "Mgr. DiS., MBA Petr Paták",
     "strana": "ODS",
+    "pohlavi": "M",
+    "pohlavi_zdroj": "senat.cz",
     "email": null,
     "web": null,
     "profile_url": "https://www.senat.cz/senatori/index.php?lng=cz&par_3=489"
@@ -336,6 +396,8 @@
     "jmeno": "Martin Krsek",
     "jmeno_s_tituly": "Mgr. Martin Krsek",
     "strana": "BEZPP",
+    "pohlavi": "M",
+    "pohlavi_zdroj": "senat.cz",
     "email": "krsekm@senat.cz",
     "web": "https://martinkrsek.cz",
     "profile_url": "https://www.senat.cz/senatori/index.php?lng=cz&par_3=364"
@@ -347,6 +409,8 @@
     "jmeno": "Jan Schiller",
     "jmeno_s_tituly": "Ing. Jan Schiller",
     "strana": "ANO 2011",
+    "pohlavi": "M",
+    "pohlavi_zdroj": "senat.cz",
     "email": "schillerj@senat.cz",
     "web": null,
     "profile_url": "https://www.senat.cz/senatori/index.php?lng=cz&par_3=468"
@@ -358,6 +422,8 @@
     "jmeno": "Zbyněk Linhart",
     "jmeno_s_tituly": "Ing. Zbyněk Linhart",
     "strana": "BEZPP",
+    "pohlavi": "M",
+    "pohlavi_zdroj": "odvozeno",
     "email": "linhartz@senat.cz",
     "web": "http://www.zbyneklinhart.cz",
     "profile_url": "https://www.senat.cz/senatori/index.php?lng=cz&par_3=281"
@@ -369,6 +435,8 @@
     "jmeno": "Michael Canov",
     "jmeno_s_tituly": "Ing. Michael Canov",
     "strana": "SLK",
+    "pohlavi": "M",
+    "pohlavi_zdroj": "senat.cz",
     "email": "canovm@senat.cz",
     "web": "http://www.michaelcanov.cz",
     "profile_url": "https://www.senat.cz/senatori/index.php?lng=cz&par_3=300"
@@ -380,6 +448,8 @@
     "jmeno": "Lena Mlejnková",
     "jmeno_s_tituly": "Bc. Lena Mlejnková",
     "strana": "SLK",
+    "pohlavi": "Z",
+    "pohlavi_zdroj": "senat.cz",
     "email": "mlejnkoval@senat.cz",
     "web": "https://www.lenasenat.cz/",
     "profile_url": "https://www.senat.cz/senatori/index.php?lng=cz&par_3=483"
@@ -391,6 +461,8 @@
     "jmeno": "Martin Půta",
     "jmeno_s_tituly": "Martin Půta",
     "strana": "SLK",
+    "pohlavi": "M",
+    "pohlavi_zdroj": "senat.cz",
     "email": null,
     "web": null,
     "profile_url": "https://www.senat.cz/senatori/index.php?lng=cz&par_3=490"
@@ -402,6 +474,8 @@
     "jmeno": "Tomáš Czernin",
     "jmeno_s_tituly": "Ing. Tomáš Czernin",
     "strana": "TOP 09",
+    "pohlavi": "M",
+    "pohlavi_zdroj": "senat.cz",
     "email": "czernint@senat.cz",
     "web": "http://www.tomasczernin.cz",
     "profile_url": "https://www.senat.cz/senatori/index.php?lng=cz&par_3=301"
@@ -413,6 +487,8 @@
     "jmeno": "Ondřej Lochman",
     "jmeno_s_tituly": "Mgr. Ondřej Lochman, Ph.D.",
     "strana": "STAN",
+    "pohlavi": "M",
+    "pohlavi_zdroj": "senat.cz",
     "email": "lochmano@senat.cz",
     "web": "https://www.ondrejlochman.cz",
     "profile_url": "https://www.senat.cz/senatori/index.php?lng=cz&par_3=470"
@@ -424,6 +500,8 @@
     "jmeno": "Jan Sobotka",
     "jmeno_s_tituly": "Ing. Jan Sobotka, MBA",
     "strana": "BEZPP",
+    "pohlavi": "M",
+    "pohlavi_zdroj": "senat.cz",
     "email": "sobotkaj@senat.cz",
     "web": "http://www.jansobotka.cz",
     "profile_url": "https://www.senat.cz/senatori/index.php?lng=cz&par_3=311"
@@ -435,6 +513,8 @@
     "jmeno": "Bohuslav Procházka",
     "jmeno_s_tituly": "MUDr. Bohuslav Procházka",
     "strana": "KDU-ČSL",
+    "pohlavi": "M",
+    "pohlavi_zdroj": "senat.cz",
     "email": "prochazkab@senat.cz",
     "web": null,
     "profile_url": "https://www.senat.cz/senatori/index.php?lng=cz&par_3=365"
@@ -446,6 +526,8 @@
     "jmeno": "Zdeněk Hraba",
     "jmeno_s_tituly": "JUDr. Ing. Zdeněk Hraba, Ph.D.",
     "strana": "BEZPP",
+    "pohlavi": "M",
+    "pohlavi_zdroj": "senat.cz",
     "email": "hrabaz@senat.cz",
     "web": "http://www.zdenekhraba.cz",
     "profile_url": "https://www.senat.cz/senatori/index.php?lng=cz&par_3=324"
@@ -457,6 +539,8 @@
     "jmeno": "Michael Kašpar",
     "jmeno_s_tituly": "Mgr. Michael Kašpar",
     "strana": "STAN",
+    "pohlavi": "M",
+    "pohlavi_zdroj": "senat.cz",
     "email": null,
     "web": null,
     "profile_url": "https://www.senat.cz/senatori/index.php?lng=cz&par_3=491"
@@ -468,6 +552,8 @@
     "jmeno": "Miluše Horská",
     "jmeno_s_tituly": "Mgr. Miluše Horská",
     "strana": "BEZPP",
+    "pohlavi": "Z",
+    "pohlavi_zdroj": "senat.cz",
     "email": "horskam@senat.cz",
     "web": "http://www.milusehorska.cz",
     "profile_url": "https://www.senat.cz/senatori/index.php?lng=cz&par_3=240"
@@ -479,6 +565,8 @@
     "jmeno": "Jan Tecl",
     "jmeno_s_tituly": "Mgr. Jan Tecl, MBA",
     "strana": "ODS",
+    "pohlavi": "M",
+    "pohlavi_zdroj": "senat.cz",
     "email": "teclj@senat.cz",
     "web": "https://www.jantecl.cz/",
     "profile_url": "https://www.senat.cz/senatori/index.php?lng=cz&par_3=325"
@@ -490,6 +578,8 @@
     "jmeno": "Zuzana Ceralová Petrofová",
     "jmeno_s_tituly": "Mgr. Zuzana Ceralová Petrofová",
     "strana": "BEZPP",
+    "pohlavi": "Z",
+    "pohlavi_zdroj": "senat.cz",
     "email": null,
     "web": null,
     "profile_url": "https://www.senat.cz/senatori/index.php?lng=cz&par_3=492"
@@ -501,6 +591,8 @@
     "jmeno": "Petr Fiala",
     "jmeno_s_tituly": "Petr Fiala",
     "strana": "MY",
+    "pohlavi": "M",
+    "pohlavi_zdroj": "senat.cz",
     "email": null,
     "web": "https://petrfialaletohrad.cz",
     "profile_url": "https://www.senat.cz/senatori/index.php?lng=cz&par_3=355"
@@ -512,6 +604,8 @@
     "jmeno": "Martin Červíček",
     "jmeno_s_tituly": "Mgr. Martin Červíček, brig. gen. v.v.",
     "strana": "ODS",
+    "pohlavi": "M",
+    "pohlavi_zdroj": "senat.cz",
     "email": "cervicekm@senat.cz",
     "web": "https://www.martincervicek.cz",
     "profile_url": "https://www.senat.cz/senatori/index.php?lng=cz&par_3=326"
@@ -523,6 +617,8 @@
     "jmeno": "Jan Grulich",
     "jmeno_s_tituly": "Mgr. Jan Grulich",
     "strana": "TOP 09",
+    "pohlavi": "M",
+    "pohlavi_zdroj": "senat.cz",
     "email": "grulichj@senat.cz",
     "web": "https://grulich.cz",
     "profile_url": "https://www.senat.cz/senatori/index.php?lng=cz&par_3=346"
@@ -534,6 +630,8 @@
     "jmeno": "Jaromíra Vítková",
     "jmeno_s_tituly": "Ing. Jaromíra Vítková",
     "strana": "KDU-ČSL",
+    "pohlavi": "Z",
+    "pohlavi_zdroj": "senat.cz",
     "email": "vitkovaj@senat.cz",
     "web": "http://www.jaromiravitkova.cz",
     "profile_url": "https://www.senat.cz/senatori/index.php?lng=cz&par_3=302"
@@ -545,6 +643,8 @@
     "jmeno": "David Šimek",
     "jmeno_s_tituly": "Mgr. Bc. David Šimek",
     "strana": "Nestran.",
+    "pohlavi": "M",
+    "pohlavi_zdroj": "senat.cz",
     "email": "simekd@senat.cz",
     "web": null,
     "profile_url": "https://www.senat.cz/senatori/index.php?lng=cz&par_3=474"
@@ -556,6 +656,8 @@
     "jmeno": "Josef Klement",
     "jmeno_s_tituly": "Ing. Josef Klement",
     "strana": "KDU-ČSL",
+    "pohlavi": "M",
+    "pohlavi_zdroj": "senat.cz",
     "email": null,
     "web": null,
     "profile_url": "https://www.senat.cz/senatori/index.php?lng=cz&par_3=347"
@@ -567,6 +669,8 @@
     "jmeno": "Miloš Vystrčil",
     "jmeno_s_tituly": "RNDr. Miloš Vystrčil",
     "strana": "ODS",
+    "pohlavi": "M",
+    "pohlavi_zdroj": "senat.cz",
     "email": "vystrcilm@senat.cz",
     "web": "https://www.vystrcil.cz",
     "profile_url": "https://www.senat.cz/senatori/index.php?lng=cz&par_3=243"
@@ -578,6 +682,8 @@
     "jmeno": "Hana Žáková",
     "jmeno_s_tituly": "Hana Žáková",
     "strana": "BEZPP",
+    "pohlavi": "Z",
+    "pohlavi_zdroj": "senat.cz",
     "email": "zakovah@senat.cz",
     "web": "https://www.hanazakova.cz/",
     "profile_url": "https://www.senat.cz/senatori/index.php?lng=cz&par_3=328"
@@ -589,6 +695,8 @@
     "jmeno": "Tomáš Třetina",
     "jmeno_s_tituly": "Mgr. Tomáš Třetina",
     "strana": "TOP 09",
+    "pohlavi": "M",
+    "pohlavi_zdroj": "senat.cz",
     "email": "tretinat@senat.cz",
     "web": "https://tomastretina.cz",
     "profile_url": "https://www.senat.cz/senatori/index.php?lng=cz&par_3=348"
@@ -600,6 +708,8 @@
     "jmeno": "Tomáš Töpfer",
     "jmeno_s_tituly": "doc. MgA. Tomáš Töpfer",
     "strana": "BEZPP",
+    "pohlavi": "M",
+    "pohlavi_zdroj": "senat.cz",
     "email": "topfert@senat.cz",
     "web": null,
     "profile_url": "https://www.senat.cz/senatori/index.php?lng=cz&par_3=194"
@@ -611,6 +721,8 @@
     "jmeno": "Róbert Šlachta",
     "jmeno_s_tituly": "Mgr. Róbert Šlachta",
     "strana": "Přísaha",
+    "pohlavi": "M",
+    "pohlavi_zdroj": "senat.cz",
     "email": "slachtar@senat.cz",
     "web": null,
     "profile_url": "https://www.senat.cz/senatori/index.php?lng=cz&par_3=477"
@@ -622,6 +734,8 @@
     "jmeno": "Jan Grolich",
     "jmeno_s_tituly": "Mgr. Jan Grolich",
     "strana": "KDU-ČSL",
+    "pohlavi": "M",
+    "pohlavi_zdroj": "senat.cz",
     "email": "grolichj@senat.cz",
     "web": null,
     "profile_url": "https://www.senat.cz/senatori/index.php?lng=cz&par_3=484"
@@ -633,6 +747,8 @@
     "jmeno": "Jiří Dušek",
     "jmeno_s_tituly": "Mgr. Jiří Dušek, Ph.D.",
     "strana": "BEZPP",
+    "pohlavi": "M",
+    "pohlavi_zdroj": "senat.cz",
     "email": "dusekj@senat.cz",
     "web": "https://www.brnojemujvesmir.cz",
     "profile_url": "https://www.senat.cz/senatori/index.php?lng=cz&par_3=303"
@@ -644,6 +760,8 @@
     "jmeno": "Břetislav Rychlík",
     "jmeno_s_tituly": "doc. Břetislav Rychlík",
     "strana": "BEZPP",
+    "pohlavi": "M",
+    "pohlavi_zdroj": "senat.cz",
     "email": "rychlikb@senat.cz",
     "web": "https://www.rychlikdosenatu.cz",
     "profile_url": "https://www.senat.cz/senatori/index.php?lng=cz&par_3=478"
@@ -655,6 +773,8 @@
     "jmeno": "Zdeněk Papoušek",
     "jmeno_s_tituly": "PhDr. Zdeněk Papoušek",
     "strana": "BEZPP",
+    "pohlavi": "M",
+    "pohlavi_zdroj": "senat.cz",
     "email": "papousekz@senat.cz",
     "web": "https://www.zdenaldosenatu.cz/",
     "profile_url": "https://www.senat.cz/senatori/index.php?lng=cz&par_3=288"
@@ -666,6 +786,8 @@
     "jmeno": "Lumír Kantor",
     "jmeno_s_tituly": "MUDr. Lumír Kantor, Ph.D.",
     "strana": "KDU-ČSL",
+    "pohlavi": "M",
+    "pohlavi_zdroj": "senat.cz",
     "email": "kantorl@senat.cz",
     "web": "http://lumir-kantor.cz",
     "profile_url": "https://www.senat.cz/senatori/index.php?lng=cz&par_3=304"
@@ -677,6 +799,8 @@
     "jmeno": "František Jura",
     "jmeno_s_tituly": "Mgr. František Jura, MBA, LL.M.",
     "strana": "ANO 2011",
+    "pohlavi": "M",
+    "pohlavi_zdroj": "senat.cz",
     "email": "juraf@senat.cz",
     "web": "https://frantisekjura.cz",
     "profile_url": "https://www.senat.cz/senatori/index.php?lng=cz&par_3=479"
@@ -688,6 +812,8 @@
     "jmeno": "Jakub Navařík",
     "jmeno_s_tituly": "Mgr. Ph.D Jakub Navařík",
     "strana": "ODS",
+    "pohlavi": "M",
+    "pohlavi_zdroj": "senat.cz",
     "email": null,
     "web": null,
     "profile_url": "https://www.senat.cz/senatori/index.php?lng=cz&par_3=493"
@@ -699,6 +825,8 @@
     "jmeno": "Ladislav Václavec",
     "jmeno_s_tituly": "MUDr. Ladislav Václavec",
     "strana": "ANO 2011",
+    "pohlavi": "M",
+    "pohlavi_zdroj": "senat.cz",
     "email": "vaclavecl@senat.cz",
     "web": "http://www.ladislav-vaclavec.cz",
     "profile_url": "https://www.senat.cz/senatori/index.php?lng=cz&par_3=305"
@@ -710,6 +838,8 @@
     "jmeno": "Stanislav Balík",
     "jmeno_s_tituly": "prof. PhDr. Stanislav Balík, Ph.D.",
     "strana": "BEZPP",
+    "pohlavi": "M",
+    "pohlavi_zdroj": "senat.cz",
     "email": "baliks@senat.cz",
     "web": "https://www.standabalik.cz/",
     "profile_url": "https://www.senat.cz/senatori/index.php?lng=cz&par_3=480"
@@ -721,6 +851,8 @@
     "jmeno": "Marek Ošťádal",
     "jmeno_s_tituly": "Marek Ošťádal",
     "strana": "24/7",
+    "pohlavi": "M",
+    "pohlavi_zdroj": "senat.cz",
     "email": null,
     "web": null,
     "profile_url": "https://www.senat.cz/senatori/index.php?lng=cz&par_3=351"
@@ -732,6 +864,8 @@
     "jmeno": "Ivana Váňová",
     "jmeno_s_tituly": "Ivana Váňová, MBA",
     "strana": "KDU-ČSL",
+    "pohlavi": "Z",
+    "pohlavi_zdroj": "senat.cz",
     "email": "vanovai@senat.cz",
     "web": "http://www.ivanavanova.cz",
     "profile_url": "https://www.senat.cz/senatori/index.php?lng=cz&par_3=366"
@@ -743,6 +877,8 @@
     "jmeno": "Tomáš Navrátil",
     "jmeno_s_tituly": "Ing. Tomáš Navrátil",
     "strana": "ANO 2011",
+    "pohlavi": "M",
+    "pohlavi_zdroj": "senat.cz",
     "email": "navratilt@senat.cz",
     "web": "http://www.tomasnavratil.eu",
     "profile_url": "https://www.senat.cz/senatori/index.php?lng=cz&par_3=481"
@@ -754,6 +890,8 @@
     "jmeno": "Petr Korč",
     "jmeno_s_tituly": "Petr Korč",
     "strana": "NMFM",
+    "pohlavi": "M",
+    "pohlavi_zdroj": "senat.cz",
     "email": null,
     "web": null,
     "profile_url": "https://www.senat.cz/senatori/index.php?lng=cz&par_3=495"
@@ -765,6 +903,8 @@
     "jmeno": "Zdeněk Nytra",
     "jmeno_s_tituly": "Ing. Zdeněk Nytra",
     "strana": "ODS",
+    "pohlavi": "M",
+    "pohlavi_zdroj": "senat.cz",
     "email": "nytraz@senat.cz",
     "web": "https://senatornytra.cz",
     "profile_url": "https://www.senat.cz/senatori/index.php?lng=cz&par_3=307"
@@ -776,6 +916,8 @@
     "jmeno": "Martin Bednář",
     "jmeno_s_tituly": "Bc. Martin Bednář, MBA",
     "strana": "ANO 2011",
+    "pohlavi": "M",
+    "pohlavi_zdroj": "senat.cz",
     "email": null,
     "web": "https://senatorbednar.cz",
     "profile_url": "https://www.senat.cz/senatori/index.php?lng=cz&par_3=371"
@@ -787,6 +929,8 @@
     "jmeno": "Ondřej Šimetka",
     "jmeno_s_tituly": "doc. MUDr. Ondřej Šimetka, Ph.D.",
     "strana": "BEZPP",
+    "pohlavi": "M",
+    "pohlavi_zdroj": "senat.cz",
     "email": null,
     "web": null,
     "profile_url": "https://www.senat.cz/senatori/index.php?lng=cz&par_3=353"
@@ -798,6 +942,8 @@
     "jmeno": "Zdeněk Matušek",
     "jmeno_s_tituly": "MUDr. Mgr. Zdeněk Matušek, MBA",
     "strana": "BEZPP",
+    "pohlavi": "M",
+    "pohlavi_zdroj": "senat.cz",
     "email": "matusekz@senat.cz",
     "web": "https://www.zdenekmatusek.cz",
     "profile_url": "https://www.senat.cz/senatori/index.php?lng=cz&par_3=367"
@@ -809,6 +955,8 @@
     "jmeno": "Petr Vícha",
     "jmeno_s_tituly": "Ing. Petr Vícha",
     "strana": "SOCDEM",
+    "pohlavi": "M",
+    "pohlavi_zdroj": "senat.cz",
     "email": "vichap@senat.cz",
     "web": "http://www.petr-vicha.cz",
     "profile_url": "https://www.senat.cz/senatori/index.php?lng=cz&par_3=206"
@@ -820,6 +968,8 @@
     "jmeno": "Petr Kazík",
     "jmeno_s_tituly": "Ing. Petr Kazík, Ph.D.",
     "strana": "OK",
+    "pohlavi": "M",
+    "pohlavi_zdroj": "senat.cz",
     "email": null,
     "web": null,
     "profile_url": "https://www.senat.cz/senatori/index.php?lng=cz&par_3=496"
@@ -831,6 +981,8 @@
     "jmeno": "Jana Zwyrtek Hamplová",
     "jmeno_s_tituly": "Mgr. Jana Zwyrtek Hamplová",
     "strana": "BEZPP",
+    "pohlavi": "Z",
+    "pohlavi_zdroj": "senat.cz",
     "email": "hamplovaj@senat.cz",
     "web": null,
     "profile_url": "https://www.senat.cz/senatori/index.php?lng=cz&par_3=368"
@@ -842,6 +994,8 @@
     "jmeno": "Jiří Čunek",
     "jmeno_s_tituly": "Jiří Čunek",
     "strana": "KDU-ČSL",
+    "pohlavi": "M",
+    "pohlavi_zdroj": "senat.cz",
     "email": "cunekj@senat.cz",
     "web": null,
     "profile_url": "https://www.senat.cz/senatori/index.php?lng=cz&par_3=207"
@@ -853,6 +1007,8 @@
     "jmeno": "Tomáš Goláň",
     "jmeno_s_tituly": "Ing. Tomáš Goláň",
     "strana": "ODS",
+    "pohlavi": "M",
+    "pohlavi_zdroj": "senat.cz",
     "email": "golant@senat.cz",
     "web": "https://www.tomasgolan.cz",
     "profile_url": "https://www.senat.cz/senatori/index.php?lng=cz&par_3=312"
@@ -864,6 +1020,8 @@
     "jmeno": "Eva Rajchmanová",
     "jmeno_s_tituly": "Ing. Eva Rajchmanová",
     "strana": "KDU-ČSL",
+    "pohlavi": "Z",
+    "pohlavi_zdroj": "senat.cz",
     "email": "rajchmanovae@senat.cz",
     "web": "https://evarajchmanova.cz",
     "profile_url": "https://www.senat.cz/senatori/index.php?lng=cz&par_3=369"
@@ -875,6 +1033,8 @@
     "jmeno": "Oldřich Hájek",
     "jmeno_s_tituly": "doc. RNDr. PhDr. Oldřich Hájek, Ph.D., MBA",
     "strana": "ANO 2011",
+    "pohlavi": "M",
+    "pohlavi_zdroj": "senat.cz",
     "email": "hajeko@senat.cz",
     "web": "https://www.senator24.cz",
     "profile_url": "https://www.senat.cz/senatori/index.php?lng=cz&par_3=482"
@@ -886,6 +1046,8 @@
     "jmeno": "Josef Bazala",
     "jmeno_s_tituly": "Josef Bazala",
     "strana": "KDU-ČSL",
+    "pohlavi": "M",
+    "pohlavi_zdroj": "senat.cz",
     "email": "bazalaj@senat.cz",
     "web": null,
     "profile_url": "https://www.senat.cz/senatori/index.php?lng=cz&par_3=354"

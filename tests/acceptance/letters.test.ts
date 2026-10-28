@@ -3,7 +3,7 @@
  * adresáta, determinismus podle seedu, varianty mění formulace, nikdy fakta, patička.
  */
 import { describe, expect, it } from "vitest";
-import { ADDRESSEE_TYPES, composeLetter, type AddresseeType, type Delka, type Forma } from "@/lib/letters";
+import { ADDRESSEE_TYPES, AMBIGUOUS_GENDER_RE, PERSON_TYPES, composeLetter, textForms, type AddresseeType, type Delka, type Forma, type LetterText } from "@/lib/letters";
 import { loadLettersContent } from "@/lib/letters/load";
 import { listYaml, readYaml } from "./helpers/content";
 
@@ -14,7 +14,7 @@ interface V {
   id: string;
   forma: number[];
   delka: number[];
-  text: string;
+  text: LetterText;
 }
 const raw = Object.fromEntries(
   listYaml("letters")
@@ -75,7 +75,7 @@ describe("§9.2 varianty a kombinace", () => {
     });
 
     it(`${type}: varianty neobsahují čísla ani částky (mění formulace, ne fakta)`, () => {
-      for (const p of POS) for (const v of y.positions[p]!) expect(v.text, `${p}/${v.id}`).not.toMatch(/\d/);
+      for (const p of POS) for (const v of y.positions[p]!) for (const t of textForms(v.text)) expect(t, `${p}/${v.id}`).not.toMatch(/\d/);
     });
   }
 });
@@ -119,5 +119,23 @@ describe("§9.2 skladba dopisu", () => {
     expect(on.parts.some((p) => p.kind === "projednavani")).toBe(true);
     expect(off.parts.some((p) => p.kind === "projednavani")).toBe(false);
     expect(on.text).toContain("Moje vlastní věta.");
+  });
+});
+
+describe("§9.2 dopis konkrétnímu adresátovi (vlastník 2026-10-28)", () => {
+  it("osoba: oslovení podle pohlaví z adresáře, žádné „paní …, pane …“ ani „…/a“", () => {
+    for (const type of PERSON_TYPES)
+      for (const gender of ["M", "Z"] as const)
+        for (let seed = 0; seed < 15; seed++) {
+          const l = letter(type, seed, ((seed % 3) + 1) as Forma, 2, { gender });
+          expect(l.salutation).toMatch(gender === "Z" ? /paní/ : /pane/);
+          expect(l.text).not.toMatch(AMBIGUOUS_GENDER_RE);
+        }
+  });
+  it("neznámé pohlaví: neutrální „Vážená paní, vážený pane,“", () => {
+    expect(letter("senator", 1, 2, 2, { gender: null }).salutation).toBe("Vážená paní, vážený pane,");
+  });
+  it("zastupitelstvo: „Vážené zastupitelky, vážení zastupitelé“", () => {
+    for (const type of ["kraj", "obec"] as const) expect(letter(type, 3).salutation).toMatch(/vážené zastupitelky, vážení zastupitelé/i);
   });
 });

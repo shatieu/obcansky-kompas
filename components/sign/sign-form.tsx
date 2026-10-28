@@ -1,7 +1,10 @@
 "use client";
 
+import { ShortIdBadge } from "@/components/lookup/short-id-badge";
+import type { ShortIdTexts } from "@/lib/sign/lookup-texts";
 import { useMemo, useState, type FormEvent, type ReactNode } from "react";
 import { STORAGE_KEY, loadCompassState } from "@/lib/compass-storage";
+import { StatementText } from "@/components/ui/statement-text";
 import { composeStatement, isAnswered, QUESTION_IDS } from "@/lib/compose";
 import { CONTENT_VERSION } from "@/lib/content";
 import type { SignTexts } from "@/lib/sign/texts";
@@ -15,7 +18,7 @@ import { Turnstile } from "./turnstile";
 import { useStored } from "./use-stored";
 
 type Mode = "open" | "static" | "read_only";
-type Result = { kind: "poc"; url: string } | { kind: "sent" } | null;
+type Result = { kind: "poc"; url: string; shortId: string | null } | { kind: "sent" } | null;
 
 const relative = (url: string) => {
   try {
@@ -32,7 +35,7 @@ const relative = (url: string) => {
  * S rozpracovanou úpravou (token z e-mailu v sessionStorage) místo formuláře „Uložit změny“.
  * Rozvržení podle obrazovky „Podpis“: prohlášení na ploše (k-letter), od 1024 px dva sloupce 688 + 448.
  */
-export function SignForm({ t, mode, siteKey }: { t: SignTexts["sign"]; mode: Mode; siteKey: string }) {
+export function SignForm({ t, mode, siteKey, shortIdTexts }: { t: SignTexts["sign"]; mode: Mode; siteKey: string; shortIdTexts?: ShortIdTexts }) {
   const raw = useStored("local", STORAGE_KEY);
   const editRaw = useStored("session", EDIT_SESSION_KEY);
   const state = useMemo(() => (raw === undefined ? null : loadCompassState()), [raw]);
@@ -77,7 +80,7 @@ export function SignForm({ t, mode, siteKey }: { t: SignTexts["sign"]; mode: Mod
         <h2 id="muj-text" className="k-letter__meta">
           {t.statement_title}
         </h2>
-        <p className="mt-1">{statement.text}</p>
+        <StatementText statement={statement} className="mt-1" />
       </div>
       <ButtonLink href="/kompas#text" variant="secondary" className="mt-1">
         {t.edit_answers_button}
@@ -155,6 +158,7 @@ export function SignForm({ t, mode, siteKey }: { t: SignTexts["sign"]; mode: Mod
             <SectionTitle>{t.sent_title}</SectionTitle>
             <p>{t.poc_lead}</p>
             <p className="k-cap break-all">{result.url}</p>
+            {result.shortId && shortIdTexts && <ShortIdBadge shortId={result.shortId} texts={shortIdTexts} />}
             <StickyBar>
               <ButtonLink href={relative(result.url)} block iconEnd="arrow-right">
                 {t.poc_verify_button}
@@ -197,7 +201,11 @@ export function SignForm({ t, mode, siteKey }: { t: SignTexts["sign"]; mode: Mod
     });
     setBusy(false);
     if (r && r.status < 300) {
-      setResult(typeof r.json.verifyUrl === "string" ? { kind: "poc", url: r.json.verifyUrl } : { kind: "sent" });
+      setResult(
+        typeof r.json.verifyUrl === "string"
+          ? { kind: "poc", url: r.json.verifyUrl, shortId: typeof r.json.shortId === "string" ? r.json.shortId : null }
+          : { kind: "sent" },
+      );
       return;
     }
     // Turnstile token je jednorázový – po každém pokusu nový.

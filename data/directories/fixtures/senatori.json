@@ -6,6 +6,8 @@
     "jmeno": "Jan Pirk",
     "jmeno_s_tituly": "prof. MUDr. Jan Pirk, Dr.Sc.",
     "strana": "BEZPP",
+    "pohlavi": "M",
+    "pohlavi_zdroj": "senat.cz",
     "email": "pirkj@senat.cz",
     "web": "https://janpirk.cz",
     "profile_url": "https://www.senat.cz/senatori/index.php?lng=cz&par_3=361"
@@ -17,6 +19,8 @@
     "jmeno": "Miroslav Bárta",
     "jmeno_s_tituly": "prof. Mgr. Dr. Miroslav Bárta",
     "strana": "BEZPP",
+    "pohlavi": "M",
+    "pohlavi_zdroj": "senat.cz",
     "email": "bartam@senat.cz",
     "web": "https://www.miroslavbarta.cz/",
     "profile_url": "https://www.senat.cz/senatori/index.php?lng=cz&par_3=466"
@@ -28,6 +32,8 @@
     "jmeno": "Jiří Padevět",
     "jmeno_s_tituly": "PhDr. Jiří Padevět",
     "strana": "BEZPP",
+    "pohlavi": "M",
+    "pohlavi_zdroj": "senat.cz",
     "email": null,
     "web": null,
     "profile_url": "https://www.senat.cz/senatori/index.php?lng=cz&par_3=488"
@@ -39,6 +45,8 @@
     "jmeno": "Břetislav Rychlík",
     "jmeno_s_tituly": "doc. Břetislav Rychlík",
     "strana": "BEZPP",
+    "pohlavi": "M",
+    "pohlavi_zdroj": "senat.cz",
     "email": "rychlikb@senat.cz",
     "web": "https://www.rychlikdosenatu.cz",
     "profile_url": "https://www.senat.cz/senatori/index.php?lng=cz&par_3=478"
@@ -50,6 +58,8 @@
     "jmeno": "Zdeněk Nytra",
     "jmeno_s_tituly": "Ing. Zdeněk Nytra",
     "strana": "ODS",
+    "pohlavi": "M",
+    "pohlavi_zdroj": "senat.cz",
     "email": "nytraz@senat.cz",
     "web": "https://senatornytra.cz",
     "profile_url": "https://www.senat.cz/senatori/index.php?lng=cz&par_3=307"

@@ -8,8 +8,8 @@
 //
 // Plain Node >= 22 ESM, built-ins only (fetch, zlib). No npm dependencies.
 // Every contact value written comes from a fetched source; when a source fails the
-// script tries one alternative, then falls back to the fixture file and records that
-// in meta.json (status "fixture").
+// script tries one alternative, then keeps the previous full import (status "kept") or,
+// without one, falls back to the fixture file (status "fixture"), recorded in meta.json.
 
 import { mkdir, readFile, writeFile, copyFile, stat } from 'node:fs/promises';
 import { existsSync } from 'node:fs';
@@ -43,6 +43,10 @@ const SRC = {
   aresSearch: 'https://ares.gov.cz/ekonomicke-subjekty-v-be/rest/ekonomicke-subjekty/vyhledat',
   mkPodatelna: 'https://www.mk.gov.cz/podatelna-ministerstva-kultury-cs-2816',
   hradKontakty: 'https://www.hrad.cz/cs/kancelar-prezidenta-republiky/kontakty',
+  hradPrezident: 'https://www.hrad.cz/cs/prezident-cr/soucasny-prezident-cr',
+  vladaClenove: 'https://vlada.gov.cz/cz/vlada/',
+  wikidataApi: 'https://www.wikidata.org/w/api.php',
+  wikidataCz: 'https://www.wikidata.org/wiki/Q213',
 };
 
 // The 14 kraje: NUTS3 code, ČSÚ/RÚIAN VÚSC code. These are classification codes, not contact data.
@@ -210,6 +214,51 @@ const fmtZip = (z) => {
   return d.length === 5 ? `${d.slice(0, 3)} ${d.slice(3)}` : String(z || '');
 };
 const EMAIL_RE = /^[\w.+-]+@[\w-]+(\.[\w-]+)+$/;
+
+// ---------------------------------------------------------------- gender (pohlaví) of a person
+
+/**
+ * PSP osoby.unl `pohlavi`: "M" / "Ž" (some old rows "Z" or ISO-8859-2 "®" = Ž) -> "M" | "Z" | null.
+ */
+const pspPohlavi = (v) => (v === 'M' ? 'M' : ['Ž', 'Z', '®'].includes(v) ? 'Z' : null);
+
+// Female first names (Czech + common foreign). Only used when no source states the gender.
+const FEMALE_FIRST = new Set(
+  (
+    'Adéla Adriana Agáta Alena Alexandra Alice Alžběta Amálie Anastázie Andrea Aneta Anežka Anna Antonie Barbora Beáta Bedřiška ' +
+    'Blanka Bohdana Bohumila Bohuslava Božena Dagmar Dana Daniela Darina Denisa Dita Dominika Dorota Drahomíra Eliška Ema Emílie ' +
+    'Erika Eva Gabriela Hana Helena Ilona Irena Iva Ivana Iveta Jana Jarmila Jaromíra Jaroslava Jindřiška Jiřina Jitka Johana ' +
+    'Jolana Josefa Judita Julie Kamila Karolína Kateřina Klára Kristina Kristýna Květa Květoslava Lada Ladislava ' +
+    'Lenka Lena Libuše Lucie Ludmila Lýdie Magdalena Marcela Marie Markéta Marta Martina Michaela Milada Milena Miloslava Miluše ' +
+    'Miroslava Monika Naděžda Natálie Nikola Olga Pavla Pavlína Petra Radka Radmila Renata Romana Růžena Sabina Simona Silvie ' +
+    'Soňa Stanislava Světlana Šárka Taťána Tereza Valerie Vanda Vendula Věra Veronika Viktorie Vladimíra Vlasta Zdenka Zdeňka ' +
+    'Zita Zora Zuzana Žaneta Žofie'
+  ).split(' '),
+);
+
+/** Gender derived from the name (no source states it): -ová/-á surname or a known female first name. */
+function derivePohlavi(fullName) {
+  const parts = String(fullName || '').trim().split(/\s+/).filter(Boolean);
+  if (!parts.length) return null;
+  const first = parts[0];
+  const last = parts[parts.length - 1];
+  const female = FEMALE_FIRST.has(first) || /(ová|á)$/i.test(last);
+  return female ? 'Z' : 'M';
+}
+
+/** senat.cz profile: membership roles in <dl> (člen/členka, předseda/předsedkyně …) -> "M" | "Z" | null. */
+function senatPohlaviFromRoles(html) {
+  const roles = [...html.matchAll(/<dt>\s*([^<]{2,40}?)\s*<\/dt>/g)].map((m) => stripTags(m[1]).toLowerCase());
+  let z = 0;
+  let m = 0;
+  for (const r of roles) {
+    if (/^(členka|(místo)?předsedkyně|ověřovatelka|zpravodajka)$/.test(r)) z++;
+    else if (/^(člen|(místo)?předseda|ověřovatel|zpravodaj)$/.test(r)) m++;
+  }
+  if (z && !m) return 'Z';
+  if (m && !z) return 'M';
+  return null;
+}
 
 async function writeJson(name, data, { minify = false } = {}) {
   const file = path.join(OUT, name);
@@ -443,6 +492,8 @@ async function importPoslanci() {
       prijmeni: os[2],
       titul_pred: os[1] || null,
       titul_za: os[4] || null,
+      pohlavi: pspPohlavi(os[6]) ?? derivePohlavi(`${os[3]} ${os[2]}`),
+      ...(pspPohlavi(os[6]) ? {} : { pohlavi_zdroj: 'odvozeno' }),
       kraj_code: kraj?.code || null,
       kraj_nazev: organ.get(p[2])?.[4] || null,
       klub: club ? club[4] : null,
@@ -474,7 +525,11 @@ async function importPoslanci() {
   return {
     data: { term: { id: +termId, code: current[3], from: current[6] }, poslanci: rows },
     count: rows.length,
-    extra: { with_email: rows.filter((r) => r.email).length, emails_from_profile_pages: fromProfile },
+    extra: {
+      with_email: rows.filter((r) => r.email).length,
+      emails_from_profile_pages: fromProfile,
+      pohlavi: { M: rows.filter((r) => r.pohlavi === 'M').length, Z: rows.filter((r) => r.pohlavi === 'Z').length, odvozeno: rows.filter((r) => r.pohlavi_zdroj).length },
+    },
     sources: [SRC.pspZip, 'https://www.psp.cz/sqw/detail.sqw?id=<id>'],
   };
 }
@@ -496,6 +551,8 @@ async function importSenatori() {
       jmeno: stripTags(m[4]),
       jmeno_s_tituly: null,
       strana: stripTags(m[6]) || null,
+      pohlavi: null,
+      pohlavi_zdroj: null,
       email: null,
       web: web && /^https?:\/\//.test(web) ? web : null,
       profile_url: SRC.senatDetail(m[3]),
@@ -509,8 +566,19 @@ async function importSenatori() {
       if (em && EMAIL_RE.test(em[1].trim())) r.email = em[1].trim();
       const h1 = [...d.matchAll(/<h1[^>]*>([\s\S]*?)<\/h1>/g)].map((x) => stripTags(x[1])).find((t) => t && !/Senát Parlamentu/.test(t));
       if (h1) r.jmeno_s_tituly = h1;
+      const g = senatPohlaviFromRoles(d);
+      if (g) {
+        r.pohlavi = g;
+        r.pohlavi_zdroj = 'senat.cz';
+      }
     } catch (e) {
       warn(`senatori: detail fetch failed for ${r.id}: ${e.message}`);
+    }
+    if (!r.pohlavi) {
+      r.pohlavi = derivePohlavi(r.jmeno);
+      r.pohlavi_zdroj = 'odvozeno';
+    } else if (derivePohlavi(r.jmeno) !== r.pohlavi) {
+      warn(`senatori: ${r.jmeno} – senat.cz roles say ${r.pohlavi}, name heuristic disagrees (kept senat.cz)`);
     }
   });
   rows.sort((a, b) => a.obvod_cislo - b.obvod_cislo);
@@ -519,7 +587,10 @@ async function importSenatori() {
   return {
     data: rows,
     count: rows.length,
-    extra: { with_email: rows.filter((r) => r.email).length },
+    extra: {
+      with_email: rows.filter((r) => r.email).length,
+      pohlavi: { M: rows.filter((r) => r.pohlavi === 'M').length, Z: rows.filter((r) => r.pohlavi === 'Z').length, odvozeno: rows.filter((r) => r.pohlavi_zdroj === 'odvozeno').length },
+    },
     sources: [SRC.senatList, 'https://www.senat.cz/senatori/index.php?lng=cz&par_3=<id>'],
   };
 }
@@ -766,6 +837,74 @@ async function importObce() {
 
 // ---------------------------------------------------------------- static (ministr kultury, prezident)
 
+/** "Oto Klempíř" -> { jmeno, prijmeni } (first token = first name, rest = surname). */
+const splitName = (full) => {
+  const parts = String(full).trim().split(/\s+/);
+  return { jmeno: parts[0], prijmeni: parts.slice(1).join(' ') };
+};
+
+/**
+ * Current minister of culture from the list of government members on vlada.gov.cz
+ * (name + office title; the title "ministr" / "ministryně" gives the gender).
+ */
+async function ministrKulturyOsoba() {
+  const html = stripComments(await fetchText(SRC.vladaClenove));
+  for (const m of html.matchAll(/<h3>\s*<a href="([^"]+)"[^>]*>([\s\S]*?)<\/a>\s*<\/h3>\s*<p>([\s\S]*?)<\/p>/g)) {
+    const funkce = stripTags(m[3]).toLowerCase();
+    if (!/^ministr(yně)? kultury$/.test(funkce)) continue;
+    const name = stripTags(m[2]);
+    return {
+      ...splitName(name),
+      titul_pred: null,
+      titul_za: null,
+      pohlavi: funkce.startsWith('ministryně') ? 'Z' : 'M',
+      zdroj: SRC.vladaClenove,
+      zdroj_detail: new URL(m[1], SRC.vladaClenove).toString(),
+      overeno: today,
+    };
+  }
+  throw new Error('vlada.gov.cz: "ministr(yně) kultury" not found in the list of government members');
+}
+
+/**
+ * Current president. hrad.cz answers HTTP 403 to automated requests, so the fallback is
+ * Wikidata (Q213 Czech Republic, P35 head of state with no end date; P21 sex).
+ */
+async function prezidentOsoba(notes) {
+  try {
+    const html = await fetchText(SRC.hradPrezident, 'utf-8', { retries: 0 });
+    // Accept only the real page (not a bot challenge): <h1> = "Prezident(ka) republiky <Jméno Příjmení>".
+    const h1 = [...html.matchAll(/<h1[^>]*>([\s\S]*?)<\/h1>/g)].map((x) => stripTags(x[1]));
+    const m = h1
+      .map((t) => t.match(/^(Prezidentka|Prezident) (?:České )?republiky,? ([A-ZÁČĎÉĚÍŇÓŘŠŤÚŮÝŽ][\p{Ll}]+ [A-ZÁČĎÉĚÍŇÓŘŠŤÚŮÝŽ][\p{Ll}]+)$/u))
+      .find(Boolean);
+    if (m) return { ...splitName(m[2]), titul_pred: null, titul_za: null, pohlavi: m[1] === 'Prezidentka' ? 'Z' : 'M', zdroj: SRC.hradPrezident, overeno: today };
+    notes.push('hrad.cz: stránka nedala jméno prezidenta (ochrana proti robotům); jméno a pohlaví prezidenta z Wikidat');
+  } catch (e) {
+    notes.push(`hrad.cz nelze automaticky stáhnout (${e.message}); jméno a pohlaví prezidenta z Wikidat`);
+  }
+  const api = (q) => fetchJson(`${SRC.wikidataApi}?${new URLSearchParams({ format: 'json', ...q })}`, { cache: false });
+  const claims = (await api({ action: 'wbgetclaims', entity: 'Q213', property: 'P35' })).claims?.P35 ?? [];
+  const current = claims.filter((c) => c.rank !== 'deprecated' && !c.qualifiers?.P582 && c.mainsnak?.datavalue);
+  const pick = current.find((c) => c.rank === 'preferred') ?? current[0];
+  if (!pick) throw new Error('Wikidata: no current head of state (Q213 P35)');
+  const qid = pick.mainsnak.datavalue.value.id;
+  const ent = (await api({ action: 'wbgetentities', ids: qid, props: 'labels|claims', languages: 'cs' })).entities[qid];
+  const sex = ent.claims?.P21?.[0]?.mainsnak?.datavalue?.value?.id;
+  const pohlavi = sex === 'Q6581072' ? 'Z' : sex === 'Q6581097' ? 'M' : null;
+  if (!pohlavi) throw new Error(`Wikidata: ${qid} has no usable sex (P21)`);
+  const since = pick.qualifiers?.P580?.[0]?.datavalue?.value?.time?.slice(1, 11) ?? null;
+  return {
+    ...splitName(ent.labels.cs.value),
+    titul_pred: null,
+    titul_za: null,
+    pohlavi,
+    zdroj: `https://www.wikidata.org/wiki/${qid}`,
+    zdroj_detail: `${SRC.wikidataCz} (P35 hlava státu${since ? `, od ${since}` : ''})`,
+    overeno: today,
+  };
+}
+
 async function importStatic() {
   const boxes = await isds();
   const items = await rpp();
@@ -815,6 +954,12 @@ async function importStatic() {
       rec.notes.push(`mk.gov.cz podatelna page failed: ${e.message}`);
       warn(`static: mk.gov.cz failed: ${e.message}`);
     }
+    try {
+      rec.osoba = await ministrKulturyOsoba();
+    } catch (e) {
+      rec.osoba = PREV_STATIC?.ministr_kultury?.osoba ?? null;
+      warn(`static: minister of culture not imported (${e.message})${rec.osoba ? ' – kept previous value' : ''}`);
+    }
     out.ministr_kultury = rec;
   }
 
@@ -848,9 +993,19 @@ async function importStatic() {
       rec.notes.push(`hrad.cz kontakty nelze automaticky stáhnout (${e.message}); e-mail / webový formulář doplnit ručně z ${SRC.hradKontakty}`);
       warn(`static: hrad.cz failed: ${e.message} (email/web form left null)`);
     }
+    try {
+      rec.osoba = await prezidentOsoba(rec.notes);
+    } catch (e) {
+      rec.osoba = PREV_STATIC?.prezident?.osoba ?? null;
+      warn(`static: president not imported (${e.message})${rec.osoba ? ' – kept previous value' : ''}`);
+    }
     out.prezident = rec;
   }
-  return { data: out, count: Object.keys(out).length, sources: [SRC.isdsOvm, SRC.rppOvm, SRC.mkPodatelna, SRC.hradKontakty] };
+  return {
+    data: out,
+    count: Object.keys(out).length,
+    sources: [SRC.isdsOvm, SRC.rppOvm, SRC.mkPodatelna, SRC.hradKontakty, SRC.vladaClenove, SRC.hradPrezident, SRC.wikidataCz],
+  };
 }
 
 // ---------------------------------------------------------------- fixtures
@@ -885,8 +1040,11 @@ const JOBS = [
   ['static', 'static.json', importStatic, {}],
 ];
 
+let PREV_STATIC = null;
+
 async function main() {
   await mkdir(OUT, { recursive: true });
+  if (existsSync(path.join(OUT, 'static.json'))) PREV_STATIC = JSON.parse(await readFile(path.join(OUT, 'static.json'), 'utf8'));
   const prevMeta = existsSync(path.join(OUT, 'meta.json')) ? JSON.parse(await readFile(path.join(OUT, 'meta.json'), 'utf8')) : null;
   if (prevMeta && ONLY.length) {
     meta.files = prevMeta.files || {};
@@ -911,7 +1069,12 @@ async function main() {
     } catch (e) {
       console.error(`   FAILED: ${e.stack || e.message}`);
       const fx = path.join(FIX, file);
-      if (existsSync(fx)) {
+      const prev = meta.files[file] ?? prevMeta?.files?.[file];
+      if (existsSync(path.join(OUT, file)) && prev?.status === 'ok') {
+        // A previous full import is better than the small fixture: keep it.
+        meta.files[file] = { ...prev, status: 'kept', error: String(e.message) };
+        warn(`${file}: import failed, kept previous data from ${prev.fetched} (${e.message})`);
+      } else if (existsSync(fx)) {
         await copyFile(fx, path.join(OUT, file));
         meta.files[file] = { status: 'fixture', error: String(e.message), fetched: null, bytes: (await stat(fx)).size };
         warn(`${file}: import failed, copied fixture (${e.message})`);

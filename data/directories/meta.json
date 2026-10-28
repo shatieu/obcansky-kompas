@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-10-27T23:47:53.385Z",
+  "generated_at": "2026-10-28T09:06:36.383Z",
   "files": {
     "kraje.json": {
       "status": "ok",
@@ -13,29 +13,39 @@
     },
     "poslanci.json": {
       "status": "ok",
-      "fetched": "2026-10-27",
+      "fetched": "2026-10-28",
       "count": 200,
-      "bytes": 95141,
+      "bytes": 99541,
       "sources": [
         "https://www.psp.cz/eknih/cdrom/opendata/poslanci.zip",
         "https://www.psp.cz/sqw/detail.sqw?id=<id>"
       ],
       "extra": {
         "with_email": 200,
-        "emails_from_profile_pages": 200
+        "emails_from_profile_pages": 200,
+        "pohlavi": {
+          "M": 134,
+          "Z": 66,
+          "odvozeno": 0
+        }
       }
     },
     "senatori.json": {
       "status": "ok",
-      "fetched": "2026-10-27",
+      "fetched": "2026-10-28",
       "count": 81,
-      "bytes": 26152,
+      "bytes": 30445,
       "sources": [
         "https://www.senat.cz/senatori/index.php?lng=cz&par_2=2",
         "https://www.senat.cz/senatori/index.php?lng=cz&par_3=<id>"
       ],
       "extra": {
-        "with_email": 63
+        "with_email": 63,
+        "pohlavi": {
+          "M": 67,
+          "Z": 14,
+          "odvozeno": 2
+        }
       }
     },
     "obce.json": {
@@ -66,26 +76,29 @@
     },
     "static.json": {
       "status": "ok",
-      "fetched": "2026-10-27",
+      "fetched": "2026-10-28",
       "count": 2,
-      "bytes": 1564,
+      "bytes": 2321,
       "sources": [
         "https://www.mojedatovaschranka.cz/sds/datafile?format=xml&service=seznam_ds_ovm",
         "https://rpp-opendata.egon.gov.cz/odrpp/datovasada/ovm.json",
         "https://www.mk.gov.cz/podatelna-ministerstva-kultury-cs-2816",
-        "https://www.hrad.cz/cs/kancelar-prezidenta-republiky/kontakty"
+        "https://www.hrad.cz/cs/kancelar-prezidenta-republiky/kontakty",
+        "https://vlada.gov.cz/cz/vlada/",
+        "https://www.hrad.cz/cs/prezident-cr/soucasny-prezident-cr",
+        "https://www.wikidata.org/wiki/Q213"
       ]
     }
   },
   "sources": {
     "rpp_ovm": {
       "url": "https://rpp-opendata.egon.gov.cz/odrpp/datovasada/ovm.json",
-      "fetched": "2026-10-27",
-      "records": 19564
+      "fetched": "2026-10-28",
+      "records": 19569
     },
     "isds_seznam_ds_ovm": {
       "url": "https://www.mojedatovaschranka.cz/sds/datafile?format=xml&service=seznam_ds_ovm",
-      "fetched": "2026-10-27",
+      "fetched": "2026-10-28",
       "boxes": 19114
     },
     "volby_ps_ciselniky": {
@@ -211,7 +224,6 @@
     }
   },
   "warnings": [
-    "obce: 547395 Praha-Petrovice: volby.gov.cz obvod 17 vs senat.cz 19 – both kept",
     "static: hrad.cz failed: HTTP 403 for https://www.hrad.cz/cs/kancelar-prezidenta-republiky/kontakty (email/web form left null)"
   ]
 }

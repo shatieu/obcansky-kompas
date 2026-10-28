@@ -1,10 +1,17 @@
+import { dangerouslyDeleteByTag } from "@vercel/functions";
 import { revalidateTag } from "next/cache";
 import { META_TAG, personTag, tileOf, tileTag } from "./constants";
 
 /**
- * Zneplatnění cache davu po zápisu (připojení, úprava, nahlášení, odvolání, CLI zásah). Okamžitě
- * (expire 0), aby skrytý text nezůstal v datech. Mimo Next request scope (testy, skripty) tiše nic –
- * CLI proto volá POST /api/demonstrace/revalidate (scripts/demo-cli.ts).
+ * Zneplatnění cache davu po zápisu (připojení, úprava, nahlášení, odvolání, AI verdikt, CLI zásah).
+ * Dvě vrstvy:
+ *  1. Data cache Next (`unstable_cache` s tagy) – `revalidateTag(tag, { expire: 0 })`.
+ *  2. CDN Vercelu – odpovědi route handlerů nesou `Vercel-Cache-Tag`; `revalidateTag` je podle
+ *     dokumentace Next nečistí, proto navíc `dangerouslyDeleteByTag` z `@vercel/functions`
+ *     (okamžité smazání, ne „stale“ – skrytý text se nesmí servírovat ani jednou). Mimo Vercel
+ *     (lokálně, testy) je to no-op.
+ * Mimo Next request scope (testy, skripty) revalidateTag tiše nic – CLI proto volá
+ * POST /api/demonstrace/revalidate (scripts/demo-*.ts).
  */
 export function demoTags(opts: { index?: number; id?: string; meta?: boolean }): string[] {
   const tags: string[] = [];
@@ -14,7 +21,12 @@ export function demoTags(opts: { index?: number; id?: string; meta?: boolean }):
   return tags;
 }
 
-export function revalidateDemoTags(tags: string[]): void {
+export type PurgeFn = (tags: string[]) => Promise<void>;
+
+const vercelPurge: PurgeFn = (tags) => dangerouslyDeleteByTag(tags);
+
+export async function revalidateDemoTags(tags: string[], purge: PurgeFn = vercelPurge): Promise<void> {
+  if (!tags.length) return;
   for (const t of tags) {
     try {
       revalidateTag(t, { expire: 0 });
@@ -22,10 +34,17 @@ export function revalidateDemoTags(tags: string[]): void {
       /* mimo Next request scope */
     }
   }
+  try {
+    await purge(tags);
+  } catch (e) {
+    // Selhání čištění CDN nesmí shodit zápis; záloha je krátká platnost plných dlaždic (5 min).
+    const code = (e as { code?: string })?.code ?? (e as Error)?.name ?? "unknown";
+    console.error(`[demo] cdn purge failed code=${String(code).slice(0, 40)}`);
+  }
 }
 
-export function revalidateDemo(opts: { index?: number; id?: string; meta?: boolean }): void {
-  revalidateDemoTags(demoTags(opts));
+export function revalidateDemo(opts: { index?: number; id?: string; meta?: boolean }): Promise<void> {
+  return revalidateDemoTags(demoTags(opts));
 }
 
 /** Povolené tagy pro revalidační endpoint (jen tagy davu). */

@@ -16,13 +16,16 @@ import { BudgetSlider } from "@/components/ui/budget-slider";
 import { Button, ButtonLink, StickyBar } from "@/components/ui/button";
 import { BottomSheet, Disclosure } from "@/components/ui/disclosure";
 import { Notice } from "@/components/ui/typography";
-import { Demographics as DemographicsStep } from "./demographics";
+import { AnswersLoaderLink } from "@/components/lookup/answers-loader-link";
+import type { LookupTexts } from "@/lib/sign/lookup-texts";
 import { QuestionNav, type NavItem } from "./question-nav";
 import { nextMultiValue } from "./select";
 import { StatementAside, StatementPreview } from "./statement-preview";
 
 /** Přehled odpovědí se načte až při prvním zobrazení (JS první obrazovky ≤ 150 kB). */
 const Summary = lazy(() => import("./summary"));
+/** Demografie (předposlední krok) také líně – šetří JS první obrazovky. */
+const DemographicsStep = lazy(() => import("./demographics").then((m) => ({ default: m.Demographics })));
 
 /** Kroky v pořadí zobrazení (questions.yaml `order`); #hash je id otázky, ne pořadí. */
 const STEP_IDS = [...QUESTION_ORDER, "o-vas", "text"] as const;
@@ -46,10 +49,13 @@ function questionOf(qid: QuestionId): Question {
   return questionsFile.questions.find((q) => q.id === qid)!;
 }
 
-export function Compass() {
+/** `lookup` = texty „Načíst moje odpovědi“ ze serveru (props → v RSC datech, ne v JS bundlu). */
+export function Compass({ lookup }: { lookup?: LookupTexts } = {}) {
   const [state, setState] = useState<CompassState>(emptyState);
   const [step, setStep] = useState(0);
   const [hydrated, setHydrated] = useState(false);
+  /** Krok otevřen navigací (ne načtením stránky) → líně načtený krok si po připojení vezme fokus. */
+  const [navigated, setNavigated] = useState(false);
   const headingRef = useRef<HTMLHeadingElement>(null);
 
   // Načtení z localStorage a z #hash až po hydrataci (server nezná stav prohlížeče).
@@ -83,6 +89,7 @@ export function Compass() {
 
   const goTo = useCallback((i: number) => {
     setStep(i);
+    setNavigated(true);
     const id = STEP_IDS[i]!;
     try {
       window.history.pushState(null, "", `#${id}`);
@@ -147,7 +154,11 @@ export function Compass() {
               headingRef={headingRef}
             />
           )}
-          {step === DEMO_STEP && <DemographicsStep value={state.demographics} onChange={setDemographics} headingRef={headingRef} />}
+          {step === DEMO_STEP && (
+            <Suspense fallback={null}>
+              <DemographicsStep value={state.demographics} onChange={setDemographics} headingRef={headingRef} focusOnMount={navigated} />
+            </Suspense>
+          )}
           {step === SUMMARY_STEP && (
             <Suspense fallback={<p className="text-ink-secondary">{ui.compass.summary_loading}</p>}>
               <Summary
@@ -164,6 +175,19 @@ export function Compass() {
             </Suspense>
           )}
         </div>
+
+        {/* Načtení odpovědí z podpisu (jiné zařízení): na první otázce a v přehledu. Stejné místo
+            ve stromu pro oba kroky → po načtení (skok na přehled) zůstane vidět potvrzení. */}
+        {lookup && (step === 0 || step === SUMMARY_STEP) && (
+          <AnswersLoaderLink
+            className="mt-3"
+            texts={lookup}
+            onLoaded={(loaded) => {
+              setState(loaded);
+              if (step !== SUMMARY_STEP) goTo(SUMMARY_STEP);
+            }}
+          />
+        )}
 
         {step < SUMMARY_STEP && (
           <div className="mt-4 lg:hidden">

@@ -11,6 +11,8 @@ import { UUID_RE } from "./input";
  */
 export interface PublicSignature {
   id: string;
+  /** Číslo podpisu (kanonický tvar bez pomlčky) – alias UUID, nic dalšího neprozrazuje. */
+  shortId: string;
   answers: Answers;
   contentVersion: string;
   comment: string | null;
@@ -31,6 +33,7 @@ export async function loadPublicSignature(sql: postgres.Sql, id: string): Promis
   const [row] = await sql<
     {
       id: string;
+      short_id: string;
       answers: Answers;
       content_version: string;
       comment: string | null;
@@ -44,7 +47,7 @@ export async function loadPublicSignature(sql: postgres.Sql, id: string): Promis
       name_enc: string | null;
     }[]
   >`
-    select s.id, s.answers, s.content_version, s.comment, s.verification_level, s.verified_at, s.withdrawn_at,
+    select s.id, s.short_id, s.answers, s.content_version, s.comment, s.verification_level, s.verified_at, s.withdrawn_at,
            s.created_at, s.is_poc, s.is_seed, r.show_name, case when r.show_name then r.name_enc end as name_enc
     from app.signature s left join app.signer r on r.signature_id = s.id
     where s.id = ${id}`;
@@ -60,6 +63,7 @@ export async function loadPublicSignature(sql: postgres.Sql, id: string): Promis
   const iso = (d: Date | null) => (d ? new Date(d).toISOString() : null);
   return {
     id: row.id,
+    shortId: row.short_id,
     answers: row.answers,
     contentVersion: row.content_version,
     comment: row.withdrawn_at ? null : row.comment,
@@ -75,7 +79,7 @@ export async function loadPublicSignature(sql: postgres.Sql, id: string): Promis
 
 /** Cachovaná varianta pro stránky. Po změně volat revalidateTag(signatureTag(id), …). */
 export function getPublicSignature(id: string): Promise<PublicSignature | null> {
-  return unstable_cache(() => loadPublicSignature(getSql(), id), ["public-signature", id], {
+  return unstable_cache(() => loadPublicSignature(getSql(), id), ["public-signature-v2", id], {
     tags: [signatureTag(id)],
     revalidate: 3600,
   })();

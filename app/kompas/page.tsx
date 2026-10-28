@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Compass } from "@/components/compass/compass";
 import { StanceBlock } from "@/components/stance-block";
 import { ui } from "@/lib/content";
+import { lookupTexts } from "@/lib/sign/lookup-texts";
 
 export const metadata: Metadata = { title: ui.compass.meta_title };
 
@@ -9,7 +10,7 @@ export const metadata: Metadata = { title: ui.compass.meta_title };
 export default function CompassPage() {
   return (
     <>
-      <Compass />
+      <Compass lookup={lookupTexts()} />
       <div className="mt-6">
         <StanceBlock />
       </div>

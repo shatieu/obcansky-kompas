@@ -7,6 +7,8 @@ import { Button, StickyBar } from "@/components/ui/button";
 import { Icon } from "@/components/ui/icon";
 import { Notice, ScreenHeading, SectionTitle } from "@/components/ui/typography";
 import { loadCompassState } from "@/lib/compass-storage";
+import { AnswersLoaderLink } from "@/components/lookup/answers-loader-link";
+import type { LookupTexts } from "@/lib/sign/lookup-texts";
 import type { Answers } from "@/lib/compose/types";
 import { lawFileBase, lawMetaLines } from "@/lib/export/law-meta";
 import { composeLawFromCompass, type LawContent } from "@/lib/law";
@@ -28,6 +30,7 @@ export function LawView({
   texts,
   initial,
   browserContentVersion,
+  lookup,
 }: {
   uuid: string;
   date: string;
@@ -36,6 +39,8 @@ export function LawView({
   content: LawContent;
   texts: ZakonTexts;
   initial: { answers: Answers; contentVersion: string } | null;
+  /** Texty „Načíst moje odpovědi“ – nabídne se, když zákon stojí na odpovědích z prohlížeče. */
+  lookup?: LookupTexts;
 }) {
   const [source, setSource] = useState<Source | null>(initial ? { kind: "signature", ...initial } : null);
   const [busy, setBusy] = useState<"pdf" | "docx" | null>(null);
@@ -114,6 +119,13 @@ export function LawView({
         <p className="k-cap mt-1">
           {source.kind === "signature" ? texts.source_signature : empty ? texts.source_empty : texts.source_browser}
         </p>
+        {lookup && source.kind === "browser" && (
+          <AnswersLoaderLink
+            className="mt-1"
+            texts={lookup}
+            onLoaded={(st) => setSource({ kind: "browser", answers: st.answers, contentVersion: browserContentVersion })}
+          />
+        )}
 
         <section aria-label={texts.meta_title_section} className="mt-3 border-t-2 border-ink pt-1.5">
           <ul className="k-cap break-words">

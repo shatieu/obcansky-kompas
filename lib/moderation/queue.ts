@@ -1,5 +1,5 @@
 import { createHash } from "node:crypto";
-import { revalidateTag } from "next/cache";
+import { revalidateDemo } from "@/lib/demo/cache";
 import type postgres from "postgres";
 import { getSql } from "@/lib/db/client";
 import { aiEnabled, getModerationProvider, ModerationError, type ModerationProvider } from "./ai";
@@ -24,19 +24,20 @@ export function initialModerationStatus(env: Record<string, string | undefined> 
   return aiEnabled(env) ? "pending" : "approved";
 }
 
+/** Po kolika neúspěších úlohy se jednou zapíše varování (vedle běžného logu každé chyby). */
+export const WARN_ATTEMPTS = 5;
+
 export const TILE_SIZE = 1000;
 export function tileTag(positionIndex: number): string {
   return `demo-tile:${Math.floor(positionIndex / TILE_SIZE)}`;
 }
 
-/** Zahodí cache dlaždice (a karty účastníka). Mimo Next request scope (skripty, testy) tiše nic. */
-export function revalidateTile(positionIndex: number, demonstratorId?: string): void {
-  try {
-    revalidateTag(tileTag(positionIndex), { expire: 0 });
-    if (demonstratorId) revalidateTag(`demo-person:${demonstratorId}`, { expire: 0 });
-  } catch {
-    /* mimo Next */
-  }
+/**
+ * Zahodí cache dlaždice a karty účastníka (data cache Next i CDN, lib/demo/cache.ts).
+ * Mimo Next request scope (skripty, testy) tiše nic.
+ */
+export function revalidateTile(positionIndex: number, demonstratorId?: string): Promise<void> {
+  return revalidateDemo({ index: positionIndex, id: demonstratorId });
 }
 
 const COLUMNS = {
@@ -78,7 +79,7 @@ export interface ProcessOptions {
   sql?: postgres.Sql;
   /** Výchozí podle env (getModerationProvider); v testech mock. */
   provider?: ModerationProvider | null;
-  revalidate?: (positionIndex: number, demonstratorId: string) => void;
+  revalidate?: (positionIndex: number, demonstratorId: string) => void | Promise<void>;
 }
 
 interface ClaimedJob {
@@ -142,6 +143,9 @@ export async function processModerationJobs(opts: ProcessOptions = {}): Promise<
           next_attempt_at = now() + ${backoffSeconds(job.attempts + 1)}::int * interval '1 second'
         where id = ${job.id}`;
       console.error(`[moderation] failed field=${job.field} code=${code}`);
+      // Jednou na úlohu (při přechodu na 5. neúspěch): AI dlouhodobě nefunguje – texty visí v `pending`.
+      if (job.attempts + 1 === WARN_ATTEMPTS)
+        console.warn(`[moderation] WARNING job=${job.id} failed ${WARN_ATTEMPTS}x code=${code} – check MODERATION_* env (model, effort, key)`);
       out.failed++;
       continue;
     }
@@ -178,7 +182,7 @@ export async function processModerationJobs(opts: ProcessOptions = {}): Promise<
       out.stale++;
       continue;
     }
-    if (applied !== newStatus) revalidate(d.position_index, job.demonstrator_id);
+    if (applied !== newStatus) await revalidate(d.position_index, job.demonstrator_id);
     if (verdict.verdict === "ok") out.approved++;
     else out.rejected++;
   }

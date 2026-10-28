@@ -7,6 +7,8 @@ import { Checkbox, FieldError, TextInput } from "@/components/ui/fields";
 import { Kicker, Notice } from "@/components/ui/typography";
 import { Icon } from "@/components/ui/icon";
 import { StickmanPreview } from "@/components/demonstrace/stickman/stickman-preview";
+import { LookGallery } from "./look-gallery";
+import { HomeBackLink } from "@/components/demonstrace/home-link";
 import { fill } from "@/lib/crowd/format";
 import { NAME_MAX, POSES, SIGN_COLORS, SLOGAN_MAX, type ModerationStatus } from "@/lib/demo/constants";
 import { scriptCheck } from "@/lib/moderation/script";
@@ -17,6 +19,7 @@ import {
   navStates,
   nextStep,
   payload,
+  pickLook,
   reroll,
   rerollsLeft,
   signText,
@@ -42,11 +45,13 @@ export interface EditInfo {
   savedName: string | null;
   sloganStatus: ModerationStatus;
   nameStatus: ModerationStatus;
+  /** Skryto po nahlášení do ruční kontroly (úprava skrytí neruší) – „Skryto do kontroly“. */
+  hidden?: boolean;
 }
 
 const check: CheckText = (text, field) => scriptCheck(text, field).ok;
 
-const SWATCH: Record<(typeof SIGN_COLORS)[number], string> = { white: "bg-surface", blue: "bg-blue", red: "bg-red" };
+const SWATCH: Record<(typeof SIGN_COLORS)[number], string> = { white: "bg-surface", blue: "bg-blue", red: "bg-red", none: "border-dashed bg-transparent" };
 
 export function JoinFlow({
   texts: t,
@@ -178,8 +183,8 @@ export function JoinFlow({
 
   const sign = signText(draft, presetMap);
   const isLast = step === "consent";
-  const sloganStatus = edit ? visibleStatus(edit.sloganStatus, edit.savedSlogan, draft.sloganMode === "custom" ? draft.custom : "") : null;
-  const nameStatus = edit ? visibleStatus(edit.nameStatus, edit.savedName, draft.showName ? draft.firstName : "") : null;
+  const sloganStatus = edit?.hidden ? "hidden" : edit ? visibleStatus(edit.sloganStatus, edit.savedSlogan, draft.sloganMode === "custom" ? draft.custom : "") : null;
+  const nameStatus = edit?.hidden ? "hidden" : edit ? visibleStatus(edit.nameStatus, edit.savedName, draft.showName ? draft.firstName : "") : null;
   const states = navStates(step, visited, draft, check);
 
   if (joined) return <Joining texts={t} draft={draft} sign={sign} href={`/demonstrace/${joined}`} />;
@@ -187,6 +192,7 @@ export function JoinFlow({
   return (
     <div className="k-wrap pt-2 pb-4 lg:pt-4 lg:pb-6">
       <div className="mx-auto max-w-content">
+        <HomeBackLink label={t.home_aria} className="-mt-1 mb-0.5" />
         <Kicker className="m-0">{edit ? t.edit_kicker : t.kicker}</Kicker>
         <StepNav texts={t} titles={stepTitles} states={states} current={STEPS.indexOf(step)} onSelect={(i) => go(STEPS[i]!)} />
 
@@ -199,7 +205,7 @@ export function JoinFlow({
               pose={draft.pose}
               signColor={draft.signColor}
               signText={sign}
-              title={fill(t.preview_label, { slogan: sign })}
+              title={draft.signColor === "none" ? t.preview_label_no_sign : fill(t.preview_label, { slogan: sign })}
             />
           </div>
 
@@ -256,6 +262,7 @@ export function JoinFlow({
                     onSelect={() => update({ signColor: c })}
                   />
                 ))}
+                {draft.signColor === "none" && <p className="k-cap mt-1">{t.color_none_hint}</p>}
               </AnswerGroup>
             )}
 
@@ -265,6 +272,16 @@ export function JoinFlow({
                   {t.look_title}
                 </h1>
                 <p className="k-lede">{t.look_lead}</p>
+                <div className="mt-3">
+                  <LookGallery
+                    seed={draft.seed}
+                    pose={draft.pose}
+                    signColor={draft.signColor}
+                    label={t.gallery_label}
+                    itemLabel={t.gallery_item}
+                    onPick={(s) => update(pickLook(draft, s))}
+                  />
+                </div>
                 <div className="mt-3">
                   <Button variant="secondary" icon="refresh" onClick={() => update(reroll(draft))} disabled={!canReroll(draft)} aria-describedby="join-reroll">
                     {t.reroll_button}
@@ -305,9 +322,15 @@ export function JoinFlow({
                 <p className="k-lede">{t.consent_lead}</p>
                 <dl className="mt-3 border-y-2 border-ink">
                   <div className="py-1.5">
-                    <dt className="k-cap">{t.summary_slogan}</dt>
-                    <dd className="m-0 font-semibold break-words">„{sign}“</dd>
+                    <dt className="k-cap">{t.summary_sign}</dt>
+                    <dd className="m-0 font-semibold">{t.colors[draft.signColor]}</dd>
                   </div>
+                  {sign && (
+                    <div className="border-t border-rule-soft py-1.5">
+                      <dt className="k-cap">{t.summary_slogan}</dt>
+                      <dd className="m-0 font-semibold break-words">„{sign}“</dd>
+                    </div>
+                  )}
                   <div className="border-t border-rule-soft py-1.5">
                     <dt className="k-cap">{t.summary_name}</dt>
                     <dd className="m-0 font-semibold break-words">{draft.showName && tidy(draft.firstName) ? tidy(draft.firstName) : t.summary_anonymous}</dd>
@@ -343,8 +366,18 @@ export function JoinFlow({
   );
 }
 
-function StatusTag({ status, texts: t }: { status: "pending" | "rejected" | null; texts: JoinTexts }) {
+function StatusTag({ status, texts: t }: { status: "pending" | "rejected" | "hidden" | null; texts: JoinTexts }) {
   if (!status) return null;
+  if (status === "hidden")
+    return (
+      <p className="mb-1 flex items-start gap-1" role="status">
+        <Icon name="info" />
+        <span>
+          <strong className="block">{t.status_hidden}</strong>
+          <span className="k-cap">{t.status_hidden_hint}</span>
+        </span>
+      </p>
+    );
   return (
     <p className="mb-1 flex items-start gap-1" role="status">
       <Icon name={status === "rejected" ? "alert" : "info"} />

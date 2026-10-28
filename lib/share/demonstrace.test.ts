@@ -106,11 +106,21 @@ describe("OG", () => {
     const svg = sceneSvg(placed, OG_DEMO_BOX);
     expect(svg).not.toContain("<text");
     expect(svg).not.toContain("Ruce");
-    const txt = fgSignText(placed[placed.length - 1]!, OG_DEMO_BOX);
+    const txt = fgSignText(placed[placed.length - 1]!, OG_DEMO_BOX)!;
+    expect(txt).not.toBeNull();
     expect(txt.lines.join(" ")).toBe("Ruce pryč od médií");
     expect(txt.cx).toBeGreaterThan(0);
     expect(txt.cx).toBeLessThan(OG_DEMO_BOX.w);
     expect(txt.cy).toBeGreaterThan(0);
     expect(txt.fontSize).toBeGreaterThan(10);
+  });
+});
+
+describe("bez cedule", () => {
+  it("obrázek nemá text cedule ani tvar cedule", () => {
+    const card = demonstraceCard({ ...person, signColor: "none" }, 1, img);
+    expect(card.figure!.signText).toBe("");
+    const placed = demoScene(card.figure!, OG_DEMO_BOX);
+    expect(fgSignText(placed[placed.length - 1]!, OG_DEMO_BOX)).toBeNull();
   });
 });

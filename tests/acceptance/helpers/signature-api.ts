@@ -135,5 +135,7 @@ export function normaliseResponse(text: string): string {
     .replace(/[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}/gi, "<uuid>")
     .replace(/\/overeni\/[A-Za-z0-9_\-.~%]+/g, "/overeni/<token>")
     .replace(/[A-Za-z0-9_-]{32,}/g, "<token>")
+    // Číslo podpisu (jen POC odpověď, stejně jako ověřovací odkaz) je náhodné jako token.
+    .replace(/"shortId":"[0-9A-Z]{8}"/g, '"shortId":"<short-id>"')
     .replace(/\d{4}-\d{2}-\d{2}T[\d:.]+Z?/g, "<time>");
 }

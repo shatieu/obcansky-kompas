@@ -12,6 +12,7 @@ import {
   primaryKey,
   text,
   timestamp,
+  uniqueIndex,
   uuid,
 } from "drizzle-orm/pg-core";
 
@@ -36,13 +37,19 @@ export const signature = app
       verificationLevel: verificationLevel("verification_level").notNull().default("unverified"),
       verifiedAt: timestamp("verified_at", { withTimezone: true }),
       withdrawnAt: timestamp("withdrawn_at", { withTimezone: true }),
+      /** Epocha cookie vlastníka ok_owner (online demonstrace); odvolání a odhlášení ji zvýší. */
+      ownerEpoch: integer("owner_epoch").notNull().default(0),
+      /** Krátké číslo podpisu (XXXX-XXXX bez pomlčky), lib/sign/short-id.ts; migrace 20261028210000. */
+      shortId: text("short_id").notNull().default(sql`app.random_short_id()`),
       isSeed: boolean("is_seed").notNull().default(false),
       isPoc: boolean("is_poc").notNull().default(false),
       createdAt: createdAt(),
     },
     (t) => [
       index("signature_stats_idx").on(t.isSeed, t.verificationLevel),
+      uniqueIndex("signature_short_id_key").on(t.shortId),
       check("signature_comment_len", sql`char_length(${t.comment}) <= 500`),
+      check("signature_short_id_format", sql`${t.shortId} ~ '^[0-9A-HJKMNP-TV-Z]{8}$'`),
     ],
   )
   .enableRLS();
@@ -196,6 +203,8 @@ export const demonstrator = app
       firstName: text("first_name"),
       nameStatus: text("name_status").notNull().default("none"),
       consentAt: timestamp("consent_at", { withTimezone: true }).notNull(),
+      /** Verze (hash) textu souhlasu; obnoví se s consent_at při úpravě. */
+      consentVersion: text("consent_version"),
       hiddenAt: timestamp("hidden_at", { withTimezone: true }),
       reportCount: integer("report_count").notNull().default(0),
       rerollCount: integer("reroll_count").notNull().default(0),
@@ -206,11 +215,11 @@ export const demonstrator = app
     },
     (t) => [
       check("demonstrator_seed_u32", sql`${t.seed} between 0 and 4294967295`),
-      check("demonstrator_pose", sql`${t.pose} in ('drzi', 'mava', 'pochoduje', 'tleska', 'skace', 'pest')`),
-      check("demonstrator_sign_color", sql`${t.signColor} in ('white', 'blue', 'red')`),
+      check("demonstrator_pose", sql`${t.pose} in ('drzi', 'mava', 'pochoduje', 'tleska', 'skace', 'pest', 'klice')`),
+      check("demonstrator_sign_color", sql`${t.signColor} in ('white', 'blue', 'red', 'none')`),
       check("demonstrator_slogan_status", sql`${t.sloganStatus} in ('none', 'pending', 'approved', 'rejected')`),
       check("demonstrator_name_status", sql`${t.nameStatus} in ('none', 'pending', 'approved', 'rejected')`),
-      check("demonstrator_slogan_present", sql`${t.sloganPresetId} is not null or ${t.sloganCustom} is not null`),
+      check("demonstrator_slogan_present", sql`${t.signColor} = 'none' or ${t.sloganPresetId} is not null or ${t.sloganCustom} is not null`),
       check("demonstrator_slogan_len", sql`char_length(${t.sloganCustom}) <= 40`),
       check("demonstrator_name_len", sql`char_length(${t.firstName}) <= 20`),
       check("demonstrator_reroll", sql`${t.rerollCount} between 0 and 20`),
@@ -275,6 +284,8 @@ export const moderationLog = app
     },
     (t) => [
       index("moderation_log_demonstrator_idx").on(t.demonstratorId),
+      // Globální strop automatických skrytí po nahlášení (lib/demo/service.ts, AUTO_HIDE_PER_HOUR).
+      index("moderation_log_actor_action_created_idx").on(t.actor, t.action, t.createdAt),
       check("moderation_log_actor", sql`${t.actor} in ('script', 'ai', 'reports', 'cli')`),
     ],
   )

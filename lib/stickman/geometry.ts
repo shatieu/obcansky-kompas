@@ -49,7 +49,8 @@ export const HEAD_LIMITS = (() => {
   return { centerMin, centerMax, rMax: BODY.headR * sMax * hMax };
 })();
 
-export type SignMode = "two" | "one" | "ground";
+/** two = obě ruce nad hlavou, one = jedna ruka, ground = opřená o zem, none = bez cedule. */
+export type SignMode = "two" | "one" | "ground" | "none";
 
 /** Úhly kloubů ve stupních. 0 = svisle dolů, 90 = doprava, 180 = nahoru, −90 = doleva (obrazovka). */
 export interface PoseAngles {
@@ -68,6 +69,8 @@ export interface PoseAngles {
   sign: { mode: SignMode; angle: number };
   /** Zdvižená pěst na levé ruce. */
   fist: boolean;
+  /** Svazek klíčů v levé ruce (póza „klice“): natočení svazku ve stupních (cinkání). */
+  keys?: number;
 }
 
 export interface Pt {
@@ -87,15 +90,39 @@ export interface Figure {
   /** Tyče cedule (0–2). */
   poles: Seg[];
   head: { x: number; y: number; r: number; angle: number };
-  /** Střed cedule, rozměry a natočení (stupně, po směru hodin). */
-  sign: { x: number; y: number; w: number; h: number; angle: number };
+  /** Střed cedule, rozměry a natočení (stupně, po směru hodin); null = panáček bez cedule. */
+  sign: { x: number; y: number; w: number; h: number; angle: number } | null;
   scarf: { x: number; y: number; angle: number; half: number } | null;
   fist: { x: number; y: number; size: number } | null;
+  /** Svazek klíčů v levé ruce: kroužek v (x, y), visí dolů natočený o `angle`; tvar KEYS_PATH × scale. */
+  keys: { x: number; y: number; angle: number } | null;
   hair: Hair;
   glasses: boolean;
   /** Měřítko postavy (= params.height) – pro tloušťku detailů. */
   scale: number;
 }
+
+/**
+ * Svazek klíčů (jednotky při měřítku 1, počátek = střed kroužku, klíče visí dolů): kroužek r 2,6
+ * a tři klíče do vějíře (dřík + zuby). Stejné úsečky pro SVG i canvas, čáry v --ink.
+ */
+export const KEYS_RING_R = 2.6;
+export const KEYS_SEGS: readonly Seg[] = (() => {
+  const out: Seg[] = [];
+  for (const [deg, len] of [[-24, 10], [0, 12], [22, 9]] as const) {
+    const c = Math.cos((deg * Math.PI) / 180);
+    const sn = Math.sin((deg * Math.PI) / 180);
+    // lokální osa klíče: od kroužku dolů, otočená o deg
+    const P = (x: number, y: number): Pt => ({ x: Math.round((x * c - y * sn) * 100) / 100, y: Math.round((x * sn + y * c) * 100) / 100 });
+    const y0 = KEYS_RING_R;
+    const sg = (a: Pt, b: Pt): Seg => ({ x1: a.x, y1: a.y, x2: b.x, y2: b.y });
+    out.push(sg(P(0, y0), P(0, y0 + len)), sg(P(0, y0 + len - 1), P(2.6, y0 + len - 1)), sg(P(0, y0 + len - 3.6), P(1.8, y0 + len - 3.6)));
+  }
+  return out;
+})();
+export const KEYS_PATH = KEYS_SEGS.map((g) => `M${g.x1} ${g.y1}L${g.x2} ${g.y2}`).join("");
+/** Šířka čar klíčů (jednotky). */
+export const KEYS_STROKE = 1.4;
 
 const RAD = Math.PI / 180;
 const dir = (deg: number): Pt => ({ x: Math.sin(deg * RAD), y: Math.cos(deg * RAD) });
@@ -163,6 +190,17 @@ export function figureGeometry(p: StickmanParams, a: PoseAngles): Figure {
     seg(elbowR, handR),
   ];
 
+  const rest = {
+    head: { x: headC.x, y: headC.y, r: headR, angle: headAngle },
+    scarf: p.scarf ? { x: neck.x, y: neck.y, angle: lean, half: sh } : null,
+    fist: a.fist ? { x: handL.x, y: handL.y, size: BODY.fist * s } : null,
+    keys: a.keys !== undefined ? { x: handL.x, y: handL.y - 2 * s, angle: a.keys } : null,
+    hair: p.hair,
+    glasses: p.glasses,
+    scale: s,
+  };
+  if (a.sign.mode === "none") return { body, poles: [], sign: null, ...rest };
+
   // Cedule
   const size = SIGN_SIZE[p.signShape];
   const w = size.w * s;
@@ -201,17 +239,7 @@ export function figureGeometry(p: StickmanParams, a: PoseAngles): Figure {
   }
   const center = add(bottom, rot({ x: 0, y: -h / 2 }, ang));
 
-  return {
-    body,
-    poles,
-    head: { x: headC.x, y: headC.y, r: headR, angle: headAngle },
-    sign: { x: center.x, y: center.y, w, h, angle: ang },
-    scarf: p.scarf ? { x: neck.x, y: neck.y, angle: lean, half: sh } : null,
-    fist: a.fist ? { x: handL.x, y: handL.y, size: BODY.fist * s } : null,
-    hair: p.hair,
-    glasses: p.glasses,
-    scale: s,
-  };
+  return { body, poles, sign: { x: center.x, y: center.y, w, h, angle: ang }, ...rest };
 }
 
 /**

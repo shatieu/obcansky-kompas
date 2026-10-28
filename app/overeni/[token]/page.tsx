@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { VerifyClient } from "@/components/sign/verify-client";
+import { shortIdTexts } from "@/lib/sign/lookup-texts";
 import { signTexts } from "@/lib/sign/texts";
 
 export function generateMetadata(): Metadata {
@@ -11,7 +12,7 @@ export default async function VerifyPage({ params }: { params: Promise<{ token: 
   const { token } = await params;
   return (
     <div className="k-wrap">
-      <VerifyClient token={token} t={signTexts().verify} />
+      <VerifyClient token={token} t={signTexts().verify} shortIdTexts={shortIdTexts()} />
     </div>
   );
 }

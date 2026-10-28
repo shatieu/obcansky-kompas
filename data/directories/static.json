@@ -13,7 +13,17 @@
     "web": "https://www.mk.gov.cz/",
     "notes": [],
     "address_podatelna": "Maltézské náměstí 1, 118 00 Praha 1",
-    "address_podatelna_source": "https://www.mk.gov.cz/podatelna-ministerstva-kultury-cs-2816"
+    "address_podatelna_source": "https://www.mk.gov.cz/podatelna-ministerstva-kultury-cs-2816",
+    "osoba": {
+      "jmeno": "Oto",
+      "prijmeni": "Klempíř",
+      "titul_pred": null,
+      "titul_za": null,
+      "pohlavi": "M",
+      "zdroj": "https://vlada.gov.cz/cz/vlada/",
+      "zdroj_detail": "https://vlada.gov.cz/cz/vlada/clenove-vlady/oto-klempir-223983/",
+      "overeno": "2026-10-28"
+    }
   },
   "prezident": {
     "adresat": "Prezident republiky",
@@ -28,7 +38,18 @@
     "web_form": null,
     "web": null,
     "notes": [
-      "hrad.cz kontakty nelze automaticky stáhnout (HTTP 403 for https://www.hrad.cz/cs/kancelar-prezidenta-republiky/kontakty); e-mail / webový formulář doplnit ručně z https://www.hrad.cz/cs/kancelar-prezidenta-republiky/kontakty"
-    ]
+      "hrad.cz kontakty nelze automaticky stáhnout (HTTP 403 for https://www.hrad.cz/cs/kancelar-prezidenta-republiky/kontakty); e-mail / webový formulář doplnit ručně z https://www.hrad.cz/cs/kancelar-prezidenta-republiky/kontakty",
+      "hrad.cz: stránka nedala jméno prezidenta (ochrana proti robotům); jméno a pohlaví prezidenta z Wikidat"
+    ],
+    "osoba": {
+      "jmeno": "Petr",
+      "prijmeni": "Pavel",
+      "titul_pred": null,
+      "titul_za": null,
+      "pohlavi": "M",
+      "zdroj": "https://www.wikidata.org/wiki/Q2080040",
+      "zdroj_detail": "https://www.wikidata.org/wiki/Q213 (P35 hlava státu, od 2023-03-09)",
+      "overeno": "2026-10-28"
+    }
   }
 }

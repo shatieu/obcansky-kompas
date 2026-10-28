@@ -17,6 +17,7 @@ site:
 
 nav:
   compass: Kompas
+  demo: Demonstrace
   stats: Statistiky
   parties: Strany a hnutí
   method: Metodika
@@ -25,8 +26,10 @@ nav:
 footer:
   lead: Občanský kompas – jak financovat ČT a ČRo.
   privacy: Soukromí
+  demo: Online demonstrace
   parties: Strany a hnutí
   method: Metodika
+  reading: K přečtení
   about: O projektu
   source: Zdrojový kód
   source_url: https://github.com/shatieu/obcansky-kompas
@@ -43,6 +46,9 @@ home:
   stats_button: Všechny statistiky
   method_line: Odkud bereme fakta a jak je ověřujeme.
   method_button: Metodika
+  # Ilustrace demonstrace v hero (bez textu, celá je odkaz) + textový odkaz pod ní.
+  demo_aria: Online demonstrace – otevřít dav
+  demo_button: Online demonstrace
 
 compass:
   meta_title: Kompas – Občanský kompas
@@ -298,8 +304,12 @@ email:
     díky za podpis v Občanském kompasu. Ověř ho tímhle odkazem (platí 7 dní):
 
     {url}
-
+    {short_id}{statement}
     Pokud jsi nic nepodepisoval/a, e-mail ignoruj – bez ověření se podpis nezapočítá.
+  statement_heading: "Tvůj text k podpisu:"
+  short_id_line: |-
+    Číslo tvého podpisu: {code}
+    S ním si odpovědi načteš i na jiném počítači – v kompasu klepni na „Načíst moje odpovědi“.
   edit_subject: Odkaz pro úpravu podpisu – Občanský kompas
   edit_body: |-
     Ahoj,
@@ -316,6 +326,30 @@ email:
     Stránka: {url}
     Důvod: {reason}
     Kontakt oznamovatele: {contact}
+
+# ---------- Číslo podpisu a načtení odpovědí na jiném zařízení – jen server ----------
+# (lib/sign/lookup-texts.ts; do klientských komponent jako props, okno načtení je líný chunk.)
+lookup:
+  link: Načíst moje odpovědi
+  title: Načíst moje odpovědi
+  lead: Zadej číslo podpisu z ověřovacího e-mailu, nebo vlož odkaz z něj.
+  input_label: Číslo podpisu nebo odkaz
+  input_hint: Třeba 7KQ2-M9XA. Na velikosti písmen ani pomlčce nezáleží.
+  submit_button: Načíst odpovědi
+  cancel_button: Zavřít
+  loading: Hledám podpis…
+  done_title: Odpovědi jsou načtené
+  done_lead: Upravit nebo odvolat podpis jde dál jen odkazem z e-mailu.
+  open_page_button: Otevřít můj podpis
+  empty: Napiš číslo podpisu nebo vlož odkaz.
+  invalid: Tohle nevypadá jako číslo podpisu ani odkaz z e-mailu.
+  not_found: Podpis s tímhle číslem nebo odkazem jsme nenašli. Zkontroluj ho a zkus to znovu.
+  rate_limited: Moc pokusů za sebou. Zkus to znovu za hodinu.
+  unavailable: Načtení teď nejde. Zkus to za chvíli.
+  short_id_label: Tvoje číslo podpisu
+  short_id_hint: S ním si odpovědi načteš i na jiném počítači – v kompasu přes „Načíst moje odpovědi“.
+  copy_button: Kopírovat
+  copied: Zkopírováno
 
 # ---------- /fotka (SPEC §9.3) – jen server. Slogany jsou v content/slogans.yaml. ----------
 photo:
@@ -428,6 +462,7 @@ akce:
 
   letters_title: Tvoje dopisy
   letters_empty: Vyber aspoň jednoho adresáta.
+  salutation_label: "Oslovení v dopisu:"
   show_letter: Zobrazit dopis
   hide_letter: Skrýt dopis
   copy_button: Kopírovat text
@@ -583,14 +618,10 @@ method:
   repo_url: https://github.com/shatieu/obcansky-kompas
   demo_title: Moderace online demonstrace
   demo_body: V davu se nesmí objevit vulgarita, nenávist ani podvržené jméno. Kontrolují se jen texty, které lidé píšou sami, tedy vlastní slogan a křestní jméno. Slogany z nabídky, póza, barva cedule a vzhled panáčka kontrolu nepotřebují.
-  demo_script_title: První stupeň, pravidla v kódu
-  demo_script_body: Každý vlastní text hned při odeslání projde pravidly, stejnými na serveru i v prohlížeči. Text se nejdřív sjednotí, aby nešlo kontrolu obejít, tedy malá písmena, bez diakritiky, podobné znaky a číslice nahrazené písmeny, bez mezer, teček a pomlček mezi písmeny a bez opakovaných písmen. Pak se porovná se seznamy českých, slovenských a anglických vulgarit a urážek. Odkazy, e-maily, telefonní čísla, přezdívky se zavináčem a hashtagy nejdou. Slogan má 3 až 40 znaků, nejvýš polovinu velkých písmen (jinak je zmenšíme) a nejvýš 2 emoji. Jméno je jedno slovo z písmen, 2 až 20 znaků, a nesmí to být příjmení známé veřejné osoby nebo politika. Když text neprojde, ukážeme jen větu, že ho nelze použít, bez důvodu, aby nešlo pravidla obcházet zkoušením. Seznamy zakázaných slov jsou v otevřeném kódu, tady je celé nezveřejňujeme.
-  demo_ai_title: Druhý stupeň, kontrola umělou inteligencí
-  demo_ai_body: Když je zapnutá, text, který prošel pravidly, čeká na kontrolu jazykovým modelem. Model odmítne vulgarity i skryté nebo zakódované, nenávist, výhrůžky, útoky na konkrétní lidi, sexuální obsah, reklamu a podvržená jména. Ostrou kritiku vlády, zákona i politiků bez urážek povolí, stejně jako slogany opačného názoru. Dokud kontrola neskončí, je v davu výchozí slogan a žádné jméno. Když kontrola selže, text dál čeká, nikdy se kvůli chybě neschválí sám.
-  demo_ai_on: Kontrola umělou inteligencí je teď zapnutá.
-  demo_ai_off: Kontrola umělou inteligencí je teď vypnutá, texty, které projdou pravidly, se rovnou ukážou.
+  demo_script_title: Kontrola textů
+  demo_script_body: Každý vlastní slogan a jméno před zveřejněním projde kontrolou. Ta zachytí vulgarity, nenávist, výhrůžky, sexuální obsah, reklamu a podvržená jména. Ostrou kritiku bez urážek kontrola nezastaví, stejně jako slogany opačného názoru. Když text neprojde, ukážeme jen větu, že ho nelze použít.
   demo_reports_title: Nahlášení a ruční zásahy
-  demo_reports_body: Každého panáčka jde nahlásit, z jedné IP adresy jednou. Po třech nahlášeních z různých adres se vlastní slogan a jméno skryjí, dokud je nezkontroluje člověk. Každý zásah, ať ho udělají pravidla, umělá inteligence, nahlášení, nebo člověk, se zapíše do záznamu.
+  demo_reports_body: Každého panáčka jde nahlásit, z jedné IP adresy jednou. Po třech nahlášeních z různých adres se vlastní slogan a jméno skryjí, dokud je nezkontroluje člověk. Každý zásah, ať ho udělá kontrola, nahlášení, nebo člověk, se zapíše do záznamu.
 
 sources:
   meta_title: Zdroje a ověření – Občanský kompas
@@ -723,12 +754,12 @@ share:
     demo_figure_alt: "Panáček s cedulí: {slogan}"
   # Tvary podle počtu: [1, 2–4, 5 a víc]
   recipients:
-    poslanec: [ poslanec, poslanci, poslanců ]
-    senator: [ senátor, senátoři, senátorů ]
-    kraj: [ krajské zastupitelstvo, krajská zastupitelstva, krajských zastupitelstev ]
-    obec: [ zastupitelstvo obce, zastupitelstva obcí, zastupitelstev obcí ]
-    ministr-kultury: [ ministr kultury, ministři kultury, ministrů kultury ]
-    prezident: [ prezident republiky, prezidenti, prezidentů ]
+    poslanec: [poslanec, poslanci, poslanců]
+    senator: [senátor, senátoři, senátorů]
+    kraj: [krajské zastupitelstvo, krajská zastupitelstva, krajských zastupitelstev]
+    obec: [zastupitelstvo obce, zastupitelstva obcí, zastupitelstev obcí]
+    ministr-kultury: [ministr kultury, ministři kultury, ministrů kultury]
+    prezident: [prezident republiky, prezidenti, prezidentů]
 
 compare_page:
   meta_title: Srovnání
@@ -779,6 +810,7 @@ demonstrace:
     meta_title: Připojit se k demonstraci – Občanský kompas
     kicker: Online demonstrace
     edit_kicker: Úprava panáčka
+    home_aria: Zpět na hlavní stránku
     nav_aria: Kroky připojení
     nav_item: "Krok {n} z {total}: {step}"
     nav_state_done: hotovo
@@ -792,6 +824,7 @@ demonstrace:
     step_name: Jméno
     step_consent: Souhlas
     preview_label: "Náhled tvého panáčka s cedulí: {slogan}"
+    preview_label_no_sign: Náhled tvého panáčka bez cedule
     slogan_title: Co bude na tvé ceduli?
     slogan_lead: Vyber heslo, nebo napiš vlastní.
     slogan_custom_option: Napíšu vlastní
@@ -809,14 +842,19 @@ demonstrace:
       tleska: Tleská
       skace: Skáče
       pest: Zdvižená pěst
+      klice: Zvoní klíči
     color_title: Jakou barvu má cedule?
     color_lead: Barvu uvidí všichni v davu.
     colors:
       white: Bílá
       blue: Modrá
       red: Červená
+      none: Bez cedule
+    color_none_hint: Ruce budeš mít volné. Slogan uvidí ostatní na tvé kartě.
     look_title: Takhle vypadáš
-    look_lead: Když se ti nelíbí, zkus jiného panáčka.
+    look_lead: Vyber si panáčka z nabídky, nebo zkus náhodného.
+    gallery_label: Panáčci na výběr
+    gallery_item: "Panáček {n} z {total}"
     reroll_button: Jiný panáček
     reroll_left: "Ještě {n}× můžeš změnit"
     reroll_done: Víc změn nejde, zůstane tenhle panáček.
@@ -833,6 +871,7 @@ demonstrace:
     consent_caption: Souhlas odvoláš tak, že odvoláš podpis. Panáček pak z davu zmizí.
     consent_error: Bez souhlasu se připojit nejde.
     summary_slogan: Slogan
+    summary_sign: Cedule
     summary_name: Jméno
     summary_anonymous: Anonym
     next_button: Další
@@ -846,6 +885,8 @@ demonstrace:
     status_rejected: Text neprošel kontrolou
     status_pending_hint: V davu je zatím výchozí slogan a bez jména.
     status_rejected_hint: Zadej jiný text. V davu je zatím výchozí slogan.
+    status_hidden: Skryto do kontroly
+    status_hidden_hint: Někdo tvého panáčka nahlásil. Tvůj slogan a jméno vidíš jen ty, v davu je zatím výchozí slogan a bez jména, dokud to nezkontroluje člověk.
     gate_title: Nejdřív podepiš kompas
     gate_lead: K demonstraci se připojí jen ten, kdo ověřil svůj podpis.
     gate_button: Spustit kompas
@@ -856,9 +897,15 @@ demonstrace:
     error_rate_limited: Moc pokusů za krátkou dobu. Zkus to za hodinu.
     error_unauthorized: Platnost přihlášení vypršela. Otevři znovu odkaz z e-mailu.
     view_crowd_button: Zobrazit dav
+    owner_conflict_title: Tady je přihlášený jiný podpis
+    owner_conflict_lead: Chceš ho v tomhle prohlížeči nahradit tímhle podpisem, nebo nechat původní?
+    owner_conflict_replace: Nahradit tímhle podpisem
+    owner_conflict_keep: Nechat původní
+    owner_conflict_kept: Necháváme původní podpis. Úprava tohohle podpisu funguje dál.
   list:
     meta_title: Seznam účastníků – Online demonstrace
     meta_description: Přístupný seznam lidí, kteří se připojili k online demonstraci.
+    home_aria: Zpět na hlavní stránku
     kicker: Online demonstrace
     title: Seznam účastníků
     lead: Všichni v davu podle pořadí připojení.
@@ -869,6 +916,8 @@ demonstrace:
     pagination_aria: Stránkování seznamu
     prev_button: Předchozí
     next_button: Další
+    page_jump_label: Přejít na stranu
+    page_jump_button: Přejít
     crowd_button: Zobrazit dav
     join_button: Připojit se
     empty: Zatím tu nikdo nestojí. Buď první.
@@ -885,8 +934,11 @@ demonstrace_crowd:
   count_few: "{count} účastníci"
   count_many: "{count} účastníků"
   join_button: Připojit se
+  home_aria: Zpět na hlavní stránku
+  edit_button: Upravit panáčka
   list_button: Zobrazit jako seznam
   find_me_button: Najdi mě
+  minimap_button: Mapa davu
   start_button: Na začátek
   end_button: Na konec davu
   zoom_in: Přiblížit
@@ -908,5 +960,7 @@ demonstrace_crowd:
     copied: Odkaz je zkopírovaný.
     reported: Díky. Podíváme se na to.
     report_error: Nahlášení se nepovedlo. Zkus to znovu.
+    report_verify: Ještě potvrď, že nejsi robot. Nahlášení se pak odešle samo.
     close: Zavřít
     figure_label: "Panáček s cedulí: {slogan}"
+    figure_label_no_sign: Panáček bez cedule

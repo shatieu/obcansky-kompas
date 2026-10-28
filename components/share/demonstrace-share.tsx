@@ -49,12 +49,14 @@ export default function DemoShare({
   label,
   config: configProp,
   sticky = false,
+  defaultOpen = false,
 }: {
   person: Pick<CrowdPerson, "id" | "index" | "seed" | "pose" | "signColor" | "slogan" | "name">;
   url: string;
   label?: string;
   config?: DemoShareConfig;
   sticky?: boolean;
+  defaultOpen?: boolean;
 }) {
   const ctx = useDemoShare();
   const config = configProp ?? ctx;
@@ -70,5 +72,5 @@ export default function DemoShare({
   }, [config, person, count, crowd]);
   if (!config || !card) return null;
   // Panel se po načtení dat jednou přimontuje znovu (key), aby obrázek měl počet a sousedy.
-  return <SharePanel key={ready ? "ready" : "early"} card={card} url={url} texts={config.texts} buttonLabel={label} sticky={sticky} />;
+  return <SharePanel key={ready ? "ready" : "early"} card={card} url={url} texts={config.texts} buttonLabel={label} sticky={sticky} defaultOpen={defaultOpen} />;
 }

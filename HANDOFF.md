@@ -48,6 +48,13 @@ Designový systém vlastníka (Mona Sans, vlajková značka výběru, tykání) 
 - [ ] `pnpm poc:clear` a `pnpm seed:clear` proti produkční DB, pak `POC_MODE=0`, `DEMO_MODE=0` (start guard jinak odmítne běžet se seedem).
 - [ ] Zvážit Cloudflare proxy (pak vrátit `cf-connecting-ip` do `lib/sign/http.ts`).
 
+## Online demonstrace – moderace a bezpečnost
+
+- **AI moderace: nastav MODERATION_API_KEY ve Vercelu a spusť pnpm moderation:recheck.** Nic dalšího není potřeba – poskytovatel je výchozí `anthropic`, model `claude-haiku-5-5` (přepsat jde `MODERATION_MODEL`, vypnout `MODERATION_PROVIDER=none`). Do té doby vlastní texty schvaluje jen skript (vulgarity, odkazy, podvržená jména, obcházení filtru). Recheck potřebuje i `NEXT_PUBLIC_SITE_URL` a `CRON_SECRET`, jinak skončí chybou (cache se nezneplatní); `--no-revalidate` jen pro lokální DB.
+- **Migrace k aplikaci (Supabase MCP `apply_migration`)**: `supabase/migrations/20261028190000_demonstrace_security.sql` (`signature.owner_epoch`, `demonstrator.consent_version`, index `moderation_log`).
+- Nahlášení vyžaduje Turnstile – na produkci musí být nastavené `NEXT_PUBLIC_TURNSTILE_SITE_KEY` (při buildu) a `TURNSTILE_SECRET_KEY`, jinak nahlásit nejde.
+- Strop 20 automatických skrytí za hodinu: nad ním `[demo] report auto-hide cap reached` ve Vercel logu → `pnpm demo:reported` (řádek bez „SKRYTO“ s ≥ 3 nahlášeními) a ruční `demo:hide` / `demo:ban-text`.
+
 ## Pro další session
 
 - Tajné hodnoty (klíče, heslo role `kompas_app`) jsou jen v `.env.setup.local` na počítači vlastníka a ve Vercel env.

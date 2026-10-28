@@ -46,12 +46,18 @@ export async function enqueueRecheck(sql: postgres.Sql): Promise<{ enqueued: num
 /** Zařadí a zpracuje po dávkách, dokud jsou splatné úlohy (chybující čekají na backoff → cron). */
 export async function runRecheck(
   sql: postgres.Sql,
-  opts: { batch?: number; provider?: ModerationProvider | null; onBatch?: (r: ProcessResult) => void } = {},
+  opts: {
+    batch?: number;
+    provider?: ModerationProvider | null;
+    onBatch?: (r: ProcessResult) => void;
+    /** Mimo Next (CLI): sběr změněných panáčků pro vzdálenou revalidaci. */
+    revalidate?: (positionIndex: number, demonstratorId: string) => void | Promise<void>;
+  } = {},
 ): Promise<RecheckResult> {
   const queued = await enqueueRecheck(sql);
   const total: ProcessResult = { claimed: 0, approved: 0, rejected: 0, stale: 0, failed: 0 };
   for (;;) {
-    const r = await processModerationJobs({ sql, limit: opts.batch ?? 20, provider: opts.provider });
+    const r = await processModerationJobs({ sql, limit: opts.batch ?? 20, provider: opts.provider, revalidate: opts.revalidate });
     opts.onBatch?.(r);
     for (const k of Object.keys(total) as (keyof ProcessResult)[]) total[k] += r[k];
     if (r.claimed === 0) break;

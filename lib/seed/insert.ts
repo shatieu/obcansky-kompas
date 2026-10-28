@@ -1,6 +1,7 @@
 import type postgres from "postgres";
 import { CONTENT_VERSION } from "@/lib/content";
 import { emailHmac, encrypt, sha256Hex } from "@/lib/crypto";
+import { generateShortId } from "@/lib/sign/short-id";
 import type { SeedOrganization, SeedSignature } from "./generate";
 
 /** Zapíše seed do DB (idempotentně: nejdřív smaže předchozí seed). */
@@ -10,8 +11,17 @@ export async function insertSeed(
 ): Promise<void> {
   await sql.begin(async (tx) => {
     await clearSeed(tx);
+    // Číslo podpisu i pro seed (náhodné jako u skutečných podpisů; v dávce bez opakování).
+    const shortIds = new Set<string>();
+    const nextShortId = () => {
+      let id = generateShortId();
+      while (shortIds.has(id)) id = generateShortId();
+      shortIds.add(id);
+      return id;
+    };
     const sigRows = data.signatures.map((s) => ({
       id: s.id,
+      short_id: nextShortId(),
       answers: s.answers as unknown as postgres.JSONValue,
       content_version: CONTENT_VERSION,
       region: s.region,

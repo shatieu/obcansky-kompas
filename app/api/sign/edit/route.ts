@@ -1,5 +1,5 @@
 import { NextResponse, type NextRequest } from "next/server";
-import { isSecureRequest, setOwnerCookie } from "@/lib/demo/owner";
+import { isSecureRequest, ownerEpoch, setOwnerCookie } from "@/lib/demo/owner";
 import { z } from "zod";
 import { CONTENT_VERSION, questionsFile } from "@/lib/content";
 import { getSql } from "@/lib/db/client";
@@ -48,6 +48,7 @@ export async function POST(req: NextRequest): Promise<Response> {
       NextResponse.json({ ok: true, id: r.signatureId, url: signaturePath(r.signatureId) }, { headers: { "cache-control": "no-store" } }),
       r.signatureId,
       isSecureRequest(req),
+      await ownerEpoch(getSql(), r.signatureId),
     );
   } catch (e) {
     return unavailable(e, "edit");

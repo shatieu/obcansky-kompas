@@ -92,10 +92,11 @@ export async function POST(req: NextRequest): Promise<Response> {
     if (!poc) {
       after(() => deliverJob(sql, { id: r.jobId, signerId: r.signerId, kind: "verify", token: r.verifyToken, baseUrl: base }));
     }
-    // Stejná odpověď pro nový i nahrazený podpis; UUID se nevrací (zjistil by se cizí podpis).
+    // Stejná odpověď pro nový i nahrazený podpis; UUID ani číslo podpisu se ostře nevrací (zjistil
+    // by se cizí podpis). V POC je ověřovací odkaz stejně na obrazovce, tak i číslo podpisu.
     return json(
       poc
-        ? { ok: true, poc: true, message: t.poc_lead, verifyUrl: verifyUrl(base, r.verifyToken) }
+        ? { ok: true, poc: true, message: t.poc_lead, verifyUrl: verifyUrl(base, r.verifyToken), shortId: r.shortId }
         : { ok: true, poc: false, message: t.sent_lead },
       202,
     );

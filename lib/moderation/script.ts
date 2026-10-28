@@ -11,7 +11,16 @@ import { baseFold, normalizeSimple } from "./normalize";
  */
 
 export type ModerationField = "slogan" | "name";
-export type ScriptResult = { ok: true; text: string } | { ok: false };
+/**
+ * `review: true` = text prošel, ale obsahuje písmena mimo latinku, cyrilici a řečtinu – skript
+ * ho neumí posoudit, rozhodne AI (stupeň 2). Vrací se jen s `{ ai: true }`; bez AI se odmítne.
+ */
+export type ScriptResult = { ok: true; text: string; review?: true } | { ok: false };
+
+export interface ScriptOptions {
+  /** AI kontrola zapnutá (server: aiEnabled()). Prohlížeč ji nezná → přísnější výchozí `false`. */
+  ai?: boolean;
+}
 
 export const SLOGAN_MIN = 3;
 export const SLOGAN_MAX = 40;
@@ -88,6 +97,35 @@ export function fixShouting(text: string): string {
 
 const NAME_RE = /^\p{Script=Latin}+(?:-\p{Script=Latin}+)*$/u;
 
+/**
+ * Písmena jako symboly (obcházení filtru, běžný text je nepotřebuje): IPA a kapitálky
+ * (ɢ ʀ ɴ ʟ ɪ, ᴀ–ᴢ), fonetická rozšíření, latinka rozšířená D/E (ꜰ ꜱ ꭓ), plnošířková písmena,
+ * matematická písmena (𝐀), kroužková a čtverečková písmena (Ⓐ 🄰 🅐 🅰) a písmena z bloku
+ * Letterlike Symbols (ℂ ℍ ℓ). Regionální indikátory (🇦) řeší zvlášť hasLetterSymbols.
+ */
+const LETTERLIKE =
+  /[ɐ-ʯᴀ-ᶿ꜠-ꟿꬰ-꭯Ａ-Ｚａ-ｚ①-⓿\u{1d400}-\u{1d7ff}\u{1f100}-\u{1f1e5}]|(?=\p{L})[℀-⅏]/u;
+const RI = /\p{Regional_Indicator}/gu;
+/** Jediná vlajka (dva indikátory) stojící samostatně – ne přilepená k písmenům nebo číslicím. */
+const LONE_FLAG = /(?:^|[^\p{L}\p{N}])\p{Regional_Indicator}{2}(?:$|[^\p{L}\p{N}\p{Regional_Indicator}])/u;
+
+/**
+ * Obsahuje text písmena jako symboly nebo regionální indikátory skládající písmena (🇰🇺🇷🇻🇦)?
+ * Povolená je nejvýš jedna samostatná vlajka (🇨🇿, 🇺🇦) – i ta se ale v normalizaci čte jako
+ * písmena, takže přilepená ke slovu neprojde blocklistem.
+ */
+export function hasLetterSymbols(text: string): boolean {
+  const ri = text.match(RI)?.length ?? 0;
+  if (ri > 0 && !(ri === 2 && LONE_FLAG.test(text))) return true;
+  return LETTERLIKE.test(text);
+}
+
+/** Písmeno mimo latinku, cyrilici a řečtinu (normalizace ho nepřevede, blocklist ho nevidí). */
+const FOREIGN = /[^\P{L}\p{Script=Latin}\p{Script=Cyrillic}\p{Script=Greek}]/u;
+export function hasForeignLetters(text: string): boolean {
+  return FOREIGN.test(text);
+}
+
 /** Je jméno na seznamu veřejně známých osob (normalizovaně, i každá část se spojovníkem)? */
 export function isPublicName(name: string): boolean {
   const set = publicNames();
@@ -101,12 +139,12 @@ export function isBlocked(text: string): boolean {
   return containsBlocked(text, lists());
 }
 
-export function scriptCheck(text: string, field: ModerationField): ScriptResult {
+export function scriptCheck(text: string, field: ModerationField, opts: ScriptOptions = {}): ScriptResult {
   if (typeof text !== "string") return { ok: false };
   const t = cleanText(text);
   if (field === "name") {
     const n = len(t);
-    if (n < NAME_MIN || n > NAME_MAX || !NAME_RE.test(t)) return { ok: false };
+    if (n < NAME_MIN || n > NAME_MAX || !NAME_RE.test(t) || hasLetterSymbols(t)) return { ok: false };
     if (isPublicName(t) || isBlocked(t)) return { ok: false };
     return { ok: true, text: t };
   }
@@ -114,7 +152,11 @@ export function scriptCheck(text: string, field: ModerationField): ScriptResult 
   const n = len(t);
   if (n < SLOGAN_MIN || n > SLOGAN_MAX) return { ok: false };
   if ((t.match(/\p{L}/gu)?.length ?? 0) < 2) return { ok: false };
-  if (countEmoji(t) > MAX_EMOJI) return { ok: false };
+  if (countEmoji(t) > MAX_EMOJI || hasLetterSymbols(t)) return { ok: false };
   if (hasContactOrLink(t) || isBlocked(t)) return { ok: false };
-  return { ok: true, text: fixShouting(t) };
+  // Převod velkých písmen může text prodloužit (İ → i̇) nebo změnit – znovu délka a blocklist.
+  const out = fixShouting(t);
+  if (out !== t && (len(out) > SLOGAN_MAX || isBlocked(out))) return { ok: false };
+  if (hasForeignLetters(out)) return opts.ai ? { ok: true, text: out, review: true } : { ok: false };
+  return { ok: true, text: out };
 }

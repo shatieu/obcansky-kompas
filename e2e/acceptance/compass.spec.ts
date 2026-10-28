@@ -77,6 +77,17 @@ test("přehled na konci: změna odpovědi na místě přepíše text živě a zv
   await expect(statement).toContainText(oldQ2);
   await expect(page.locator("li.k-sumrow[data-invalid]")).toHaveCount(0);
 
+  // Text po odstavcích (požadavek vlastníka 2026-10-28): úvod, blok se štítkem za každou
+  // otázku v pořadí zobrazení, závěr; štítek vede na řádek odpovědi.
+  const blocks = statement.locator(".k-stmt__block");
+  await expect(blocks).toHaveCount(ORDER.length);
+  await expect(blocks.locator(".k-stmt__label")).toHaveText(ORDER.map((id) => q(id).short));
+  await expect(statement.locator(".k-stmt__end").first()).toHaveText(sentences.intro.text);
+  await expect(statement.locator('.k-stmt__block[data-q="q2"]')).toContainText(oldQ2);
+  await statement.getByRole("link", { name: q("q6").short, exact: true }).click();
+  await expect(page.locator("#sum-row-q6")).toBeFocused();
+  await expect(page).toHaveURL(/#text$/);
+
   await page.getByRole("button", { name: t(ui.compass.change_aria, { question: q("q2").text }) }).click();
   const row = page.locator('li.k-sumrow[data-q="q2"]');
   await row.getByRole("radio", { name: Q2_BUDGET, exact: true }).click();

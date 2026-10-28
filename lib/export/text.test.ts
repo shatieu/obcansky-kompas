@@ -122,6 +122,46 @@ describe("adresáti", () => {
     expect(m.postal).toEqual(["Ministr kultury", "Ministerstvo kultury", "Maltézské náměstí 1", "118 00 Praha 1"]);
     expect(m.dataBox).toBe("8spaaur");
   });
+
+  it("adresát-osoba: pohlaví z adresáře, funkce podle pohlaví pod jménem v adrese, strana z klubu", () => {
+    const roles = { m: "poslanec", z: "poslankyně" };
+    const z = poslanecRecipient(
+      { id: 1, jmeno: "Jana", prijmeni: "Černochová", titul_pred: "Mgr.", titul_za: null, kraj_code: "CZ010", pohlavi: "Z", klub: "Poslanecký klub ODS", klub_zkratka: "ODS", email: null },
+      postal,
+      roles,
+    );
+    expect(z.gender).toBe("Z");
+    expect(z.detail).toBe("ODS");
+    expect(z.postal.slice(0, 3)).toEqual(["Mgr. Jana Černochová", "poslankyně", "Poslanecká sněmovna"]);
+    const m = poslanecRecipient(
+      { id: 2, jmeno: "Marek", prijmeni: "Benda", titul_pred: null, titul_za: null, kraj_code: "CZ010", pohlavi: "M", klub: "Poslanecký klub ANO 2011", klub_zkratka: "ANO2011", email: null },
+      postal,
+      roles,
+    );
+    expect(m.detail).toBe("ANO 2011");
+    expect(m.postal[1]).toBe("poslanec");
+    // Bez pohlaví žádná funkce (nehádá se).
+    const u = senatorRecipient({ obvod_cislo: 1, obvod_nazev: "X", id: 3, jmeno: "A B", jmeno_s_tituly: "A B", email: null }, postal, { m: "senátor", z: "senátorka" });
+    expect(u.gender).toBeNull();
+    expect(u.postal[1]).toBe("Senát");
+    // Úřad se jménem držitele: jméno, funkce, úřad, adresa.
+    const k = staticRecipient(
+      "ministr-kultury",
+      {
+        adresat: "Ministr kultury",
+        osoba: { jmeno: "Oto", prijmeni: "Klempíř", titul_pred: null, titul_za: null, pohlavi: "M" },
+        urad: "Ministerstvo kultury",
+        address: null,
+        address_podatelna: "Maltézské náměstí 1, 118 00 Praha 1",
+        datova_schranka: "8spaaur",
+        email: null,
+      },
+      { m: "ministr kultury", z: "ministryně kultury" },
+    );
+    expect(k.name).toBe("Oto Klempíř");
+    expect(k.gender).toBe("M");
+    expect(k.postal).toEqual(["Oto Klempíř", "ministr kultury", "Ministerstvo kultury", "Maltézské náměstí 1", "118 00 Praha 1"]);
+  });
 });
 
 describe("senátní obvod z obce", () => {

@@ -148,6 +148,37 @@ test.describe("§4.4 komponenty", () => {
     expect(bg).not.toMatch(/rgba\(0, 0, 0, 0\)|transparent|rgb\(255, 255, 255\)/);
   });
 
+  test("hero: ilustrace demonstrace bez textu vede do davu a nepřekrývá vlajku", async ({ page }) => {
+    await page.goto("/");
+    const pic = page.getByRole("link", { name: ui.home.demo_aria, exact: true });
+    await expect(pic).toHaveAttribute("href", "/demonstrace");
+    await expect(pic.locator("text, tspan")).toHaveCount(0);
+    await expect(page.locator("#h-home").locator("xpath=ancestor::section[1]").getByRole("link", { name: ui.home.demo_button, exact: true })).toHaveAttribute(
+      "href",
+      "/demonstrace",
+    );
+    const flag = await page.locator("section .k-flag").first().boundingBox();
+    const crowd = await pic.boundingBox();
+    expect(flag && crowd).toBeTruthy();
+    // Vlajka je sama: ochranná zóna ≥ ¼ výšky vlajky mezi ní a davem (README „Vlajka“).
+    const gap = Math.max(crowd!.y - (flag!.y + flag!.height), flag!.y - (crowd!.y + crowd!.height));
+    expect(gap).toBeGreaterThanOrEqual(flag!.height / 4 - 1);
+    const sw = await page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth);
+    expect(sw).toBeLessThanOrEqual(0);
+    // Cesta do demonstrace je vidět bez posunu: ilustrace začíná v prvním výřezu (nad přilepeným tlačítkem).
+    const vh = page.viewportSize()!.height;
+    expect(crowd!.y).toBeLessThan(vh - 120);
+  });
+
+  test("Demonstrace v hlavičce (mobil i desktop, cíl ≥ 48 px) a v patičce", async ({ page }) => {
+    await page.goto("/statistiky");
+    const head = page.locator("header.k-appbar").getByRole("link", { name: ui.nav.demo, exact: true });
+    await expect(head).toBeVisible();
+    await expect(head).toHaveAttribute("href", "/demonstrace");
+    expect((await head.boundingBox())!.height).toBeGreaterThanOrEqual(48);
+    await expect(page.locator("footer").getByRole("link", { name: ui.footer.demo, exact: true })).toHaveAttribute("href", "/demonstrace");
+  });
+
   test("statistiky: čísla s tabular-nums (§4.3)", async ({ page }) => {
     await page.goto("/statistiky");
     const n = await page.evaluate(

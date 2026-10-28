@@ -5,7 +5,7 @@
  * Předpoklady: server s POC_MODE=1 (pnpm dev to nastaví), Turnstile testovací klíče.
  */
 import { expect, test } from "@playwright/test";
-import { answerCompass, esc, JOURNEY, lawBase, letterLabel, makePng, randomIp, sentences, stance, ui } from "./helpers";
+import { answerCompass, esc, JOURNEY, lawBase, letterLabel, makePng, q, randomIp, sentences, stance, ui } from "./helpers";
 
 test("§15 m16: kompas → podpis → POC ověření → osobní stránka → srovnání → zákon → akce → fotka", async ({ page }, testInfo) => {
   test.setTimeout(300_000);
@@ -17,6 +17,7 @@ test("§15 m16: kompas → podpis → POC ověření → osobní stránka → sr
     await answerCompass(page, JOURNEY);
     await expect(page.locator("main h1").first()).toHaveText(ui.compass.summary_title);
     await expect(page.getByText(sentences.intro.text).first()).toBeVisible();
+    await expect(page.locator("main .k-letter .k-stmt__label").first()).toHaveText(q("q2").short);
     await page.getByRole("link", { name: ui.compass.sign_button }).click();
     await expect(page).toHaveURL(/\/kompas\/podpis/, { timeout: 30_000 });
   });
@@ -49,6 +50,10 @@ test("§15 m16: kompas → podpis → POC ověření → osobní stránka → sr
 
   await test.step("osobní stránka /v/[uuid] (§7.3)", async () => {
     await expect(page.getByText(sentences.intro.text).first()).toBeVisible();
+    // Text po odstavcích se štítky (bez odkazů – na osobní stránce není přehled odpovědí).
+    const stmt = page.locator("main .k-stmt").first();
+    await expect(stmt.locator(".k-stmt__block")).toHaveCount(Object.keys(JOURNEY).length);
+    await expect(stmt.locator(".k-stmt__label").first()).toHaveText(q("q2").short);
     await expect(page.getByText("Jana Akceptační")).toHaveCount(0); // jméno jen se souhlasem
     await expect(page.getByRole("heading", { name: stance.title })).toBeVisible();
     for (const name of [/sdílet|sdílej/i, /porovnat|porovnej/i, /můj zákon/i])

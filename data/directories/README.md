@@ -16,8 +16,8 @@ node scripts/import-directories.mjs --write-fixtures   # also regenerate fixture
 Node ≥ 22, no npm dependencies (built-in `fetch` + `zlib`, own ZIP/CSV parsers).
 A full run makes ~450 HTTP requests (~70 MB, mostly `ovm.json`) and takes 1–3 minutes.
 
-If a source fails, the importer copies `fixtures/<file>` into place and records
-`"status": "fixture"` and the error in `meta.json`. Check `meta.json` → `files.*.status`
+If a source fails, the importer keeps the previous full import (`"status": "kept"`), or – when
+there is none – copies `fixtures/<file>` into place (`"status": "fixture"`), and records the error in `meta.json`. Check `meta.json` → `files.*.status`
 and `warnings` after every run.
 
 ## Files
@@ -60,6 +60,8 @@ and `warnings` after every run.
     "id_poslanec": 1982,
     "jmeno": "Věra", "prijmeni": "Adámková",
     "titul_pred": "prof. MUDr.", "titul_za": "CSc.",   // null when none
+    "pohlavi": "Z",             // "M" | "Z" from osoby.unl `pohlavi` (salutation + agreement in letters)
+                                // if ever missing in the source: derived from the name + "pohlavi_zdroj": "odvozeno"
     "kraj_code": "CZ010",       // volební kraj = kraj
     "kraj_nazev": "Hlavní město Praha",
     "klub": "Poslanecký klub ANO 2011", "klub_zkratka": "ANO2011",  // null = nezařazený
@@ -80,6 +82,10 @@ and `warnings` after every run.
   "jmeno": "Jan Pirk",
   "jmeno_s_tituly": "prof. MUDr. Jan Pirk, Dr.Sc.",
   "strana": "BEZPP",                      // as listed on senat.cz
+  "pohlavi": "M",                         // "M" | "Z"
+  "pohlavi_zdroj": "senat.cz",            // "senat.cz" = from the gendered committee roles on the profile
+                                          // (člen/členka, předseda/předsedkyně …); "odvozeno" = no roles,
+                                          // derived from the name (-ová/-á surname or a known female first name)
   "email": "pirkj@senat.cz",                  // null when the profile publishes none (18 of 81)
   "web": "https://janpirk.cz",            // null if none
   "profile_url": "https://www.senat.cz/senatori/index.php?lng=cz&par_3=361"
@@ -127,14 +133,20 @@ The file stays below 3 MB; if it ever exceeds it, the importer also writes `obce
     "address_podatelna": "Maltézské náměstí 1, 118 00 Praha 1", "address_podatelna_source": "<mk.gov.cz>",
     "datova_schranka": "8spaaur", "datova_schranka_source": "<RPP URL>",
     "email": "epodatelna@mk.gov.cz", "email_source": "<mk.gov.cz podatelna page>",
-    "web_form": null, "web": "https://www.mk.gov.cz/", "notes": []
+    "web_form": null, "web": "https://www.mk.gov.cz/", "notes": [],
+    "osoba": {                 // current office holder (letters: name in the address, salutation by gender)
+      "jmeno": "Oto", "prijmeni": "Klempíř", "titul_pred": null, "titul_za": null, "pohlavi": "M",
+      "zdroj": "https://vlada.gov.cz/cz/vlada/", "zdroj_detail": "<member page>", "overeno": "2026-10-28"
+    }
   },
   "prezident": { /* same shape; Kancelář prezidenta republiky */ }
 }
 ```
 
 `prezident.email` and `prezident.web_form` are `null`: hrad.cz returns HTTP 403 to
-automated requests, so they cannot be imported. The address and data box come from ISDS/RPP.
+automated requests, so they cannot be imported. For the same reason `prezident.osoba` (name, sex)
+comes from Wikidata (Q213 P35 head of state without end date, P21 sex) – the source is recorded in
+`osoba.zdroj` and `notes`. Titles are `null` because these sources do not list them (never typed in). The address and data box come from ISDS/RPP.
 If you need them, fill them in by hand from the hrad.cz contacts page and record the source.
 
 ## Sources
@@ -150,6 +162,10 @@ If you need them, fill them in by hand from the hrad.cz contacts page and record
 | Office postal address | ISDS – Seznam datových schránek OVM, https://www.mojedatovaschranka.cz/sds/datafile?format=xml&service=seznam_ds_ovm |
 | IČO → obec / MČ code | ARES REST `ekonomicke-subjekty/vyhledat` (batch by IČO) |
 | Ministerstvo kultury e-mail | https://www.mk.gov.cz/podatelna-ministerstva-kultury-cs-2816 |
+| Poslanci pohlaví | PSP `osoby.unl` column `pohlavi` |
+| Senátoři pohlaví | senat.cz profile, membership roles (`<dt>` člen/členka …); fallback derived from the name |
+| Ministr kultury (jméno, pohlaví) | https://vlada.gov.cz/cz/vlada/ (list of government members, office title ministr/ministryně) |
+| Prezident (jméno, pohlaví) | hrad.cz if it answers; otherwise Wikidata https://www.wikidata.org/wiki/Q213 (P35, P21) |
 
 ## Known caveats (see `meta.json` → `warnings`)
 

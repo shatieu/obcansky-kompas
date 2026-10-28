@@ -31,3 +31,8 @@ Podrobnosti v `content/explainers/_research-notes-b.md`.
 - [ ] Důvodová zpráva uvádí německý poplatek 18,94 €; rundfunkbeitrag.de 18,36 € – použito 18,36 €.
 - [ ] Podrobnosti Q1–Q4 v `content/explainers/_research-notes-a.md`.
 - [ ] Finsko (sazby 2026), Švédsko (zákon 2025:986), Norsko (regjeringen.no nedostupné), Německo (výše slevy RF) – údaje k ověření z primárních zdrojů.
+
+## Seznam souvisejících iniciativ (`content/links.yaml`, stránka `/souvisejici`)
+
+- [ ] Seznam souvisejících iniciativ sestavuje vlastník. Teď: „Ruce pryč od médií“ (ruceprycodmedii.cz, Milion Chvilek – od vlastníka) a „Veřejnoprávně“ (verejnopravne.cz, prohlášení pracovníků ČT a ČRo – `added_by: research`, dohledal agent). Ponechat / smazat / doplnit; popisy jsou jednou větou z vlastního obsahu stránek.
+- [ ] „K přečtení“: zkontrolovat výběr nestranných zdrojů (návrh = tisk 231, zákony 348/2005, 483/1991, 484/1991, hospodaření a rady ČT a ČRo, zahraniční vzory ze zdrojů vysvětlivek). Adresy ověřené 2026-10-28 (`checked_at`); před spuštěním zkontrolovat znovu.

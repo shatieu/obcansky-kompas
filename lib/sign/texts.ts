@@ -34,7 +34,7 @@ export const signTextsSchema = z.object({
     "report_reason_label", "report_contact_label", "report_button", "report_sent", "close_button",
   ] as const),
   email: group([
-    "verify_subject", "verify_body", "edit_subject", "edit_body", "report_subject", "report_body",
+    "verify_subject", "verify_body", "statement_heading", "short_id_line", "edit_subject", "edit_body", "report_subject", "report_body",
   ] as const),
 });
 
