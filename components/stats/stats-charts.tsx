@@ -1,5 +1,6 @@
 import { questionsFile, t, ui } from "@/lib/content";
-import { QUESTION_IDS, type QuestionId } from "@/lib/compose/types";
+import { QUESTION_ORDER } from "@/lib/compose/order";
+import type { QuestionId } from "@/lib/compose/types";
 import { chartOrder, type StatsResult } from "@/lib/stats/aggregate";
 import { BarChart } from "@/components/ui/bar-chart";
 import { formatCz, NB } from "@/components/ui/format";
@@ -32,7 +33,7 @@ export function StatsCharts({ stats }: { stats: StatsResult }) {
   if (stats.verified === 0) return <p className="mt-3 text-ink-secondary">{ui.stats.no_data}</p>;
   return (
     <div>
-      {QUESTION_IDS.map((qid) => (
+      {QUESTION_ORDER.map((qid) => (
         <div key={qid} className="border-t border-rule-soft py-3">
           <QuestionChart stats={stats} qid={qid} />
         </div>

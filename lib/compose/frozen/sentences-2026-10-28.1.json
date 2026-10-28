@@ -1,0 +1,175 @@
+{
+ "version": "2026-10-28.1",
+ "intro": {
+  "id": "intro",
+  "version": 1,
+  "text": "Takhle si představuji financování České televize a Českého rozhlasu."
+ },
+ "outro": {
+  "id": "outro",
+  "version": 1,
+  "text": "Žádám, aby zákonodárci můj názor vzali v úvahu."
+ },
+ "nevim": {
+  "id": "nevim",
+  "version": 1,
+  "text": "V otázce {topic} nechávám rozhodnutí na odbornících."
+ },
+ "q1": [
+  {
+   "id": "q1-below-gov",
+   "version": 1,
+   "text": "ČT a ČRo mají ročně dostat asi {amount}, méně než podle návrhu vlády.",
+   "band": "below-gov"
+  },
+  {
+   "id": "q1-gov",
+   "version": 1,
+   "text": "ČT a ČRo mají ročně dostat asi {amount}, jako v návrhu vlády.",
+   "band": "gov"
+  },
+  {
+   "id": "q1-between",
+   "version": 1,
+   "text": "ČT a ČRo mají ročně dostat asi {amount}, víc než v návrhu vlády, ale méně než dnes.",
+   "band": "between"
+  },
+  {
+   "id": "q1-today",
+   "version": 1,
+   "text": "ČT a ČRo mají ročně dostat asi {amount}, tedy zhruba jako dnes.",
+   "band": "today"
+  },
+  {
+   "id": "q1-above-today",
+   "version": 1,
+   "text": "ČT a ČRo mají ročně dostat asi {amount}, víc než dnes.",
+   "band": "above-today"
+  }
+ ],
+ "multi": {
+  "q7": {
+   "id": "q7-multi",
+   "version": 1,
+   "text": "Platit nemají: {items}."
+  }
+ },
+ "options": {
+  "q2-opt1": {
+   "version": 1,
+   "text": "Peníze mají jít z poplatku jako dnes."
+  },
+  "q2-opt2": {
+   "version": 1,
+   "text": "Peníze mají jít ze zvláštního poplatku vybíraného spolu s daněmi."
+  },
+  "q2-opt3": {
+   "version": 1,
+   "text": "Peníze mají jít ze státního rozpočtu"
+  },
+  "q2-opt4": {
+   "version": 1,
+   "text": "Peníze mají jít podle návrhu vlády."
+  },
+  "q2-opt5": {
+   "version": 1,
+   "text": "Peníze mají jít ze státního rozpočtu bez zvláštních pojistek."
+  },
+  "q2-opt6": {
+   "version": 1,
+   "text": "ČT a ČRo mají žít jen z dobrovolných příspěvků."
+  },
+  "q3-opt1": {
+   "version": 1,
+   "text": "Výši peněz má určit zákon a má růst podle inflace."
+  },
+  "q3-opt2": {
+   "version": 1,
+   "text": "O výši peněz mají každý rok rozhodovat vláda a poslanci."
+  },
+  "q3-opt3": {
+   "version": 1,
+   "text": "O výši peněz má na několik let rozhodovat nezávislá komise."
+  },
+  "q4-opt1": {
+   "version": 1,
+   "text": "Platit má každá domácnost."
+  },
+  "q4-opt2": {
+   "version": 1,
+   "text": "Platit má každý dospělý."
+  },
+  "q4-opt3": {
+   "version": 1,
+   "text": "Nikdo nemá platit zvlášť"
+  },
+  "q5-opt1": {
+   "version": 1,
+   "text": "Všichni mají platit stejně"
+  },
+  "q5-opt2": {
+   "version": 1,
+   "text": "Platba má záviset na příjmu"
+  },
+  "q5-opt3": {
+   "version": 1,
+   "text": "Platba má záviset na příjmu"
+  },
+  "q5-opt4": {
+   "version": 1,
+   "text": "Všichni mají platit stejně"
+  },
+  "q6-opt1": {
+   "version": 1,
+   "text": "Důchodci mají platit stejně jako ostatní."
+  },
+  "q6-opt2": {
+   "version": 1,
+   "text": "Důchodci mají platit méně."
+  },
+  "q6-opt3": {
+   "version": 1,
+   "text": "Důchodci nemají platit."
+  },
+  "q7-opt1": {
+   "version": 1,
+   "fragment": "lidé s nízkým příjmem"
+  },
+  "q7-opt2": {
+   "version": 1,
+   "fragment": "studenti"
+  },
+  "q7-opt3": {
+   "version": 1,
+   "fragment": "lidé se zdravotním postižením"
+  },
+  "q7-opt4": {
+   "version": 1,
+   "fragment": "lidé v hmotné nouzi"
+  },
+  "q7-opt5": {
+   "version": 1,
+   "text": "Platit mají všichni"
+  },
+  "q8-opt1": {
+   "version": 1,
+   "text": "Firmy nemají platit."
+  },
+  "q8-opt2": {
+   "version": 1,
+   "text": "Firmy mají platit podle počtu zaměstnanců."
+  },
+  "q8-opt3": {
+   "version": 1,
+   "text": "Firmy mají platit podle zisku"
+  },
+  "q8-opt4": {
+   "version": 1,
+   "text": "Firmy mají platit podle obratu"
+  },
+  "q8-opt5": {
+   "version": 1,
+   "text": "Platit mají jen velké firmy."
+  }
+ }
+}

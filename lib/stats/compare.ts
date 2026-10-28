@@ -1,6 +1,7 @@
 import type { QuestionsFile } from "@/lib/content/schemas";
 import { evaluate, isAnswered } from "@/lib/compose/engine";
 import { q1Band, type BandThresholds } from "@/lib/compose/q1";
+import { questionOrder } from "@/lib/compose/order";
 import { QUESTION_IDS, type Answers, type AnswerValue, type QuestionId } from "@/lib/compose/types";
 import { q7Key, type StatsResult } from "./aggregate";
 
@@ -67,7 +68,7 @@ export function compare(input: {
   const { questionsFile: file, thresholds: t } = input;
   const user = evaluate(input.answers, file);
 
-  const questions: QuestionComparison[] = QUESTION_IDS.map((qid) => {
+  const questions: QuestionComparison[] = questionOrder(file).map((qid) => {
     const key = user.states[qid].status === "skipped" ? null : answerKey(qid, user.effective[qid], t);
     const qs = input.stats.questions[qid];
     if (key === null) return { questionId: qid, key, same: 0, total: qs.total, percent: null };

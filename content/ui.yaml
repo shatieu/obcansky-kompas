@@ -63,12 +63,26 @@ compass:
   disabled_explain: Tahle možnost nejde dohromady s volbou „{option}“ v otázce „{question}“. Změň nejdřív tu.
   disabled_why: Proč to nejde?
   disabled_go_button: Změnit volbu
-  summary_title: Tvůj text je hotový
-  summary_lead: Text se mění jen podle tvých voleb, ručně se nepřepisuje.
+  summary_title: Tvůj text a odpovědi
+  summary_lead: Každou odpověď můžeš změnit přímo tady, text se upraví sám.
   edit_answers_button: Upravit odpovědi
   answers_title: Tvoje odpovědi
   not_answered: Bez odpovědi
   skipped_short: Odpadá
+  # Navigace mezi otázkami (segmenty průběhu jsou tlačítka) a přehled odpovědí.
+  nav_aria: Otázky kompasu
+  nav_item: "Otázka {n} z {total}: {question}"
+  nav_state_done: zodpovězeno
+  nav_state_current: právě tady
+  nav_state_todo: bez odpovědi
+  nav_state_skipped: odpadá
+  summary_nav_button: Přehled odpovědí
+  summary_loading: Načítám přehled…
+  question_number: Otázka {n}
+  change_button: Změnit
+  change_aria: "Změnit odpověď: {question}"
+  close_editor_button: Hotovo
+  invalidated_short: Původní odpověď už neplatí. Vyber znovu.
 
 explainer:
   open: Co to znamená?
@@ -533,7 +547,7 @@ method:
   title: Jak kompas funguje
   lead: Otázky, věty i zdroje jsou veřejné, tady je vidíš všechny.
   compose_title: Jak vzniká tvůj text
-  compose_body: Text k podpisu se skládá podle pevných pravidel, nepíše ho žádná umělá inteligence. Začíná úvodní větou, pak přijde jedna věta za každou otázku, na kterou odpovíš, a nakonec závěr. Stejné odpovědi dají vždycky stejný text. U otázek s odpovědí Nevím můžeš větu vynechat.
+  compose_body: Text k podpisu se skládá podle pevných pravidel, nepíše ho žádná umělá inteligence. Začíná úvodní větou, pak přijde za každou otázku, na kterou odpovíš, tvůj postoj s krátkým zdůvodněním (dvě až tři věty) v pořadí otázek kompasu, a nakonec závěr. Stejné odpovědi dají vždycky stejný text. U otázek s odpovědí Nevím můžeš větu vynechat.
   branching_title: Větvení otázek
   branching_body: Některé odpovědi spolu nejdou dohromady. Když vybereš jednu z nich, další otázka odpadne nebo se u ní některé volby zašedí. Platí tato pravidla.
   branching_when: Když u otázky „{question}“ vybereš „{option}“

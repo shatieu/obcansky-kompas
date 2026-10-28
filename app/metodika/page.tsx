@@ -19,7 +19,7 @@ function groupTitle(g: LibraryGroup, m: ReturnType<typeof pagesTexts>["method"])
   if (g.key === "q1") return m.library_group_q1;
   if (g.key === "multi") return m.library_group_multi;
   const q = questionsFile.questions.find((x) => x.id === g.questionId);
-  return q ? `${q.id.toUpperCase()}: ${q.text}` : m.library_group_options;
+  return q ? `${questionsFile.order.indexOf(q.id) + 1}. ${q.text}` : m.library_group_options;
 }
 
 export default function MethodPage() {

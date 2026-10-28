@@ -413,19 +413,24 @@
   .k-progress__label .k-kicker { margin: 0; }
   .k-progress__label .k-kicker::before { display: none; }
   .k-progress__count { font-family: var(--font-wide); font-size: 15px; font-weight: 700; font-variant-numeric: tabular-nums lining-nums; }
-  /* Klikací průběh kompasu: segment = tlačítko 48 px vysoké, pruh 8 px uvnitř (vizuálně stejné jako .k-progress). */
-  .k-qnav { display: flex; margin: -20px 0 0; padding: 0; list-style: none; }
-  .k-qnav > li { flex: 1; min-width: 0; }
-  .k-qnav__seg { display: flex; align-items: center; width: 100%; height: 48px; padding: 0 2px; border: 0; background: none; cursor: pointer; }
-  .k-qnav > li:first-child .k-qnav__seg { padding-left: 0; }
-  .k-qnav > li:last-child .k-qnav__seg { padding-right: 0; }
+  /* Klikací průběh kompasu: segment = tlačítko 48 px vysoké s číslem otázky a pruhem 8 px.
+     Pod 480 px dvě řady po čtyřech, aby měl každý cíl aspoň 48 × 48 px (osm v řadě se na 360 px nevejde). */
+  .k-qnav { display: grid; grid-template-columns: repeat(8, minmax(0, 1fr)); margin: -8px -2px 0; padding: 0; list-style: none; }
+  @media (max-width: 479px) { .k-qnav { grid-template-columns: repeat(4, minmax(0, 1fr)); } }
+  .k-qnav > li { min-width: 0; }
+  .k-qnav__seg {
+    display: flex; flex-direction: column; justify-content: center; gap: 4px; width: 100%; height: 48px; padding: 0 2px;
+    border: 0; background: none; cursor: pointer; color: var(--ink-secondary); text-align: left;
+    font-family: var(--font-wide); font-size: 13px; line-height: 16px; font-weight: 700; font-variant-numeric: tabular-nums lining-nums;
+  }
+  .k-qnav__seg[aria-current="step"] { color: var(--ink); }
   .k-qnav__seg:focus-visible { outline-offset: -3px; }
-  .k-qnav__bar { flex: 1; height: 8px; background: var(--rule-soft); transition: background-color 160ms, height 100ms; }
-  .k-qnav__seg:hover .k-qnav__bar { height: 14px; }
+  .k-qnav__bar { display: block; height: 8px; background: var(--rule-soft); transition: background-color 160ms; }
+  .k-qnav__seg:hover .k-qnav__bar { outline: 2px solid var(--ink); outline-offset: -2px; }
   .k-qnav__seg[data-s="done"] .k-qnav__bar { background: var(--blue); }
   .k-qnav__seg[data-s="current"] .k-qnav__bar { background: var(--red); }
   .k-qnav__seg[data-s="skipped"] .k-qnav__bar { background-color: var(--surface); background-image: repeating-linear-gradient(135deg, var(--muted) 0 2px, transparent 2px 6px); }
-  .k-qnav + .k-progress__label { margin-top: -12px; align-items: center; }
+  .k-qnav + .k-progress__label { margin-top: 0; align-items: center; }
   .k-qnav__summary { margin-left: auto; }
   .k-qnav__summary[aria-current="page"] { text-decoration: none; color: var(--ink); }
   /* Přehled odpovědí: neplatná odpověď = 4px linka v ink (chyby nikdy červeně). */

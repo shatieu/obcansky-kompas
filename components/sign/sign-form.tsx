@@ -79,7 +79,7 @@ export function SignForm({ t, mode, siteKey }: { t: SignTexts["sign"]; mode: Mod
         </h2>
         <p className="mt-1">{statement.text}</p>
       </div>
-      <ButtonLink href="/kompas#q1" variant="secondary" className="mt-1">
+      <ButtonLink href="/kompas#text" variant="secondary" className="mt-1">
         {t.edit_answers_button}
       </ButtonLink>
     </section>

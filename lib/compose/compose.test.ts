@@ -156,10 +156,11 @@ describe("composeStatement (SPEC §6)", () => {
     const s1 = composeStatement(a, v);
     const s2 = composeStatement({ ...a }, v);
     expect(s1).toEqual(s2);
-    expect(s1.parts.map((p) => p.questionId)).toEqual([null, "q1", "q2", "q3", "q7", "q8", null]);
+    // Pořadí zobrazení (questions.yaml `order`): otázka na peníze (q1) je až na konci.
+    expect(s1.parts.map((p) => p.questionId)).toEqual([null, "q2", "q3", "q7", "q8", "q1", null]);
     expect(s1.text).toContain("8,5 miliardy Kč");
     expect(s1.text).toContain("lidé s nízkým příjmem a studenti");
-    expect(s1.parts[3]!.text).toContain("nechávám rozhodnutí na odbornících");
+    expect(s1.parts[2]!.text).toContain("nechávám rozhodnutí na odbornících");
   });
 
   it("věty Nevím lze skrýt", () => {

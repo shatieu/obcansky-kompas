@@ -3,7 +3,8 @@ import { SampleBanner } from "@/components/ui/sample";
 import { Notice } from "@/components/ui/typography";
 import { questionsFile, t, ui } from "@/lib/content";
 import { evaluate } from "@/lib/compose/engine";
-import { QUESTION_IDS, type QuestionId } from "@/lib/compose/types";
+import { QUESTION_ORDER } from "@/lib/compose/order";
+import type { QuestionId } from "@/lib/compose/types";
 import { flags } from "@/lib/env";
 import { answerLabel, formatDateCz } from "@/lib/org/format";
 import type { PublicOrganization } from "@/lib/org/service";
@@ -33,7 +34,7 @@ function Answers({ o, h }: { o: PublicOrganization; h: H }) {
   const units = { unit_decimal: ui.slider.unit_decimal, unit_whole: ui.slider.unit_whole };
   return (
     <ol className="flex flex-col gap-2">
-      {QUESTION_IDS.map((qid: QuestionId, i) => {
+      {QUESTION_ORDER.map((qid: QuestionId, i) => {
         const q = questionsFile.questions.find((x) => x.id === qid)!;
         const label = answerLabel(q, answers[qid], units);
         const skipped = states[qid].status === "skipped";

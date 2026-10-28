@@ -9,6 +9,7 @@ import { Kicker, Notice, ScreenHeading } from "@/components/ui/typography";
 import { facts, questionsFile, t, ui } from "@/lib/content";
 import { evaluate } from "@/lib/compose/engine";
 import { formatAmount, q1Anchors } from "@/lib/compose/q1";
+import { QUESTION_ORDER } from "@/lib/compose/order";
 import type { Answers, AnswerValue, QuestionId } from "@/lib/compose/types";
 import type { Question } from "@/lib/content/schemas";
 import type { OrgFormTexts } from "@/lib/org/texts";
@@ -110,8 +111,8 @@ export function OrgForm({ token, name, t: tx }: { token: string; name: string; t
       </div>
 
       <ol className="flex flex-col gap-6">
-        {questionsFile.questions.map((q, i) => {
-          const qid = q.id as QuestionId;
+        {QUESTION_ORDER.map((qid, i) => {
+          const q = questionsFile.questions.find((x) => x.id === qid)!;
           const st = evaluation.states[qid];
           const value = evaluation.effective[qid];
           const legendId = `${qid}-legend`;

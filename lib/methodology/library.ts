@@ -50,7 +50,8 @@ export function sentenceLibrary(sentences: SentencesFile, questions: QuestionsFi
       sentences: Object.values(sentences.multi).map((m) => s(m.id, m.version, m.text)),
     },
   ];
-  for (const q of questions.questions) {
+  for (const qid of questions.order) {
+    const q = questions.questions.find((x) => x.id === qid)!;
     const list = Object.entries(sentences.options)
       .filter(([id]) => id.startsWith(`${q.id}-`))
       .map(([id, o]) => s(id, o.version, o.text ?? null, o.fragment ?? null, optionLabel.get(id) ?? null));

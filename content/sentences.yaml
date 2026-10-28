@@ -1,8 +1,11 @@
 # Věty k podpisu (SPEC §6). Každá věta má ID a verzi. Text se skládá deterministicky:
-# úvod + jedna věta za každou zodpovězenou otázku + závěr.
+# úvod + jedna věta (u voleb 2–3 věty: postoj + krátké zdůvodnění) za každou zodpovězenou otázku
+# v pořadí `order` z questions.yaml + závěr. Žádné AI za běhu, žádná nová fakta – jen názor podepisujícího.
+# Neutralita: volby jedné otázky (včetně „Návrh vlády“) mají stejnou stavbu, tón a podobnou délku.
 # `version` souboru = content_version uložená u podpisu. Při změně jakékoli věty zvyš verzi věty
-# i souboru a starou verzi souboru zachovej v lib/compose/registry.ts pro rekonstrukci.
-version: "2026-10-28.1"
+# i souboru a starou verzi zmraz do lib/compose/frozen/ a zaregistruj v lib/compose/registry.ts.
+# Každou hodnotu s čárkou dej do uvozovek (neuvozovkovaná čárka ve `{ … }` text utne).
+version: "2026-10-28.2"
 
 intro:
   id: intro
@@ -23,65 +26,65 @@ nevim:
 q1:
   - id: q1-below-gov
     band: below-gov
-    version: 1
-    text: ČT a ČRo mají ročně dostat asi {amount}, méně než podle návrhu vlády.
+    version: 2
+    text: "ČT a ČRo mají ročně dostat asi {amount}, méně než podle návrhu vlády. Myslím si, že by měly hospodařit s menší částkou."
   - id: q1-gov
     band: gov
-    version: 1
-    text: ČT a ČRo mají ročně dostat asi {amount}, jako v návrhu vlády.
+    version: 2
+    text: "ČT a ČRo mají ročně dostat asi {amount}, jako v návrhu vlády. Myslím si, že jim tahle částka na jejich práci stačí."
   - id: q1-between
     band: between
-    version: 1
-    text: ČT a ČRo mají ročně dostat asi {amount}, víc než v návrhu vlády, ale méně než dnes.
+    version: 2
+    text: "ČT a ČRo mají ročně dostat asi {amount}, víc než v návrhu vlády, ale méně než dnes. Myslím si, že rozumná částka je mezi nimi."
   - id: q1-today
     band: today
-    version: 1
-    text: ČT a ČRo mají ročně dostat asi {amount}, tedy zhruba jako dnes.
+    version: 2
+    text: "ČT a ČRo mají ročně dostat asi {amount}, tedy zhruba jako dnes. Myslím si, že jim dnešní částka na jejich práci stačí."
   - id: q1-above-today
     band: above-today
-    version: 1
-    text: ČT a ČRo mají ročně dostat asi {amount}, víc než dnes.
+    version: 2
+    text: "ČT a ČRo mají ročně dostat asi {amount}, víc než dnes. Myslím si, že na svou práci potřebují víc peněz než teď."
 
-# Otázky s více volbami: jedna věta se seznamem vybraných skupin ({items}).
+# Otázky s více volbami: jedna věta se seznamem vybraných skupin ({items}) + zdůvodnění.
 multi:
   q7:
     id: q7-multi
-    version: 1
-    text: "Platit nemají: {items}."
+    version: 2
+    text: "Platit nemají: {items}. Podle mě je u nich na místě výjimka z placení."
 
 options:
-  q2-opt1: { version: 1, text: Peníze mají jít z poplatku jako dnes. }
-  q2-opt2: { version: 1, text: Peníze mají jít ze zvláštního poplatku vybíraného spolu s daněmi. }
-  q2-opt3: { version: 1, text: "Peníze mají jít ze státního rozpočtu, ale s pojistkami nezávislosti." }
-  q2-opt4: { version: 1, text: Peníze mají jít podle návrhu vlády. }
-  q2-opt5: { version: 1, text: Peníze mají jít ze státního rozpočtu bez zvláštních pojistek. }
-  q2-opt6: { version: 1, text: ČT a ČRo mají žít jen z dobrovolných příspěvků. }
+  q2-opt1: { version: 2, text: "Peníze mají jít z poplatku jako dnes. Současný způsob placení podle mě není potřeba měnit. Chci, aby placení zůstalo tak, jak ho lidé znají." }
+  q2-opt2: { version: 2, text: "Peníze mají jít ze zvláštního poplatku vybíraného spolu s daněmi. Podle mě je to jednodušší než platit poplatek zvlášť. Chci, aby peníze zůstaly určené jen pro ČT a ČRo." }
+  q2-opt3: { version: 2, text: "Peníze mají jít ze státního rozpočtu, ale s pojistkami nezávislosti. Podle mě to může fungovat, když pojistky stanoví zákon. Chci, aby politici nemohli peníze snadno ubrat." }
+  q2-opt4: { version: 2, text: "Peníze mají jít podle návrhu vlády. Podle mě je návrh vlády dobrý základ pro nový způsob placení. Chci, aby se změna udělala tak, jak ji vláda navrhla." }
+  q2-opt5: { version: 2, text: "Peníze mají jít ze státního rozpočtu bez zvláštních pojistek. Podle mě nejsou zvláštní pravidla potřeba. Chci, aby o penězích rozhodovali politici jako o jiných výdajích." }
+  q2-opt6: { version: 2, text: "ČT a ČRo mají žít jen z dobrovolných příspěvků. Podle mě má na ně platit jen ten, kdo sám chce. Chci, aby nikdo nemusel platit povinně." }
 
-  q3-opt1: { version: 1, text: Výši peněz má určit zákon a má růst podle inflace. }
-  q3-opt2: { version: 1, text: O výši peněz mají každý rok rozhodovat vláda a poslanci. }
-  q3-opt3: { version: 1, text: O výši peněz má na několik let rozhodovat nezávislá komise. }
+  q3-opt1: { version: 2, text: "Výši peněz má určit zákon a má růst podle inflace. Podle mě je dobré, když je částka daná pravidlem předem. Chci, aby ČT a ČRo věděly dopředu, s čím mohou počítat." }
+  q3-opt2: { version: 2, text: "O výši peněz mají každý rok rozhodovat vláda a poslanci. Podle mě mají o penězích rozhodovat lidé, které jsme zvolili. Chci, aby šla částka každý rok upravit." }
+  q3-opt3: { version: 2, text: "O výši peněz má na několik let rozhodovat nezávislá komise. Podle mě má o penězích rozhodovat někdo mimo politiku. Chci, aby částka platila na delší dobu dopředu." }
 
-  q4-opt1: { version: 1, text: Platit má každá domácnost. }
-  q4-opt2: { version: 1, text: Platit má každý dospělý. }
-  q4-opt3: { version: 1, text: "Nikdo nemá platit zvlášť, peníze mají jít ze všech daní." }
+  q4-opt1: { version: 2, text: "Platit má každá domácnost. Podle mě je spravedlivé platit jednou za celou domácnost. Chci, aby platba nezávisela na tom, kolik lidí spolu bydlí." }
+  q4-opt2: { version: 2, text: "Platit má každý dospělý. Podle mě je spravedlivé, když každý dospělý platí sám za sebe. Chci, aby platba nezávisela na tom, s kým kdo bydlí." }
+  q4-opt3: { version: 2, text: "Nikdo nemá platit zvlášť, peníze mají jít ze všech daní. Podle mě to má být běžná část výdajů státu. Chci, aby lidé neplatili žádnou zvláštní platbu." }
 
-  q5-opt1: { version: 1, text: "Všichni mají platit stejně, bez ohledu na příjem." }
-  q5-opt2: { version: 1, text: "Platba má záviset na příjmu, ale s horní hranicí." }
-  q5-opt3: { version: 1, text: "Platba má záviset na příjmu, bez horní hranice." }
-  q5-opt4: { version: 1, text: "Všichni mají platit stejně, ale někteří se slevou." }
+  q5-opt1: { version: 2, text: "Všichni mají platit stejně, bez ohledu na příjem. Podle mě je férové, když je částka pro všechny stejná. Chci, aby platba byla jednoduchá a snadno pochopitelná." }
+  q5-opt2: { version: 2, text: "Platba má záviset na příjmu, ale s horní hranicí. Podle mě mají lidé s vyšším příjmem platit víc. Chci ale, aby platba měla strop a nerostla bez omezení." }
+  q5-opt3: { version: 2, text: "Platba má záviset na příjmu, bez horní hranice. Podle mě mají lidé s vyšším příjmem platit víc. Chci, aby platba rostla s příjmem a neměla žádný strop." }
+  q5-opt4: { version: 2, text: "Všichni mají platit stejně, ale někteří se slevou. Podle mě je férové, když je základní částka pro všechny stejná. Chci ale, aby lidé v těžší situaci platili méně." }
 
-  q6-opt1: { version: 1, text: Důchodci mají platit stejně jako ostatní. }
-  q6-opt2: { version: 1, text: Důchodci mají platit méně. }
-  q6-opt3: { version: 1, text: Důchodci nemají platit. }
+  q6-opt1: { version: 2, text: "Důchodci mají platit stejně jako ostatní. Podle mě nemá o placení rozhodovat věk. Chci, aby pro všechny dospělé platila stejná pravidla." }
+  q6-opt2: { version: 2, text: "Důchodci mají platit méně. Podle mě je správné brát ohled na jejich situaci. Chci, aby pro ně byla platba nižší než pro ostatní." }
+  q6-opt3: { version: 2, text: "Důchodci nemají platit. Podle mě je správné brát ohled na jejich situaci. Chci, aby důchodci nemuseli na ČT a ČRo platit vůbec." }
 
   q7-opt1: { version: 1, fragment: lidé s nízkým příjmem }
   q7-opt2: { version: 1, fragment: studenti }
   q7-opt3: { version: 1, fragment: lidé se zdravotním postižením }
   q7-opt4: { version: 1, fragment: lidé v hmotné nouzi }
-  q7-opt5: { version: 1, text: "Platit mají všichni, bez výjimek." }
+  q7-opt5: { version: 2, text: "Platit mají všichni, bez výjimek. Podle mě by výjimky z placení být neměly." }
 
-  q8-opt1: { version: 1, text: Firmy nemají platit. }
-  q8-opt2: { version: 1, text: Firmy mají platit podle počtu zaměstnanců. }
-  q8-opt3: { version: 1, text: "Firmy mají platit podle zisku, s horní hranicí." }
-  q8-opt4: { version: 1, text: "Firmy mají platit podle obratu, s horní hranicí." }
-  q8-opt5: { version: 1, text: Platit mají jen velké firmy. }
+  q8-opt1: { version: 2, text: "Firmy nemají platit. Podle mě nemá být placení ČT a ČRo věcí firem. Chci, aby firmy žádnou zvláštní platbu neměly." }
+  q8-opt2: { version: 2, text: "Firmy mají platit podle počtu zaměstnanců. Podle mě je to jednoduché a přehledné měřítko. Chci, aby větší firmy platily víc než menší." }
+  q8-opt3: { version: 2, text: "Firmy mají platit podle zisku, s horní hranicí. Podle mě má platit víc ten, komu se daří. Chci ale, aby platba měla strop." }
+  q8-opt4: { version: 2, text: "Firmy mají platit podle obratu, s horní hranicí. Podle mě je obrat jednoduché měřítko velikosti firmy. Chci ale, aby platba měla strop." }
+  q8-opt5: { version: 2, text: "Platit mají jen velké firmy. Podle mě je správné nezatěžovat malé firmy. Chci, aby platily jen firmy, které si to mohou dovolit." }

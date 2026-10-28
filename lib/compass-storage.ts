@@ -1,4 +1,6 @@
-import type { Answers, Demographics, QuestionId } from "@/lib/compose/types";
+import { questionsFile } from "@/lib/content";
+import { evaluate } from "@/lib/compose/engine";
+import { QUESTION_IDS, type Answers, type AnswerValue, type Demographics, type QuestionId } from "@/lib/compose/types";
 
 /**
  * Stav kompasu v prohlížeči (SPEC §5.4). Vše v try/catch – localStorage může chybět
@@ -17,6 +19,21 @@ export interface CompassState {
 }
 
 export const emptyState = (): CompassState => ({ answers: {}, demographics: {}, invalidated: [], hideUnknown: false });
+
+/**
+ * Změna jedné odpovědi (krok otázky i přehled odpovědí). Větvení se přepočítá hned: odpovědi,
+ * které změna zrušila, zmizí a jejich otázky se přidají do `invalidated` (zvýrazní se, SPEC §5.2).
+ * Nová odpověď na otázku zvýraznění u ní zruší.
+ */
+export function applyAnswer(s: CompassState, qid: QuestionId, value: AnswerValue | undefined): CompassState {
+  const answers: Answers = { ...s.answers };
+  if (value === undefined || (Array.isArray(value) && value.length === 0)) delete answers[qid];
+  else answers[qid] = value;
+  const ev = evaluate(answers, questionsFile);
+  const invalidated = new Set(s.invalidated.filter((q) => q !== qid));
+  for (const q of ev.invalidated) invalidated.add(q);
+  return { ...s, answers: ev.cleaned, invalidated: QUESTION_IDS.filter((q) => invalidated.has(q)) };
+}
 
 export function loadCompassState(): CompassState {
   try {

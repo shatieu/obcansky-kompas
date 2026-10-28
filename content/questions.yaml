@@ -1,7 +1,7 @@
 # Otázky kompasu (SPEC §5.1), pravidla větvení jako data (SPEC §5.2), demografie (SPEC §5.3).
 # ID voleb: q{n}-opt{k}, k = pořadí volby ve SPEC §5.1 (od 1). „Nevím“ má id q{n}-nevim a nemá vysvětlivku.
 # Hodnoty kotev Q1 se berou z content/facts.yaml (nikdy konstanty v kódu).
-version: 1
+version: 2
 
 # Pásma Q1 od nejnižšího. Hranice: kotva „Návrh vlády“ a kotva „Dnes“ (shoda = rozdíl pod 0,05 mld).
 q1_bands:
@@ -15,6 +15,11 @@ q1_bands:
     label: Jako dnes
   - id: above-today
     label: Víc než dnes
+
+# Pořadí zobrazení. Otázka na peníze (q1) je až na konci – není to nejsilnější vstup do kompasu.
+# Id otázek zůstávají (podpisy, statistiky, zákon, dopisy); mění se jen pořadí a číslování „Otázka n z 8“.
+# Platí všude: kompas, přehled odpovědí, pořadí vět v textu, /statistiky, /v/[uuid], /org, /metodika.
+order: [q2, q3, q4, q5, q6, q7, q8, q1]
 
 questions:
   - id: q1

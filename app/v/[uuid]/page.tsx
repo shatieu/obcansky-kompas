@@ -13,7 +13,7 @@ import { podpisCard } from "@/lib/share/card";
 import { lookupSignature } from "@/lib/share/data";
 import { momentFromSearch, shareMetadata, signatureVersion } from "@/lib/share/metadata";
 import { sharePanelTexts, shareTexts } from "@/lib/share/texts";
-import { composeStatement, evaluate, isAnswered, QUESTION_IDS, type Statement } from "@/lib/compose";
+import { composeStatement, evaluate, isAnswered, QUESTION_ORDER, type Statement } from "@/lib/compose";
 import { formatAmount } from "@/lib/compose/q1";
 import { questionsFile, stance, t as fill, ui } from "@/lib/content";
 import { flags } from "@/lib/env";
@@ -48,7 +48,7 @@ const dateFmt = new Intl.DateTimeFormat("cs-CZ", { day: "numeric", month: "long"
 
 function answerRows(sig: PublicSignature, t: SignTexts["page"]) {
   const { states } = evaluate(sig.answers, questionsFile);
-  return QUESTION_IDS.map((qid) => {
+  return QUESTION_ORDER.map((qid) => {
     const q = questionsFile.questions.find((x) => x.id === qid)!;
     const v = sig.answers[qid];
     const label = (id: string) => q.options.find((o) => o.id === id)?.label ?? id;

@@ -116,8 +116,11 @@ describe("srovnání (SPEC §8)", () => {
       questionsFile,
       thresholds,
     });
-    expect(c.questions[0]!.key).toBe("gov");
-    expect(c.questions[6]!.key).toBe("q7-opt1+q7-opt2");
+    const byId = (qid: string) => c.questions.find((q) => q.questionId === qid)!;
+    expect(byId("q1").key).toBe("gov");
+    expect(byId("q7").key).toBe("q7-opt1+q7-opt2");
+    // Řádky srovnání jdou v pořadí zobrazení (otázka na peníze na konci).
+    expect(c.questions.map((q) => q.questionId)).toEqual(questionsFile.order);
     expect(c.organizations[0]).toMatchObject({ compared: 2, matches: 2, percent: 100 });
   });
 

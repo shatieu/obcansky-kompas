@@ -43,7 +43,7 @@ export function EditPanel({
   const editAnswers = () => {
     saveCompassState({ answers: signature.answers, demographics: signature.demographics, invalidated: [], hideUnknown: false });
     saveEditSession({ token, showName: signature.showName, signatureId: signature.id });
-    window.location.assign("/kompas#q1");
+    window.location.assign("/kompas#text");
   };
 
   const withdraw = async () => {

@@ -1,28 +1,35 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { lazy, Suspense, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { facts, questionsFile, t, ui } from "@/lib/content";
 import type { Question } from "@/lib/content/schemas";
-import { composeStatement, currentContentVersion, evaluate, isAnswered } from "@/lib/compose";
-import type { Cause, QuestionState } from "@/lib/compose/engine";
+import { composeWith } from "@/lib/compose/core";
+import { currentBundle } from "@/lib/compose/current";
+import { evaluate, isAnswered, type Cause, type QuestionState } from "@/lib/compose/engine";
+import { QUESTION_ORDER } from "@/lib/compose/order";
 import { formatAmount, formatInt, perAdultMonthly, q1Anchors } from "@/lib/compose/q1";
-import { QUESTION_IDS, type Answers, type AnswerValue, type Demographics, type QuestionId } from "@/lib/compose/types";
-import { emptyState, loadCompassState, saveCompassState, clearCompassState, type CompassState } from "@/lib/compass-storage";
+import { QUESTION_IDS, type AnswerValue, type Demographics, type QuestionId } from "@/lib/compose/types";
+import { applyAnswer, emptyState, loadCompassState, saveCompassState, clearCompassState, type CompassState } from "@/lib/compass-storage";
 import { ExplainerBody } from "@/components/explainer";
-import { ActionButton, ActionList } from "@/components/ui/action-list";
 import { AnswerGroup, AnswerOption } from "@/components/ui/answer";
 import { BudgetSlider } from "@/components/ui/budget-slider";
 import { Button, ButtonLink, StickyBar } from "@/components/ui/button";
 import { BottomSheet, Disclosure } from "@/components/ui/disclosure";
-import { ProgressBar, type ProgressState } from "@/components/ui/progress";
-import { Notice, ScreenHeading } from "@/components/ui/typography";
+import { Notice } from "@/components/ui/typography";
 import { Demographics as DemographicsStep } from "./demographics";
+import { QuestionNav, type NavItem } from "./question-nav";
+import { nextMultiValue } from "./select";
 import { StatementAside, StatementPreview } from "./statement-preview";
 
-const STEP_IDS = [...QUESTION_IDS, "o-vas", "text"] as const;
+/** Přehled odpovědí se načte až při prvním zobrazení (JS první obrazovky ≤ 150 kB). */
+const Summary = lazy(() => import("./summary"));
+
+/** Kroky v pořadí zobrazení (questions.yaml `order`); #hash je id otázky, ne pořadí. */
+const STEP_IDS = [...QUESTION_ORDER, "o-vas", "text"] as const;
 type StepId = (typeof STEP_IDS)[number];
-const DEMO_STEP = 8;
-const SUMMARY_STEP = 9;
+const QCOUNT = QUESTION_ORDER.length;
+const DEMO_STEP = QCOUNT;
+const SUMMARY_STEP = QCOUNT + 1;
 
 const anchors = q1Anchors(questionsFile, facts);
 const sliderAnchors = anchors.map((a) => ({ value: a.value, label: a.label }));
@@ -70,7 +77,7 @@ export function Compass() {
 
   const evaluation = useMemo(() => evaluate(state.answers, questionsFile), [state.answers]);
   const statement = useMemo(
-    () => composeStatement(state.answers, currentContentVersion(), { hideUnknown: state.hideUnknown }),
+    () => composeWith(currentBundle, state.answers, { hideUnknown: state.hideUnknown }),
     [state.answers, state.hideUnknown],
   );
 
@@ -86,7 +93,7 @@ export function Compass() {
     requestAnimationFrame(() => headingRef.current?.focus());
   }, []);
 
-  const isSkipped = (i: number) => i < 8 && evaluation.states[QUESTION_IDS[i]!].status === "skipped";
+  const isSkipped = (i: number) => i < QCOUNT && evaluation.states[QUESTION_ORDER[i]!].status === "skipped";
   const next = () => {
     let i = step + 1;
     while (i < SUMMARY_STEP && isSkipped(i)) i++;
@@ -98,35 +105,36 @@ export function Compass() {
     goTo(Math.max(i, 0));
   };
 
-  const setAnswer = (qid: QuestionId, value: AnswerValue | undefined) => {
-    setState((s) => {
-      const answers: Answers = { ...s.answers };
-      if (value === undefined || (Array.isArray(value) && value.length === 0)) delete answers[qid];
-      else answers[qid] = value;
-      const ev = evaluate(answers, questionsFile);
-      const invalidated = new Set(s.invalidated.filter((q) => q !== qid));
-      for (const q of ev.invalidated) invalidated.add(q);
-      return { ...s, answers: ev.cleaned, invalidated: QUESTION_IDS.filter((q) => invalidated.has(q)) };
-    });
-  };
+  const setAnswer = (qid: QuestionId, value: AnswerValue | undefined) => setState((s) => applyAnswer(s, qid, value));
 
   const setDemographics = (d: Demographics) => setState((s) => ({ ...s, demographics: d }));
   const setHide = (v: boolean) => setState((s) => ({ ...s, hideUnknown: v }));
 
-  const segments: ProgressState[] = QUESTION_IDS.map((qid, i) =>
-    isSkipped(i) ? "skipped" : i === step ? "current" : isAnswered(evaluation.effective[qid]) ? "done" : "todo",
-  );
+  const navItems: NavItem[] = QUESTION_ORDER.map((qid, i) => ({
+    label: questionOf(qid).short,
+    state: i === step ? "current" : isSkipped(i) ? "skipped" : isAnswered(evaluation.effective[qid]) ? "done" : "todo",
+  }));
+  const hasAnswers = QUESTION_IDS.some((q) => isAnswered(state.answers[q]));
+  const restart = () => {
+    clearCompassState();
+    setState(emptyState());
+    goTo(0);
+  };
 
   const stepId = STEP_IDS[step]!;
-  const progressLabel = t(ui.compass.progress_label, { n: Math.min(step + 1, 8), total: 8 });
 
   return (
     <div className="k-wrap pb-3 pt-3 lg:grid lg:grid-cols-[minmax(0,688px)_448px] lg:justify-between lg:gap-6 lg:pt-5">
       <div className="min-w-0">
-        <ProgressBar segments={segments} current={step < 8 ? step + 1 : 0} labelText={progressLabel} ariaLabel={progressLabel} />
+        <QuestionNav
+          items={navItems}
+          current={step < QCOUNT ? step : -1}
+          onSelect={goTo}
+          summary={{ available: hasAnswers, current: step === SUMMARY_STEP, onSelect: () => goTo(SUMMARY_STEP) }}
+        />
 
-        <div className="mt-4">
-          {step < 8 && (
+        <div className="mt-3">
+          {step < QCOUNT && (
             <QuestionStep
               key={stepId}
               question={questionOf(stepId as QuestionId)}
@@ -135,24 +143,25 @@ export function Compass() {
               userValue={state.answers[stepId as QuestionId]}
               invalidated={state.invalidated.includes(stepId as QuestionId)}
               onAnswer={(v) => setAnswer(stepId as QuestionId, v)}
-              onGoToCause={(c) => goTo(QUESTION_IDS.indexOf(c.question))}
+              onGoToCause={(c) => goTo(QUESTION_ORDER.indexOf(c.question))}
               headingRef={headingRef}
             />
           )}
           {step === DEMO_STEP && <DemographicsStep value={state.demographics} onChange={setDemographics} headingRef={headingRef} />}
           {step === SUMMARY_STEP && (
-            <Summary
-              statementText={statement.text}
-              effective={evaluation.effective}
-              states={evaluation.states}
-              onEdit={(i) => goTo(i)}
-              onRestart={() => {
-                clearCompassState();
-                setState(emptyState());
-                goTo(0);
-              }}
-              headingRef={headingRef}
-            />
+            <Suspense fallback={<p className="text-ink-secondary">{ui.compass.summary_loading}</p>}>
+              <Summary
+                statement={statement}
+                evaluation={evaluation}
+                answers={state.answers}
+                invalidated={state.invalidated}
+                hideUnknown={state.hideUnknown}
+                onToggleHide={setHide}
+                onAnswer={setAnswer}
+                onRestart={restart}
+                headingRef={headingRef}
+              />
+            </Suspense>
           )}
         </div>
 
@@ -162,30 +171,29 @@ export function Compass() {
           </div>
         )}
 
-        <div className="mt-2 md:mt-4">
-          <StickyBar>
-            {step < DEMO_STEP && (
-              <Button block iconEnd="arrow-right" onClick={next}>
-                {ui.compass.next_button}
-              </Button>
-            )}
-            {step === DEMO_STEP && (
-              <Button block iconEnd="arrow-right" onClick={next}>
-                {ui.compass.finish_button}
-              </Button>
-            )}
-            {step === SUMMARY_STEP && (
-              <ButtonLink href="/kompas/podpis" block iconEnd="arrow-right">
-                {ui.compass.sign_button}
-              </ButtonLink>
-            )}
-            {step > 0 && (
-              <Button variant="secondary" icon="chevron-left" onClick={back}>
-                {ui.compass.back_button}
-              </Button>
-            )}
-          </StickyBar>
-        </div>
+        {/* Bez obalového divu: sticky prvek se drží jen v rámci rodiče, obal by ho ukotvil v toku. */}
+        <StickyBar className="mt-2 md:mt-4">
+          {step < DEMO_STEP && (
+            <Button block iconEnd="arrow-right" onClick={next}>
+              {ui.compass.next_button}
+            </Button>
+          )}
+          {step === DEMO_STEP && (
+            <Button block iconEnd="arrow-right" onClick={next}>
+              {ui.compass.finish_button}
+            </Button>
+          )}
+          {step === SUMMARY_STEP && (
+            <ButtonLink href="/kompas/podpis" block iconEnd="arrow-right">
+              {ui.compass.sign_button}
+            </ButtonLink>
+          )}
+          {step > 0 && (
+            <Button variant="secondary" icon="chevron-left" onClick={back}>
+              {ui.compass.back_button}
+            </Button>
+          )}
+        </StickyBar>
       </div>
 
       <aside className="hidden lg:block">
@@ -231,18 +239,8 @@ function QuestionStep({
   };
   const inlineOpen = (id: string) => expl?.id === id && expl.inline;
 
-  const select = (optionId: string) => {
-    const opt = q.options.find((o) => o.id === optionId)!;
-    if (q.type === "multi") {
-      const cur = Array.isArray(userValue) ? userValue : [];
-      if (opt.exclusive) return onAnswer(cur.includes(optionId) ? undefined : [optionId]);
-      const withoutExclusive = cur.filter((o) => !q.options.find((x) => x.id === o)?.exclusive);
-      return onAnswer(
-        withoutExclusive.includes(optionId) ? withoutExclusive.filter((o) => o !== optionId) : [...withoutExclusive, optionId],
-      );
-    }
-    onAnswer(userValue === optionId ? undefined : optionId);
-  };
+  const select = (optionId: string) =>
+    onAnswer(q.type === "multi" ? nextMultiValue(q, userValue, optionId) : userValue === optionId ? undefined : optionId);
 
   const isSelected = (id: string) => (Array.isArray(value) ? value.includes(id) : value === id);
   const sliderValue = typeof userValue === "number" ? userValue : q.slider?.default ?? 0;
@@ -371,52 +369,6 @@ function QuestionStep({
       <BottomSheet open={Boolean(expl && !expl.inline)} title={expl?.title ?? ""} onClose={() => setExpl(null)} closeLabel={ui.explainer.close}>
         {expl && !expl.inline && <ExplainerBody id={expl.id} texts={ui.explainer} />}
       </BottomSheet>
-    </section>
-  );
-}
-
-function Summary({
-  statementText,
-  effective,
-  states,
-  onEdit,
-  onRestart,
-  headingRef,
-}: {
-  statementText: string;
-  effective: Answers;
-  states: Record<QuestionId, QuestionState>;
-  onEdit: (step: number) => void;
-  onRestart: () => void;
-  headingRef: React.RefObject<HTMLHeadingElement | null>;
-}) {
-  const answerText = (qid: QuestionId): string => {
-    if (states[qid].status === "skipped") return ui.compass.skipped_short;
-    const v = effective[qid];
-    if (!isAnswered(v)) return ui.compass.not_answered;
-    if (typeof v === "number") return formatAmount(v, units);
-    return (Array.isArray(v) ? v : [v as string]).map(optionLabel).join(", ");
-  };
-  return (
-    <section aria-labelledby="h-summary">
-      <ScreenHeading id="h-summary" headingRef={headingRef} title={ui.compass.summary_title} lead={ui.compass.summary_lead} />
-      <div className="k-letter mt-3">
-        <p>{statementText}</p>
-      </div>
-
-      <h2 className="k-h k-h2 mb-2 mt-5">{ui.compass.answers_title}</h2>
-      <ActionList>
-        {QUESTION_IDS.map((qid, i) => (
-          <ActionButton key={qid} onClick={() => onEdit(i)}>
-            <span className="k-cap block">{questionOf(qid).text}</span>
-            <span className="block">{answerText(qid)}</span>
-            <span className="k-sr"> – {ui.compass.edit_answers_button}</span>
-          </ActionButton>
-        ))}
-      </ActionList>
-      <button type="button" onClick={onRestart} className="k-link mt-2">
-        {ui.compass.restart_button}
-      </button>
     </section>
   );
 }

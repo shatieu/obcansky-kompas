@@ -61,6 +61,11 @@ export const questionsFileSchema = z
     version: z.number().int().positive(),
     /** Pásma Q1 v pořadí od nejnižšího. Hranice jsou kotvy (faktické hodnoty z facts.yaml). */
     q1_bands: z.array(labelled).length(5),
+    /**
+     * Pořadí zobrazení otázek (kompas, přehled, skládání textu, statistiky, osobní stránka…).
+     * Id otázek se nemění (podpisy, statistiky, zákon); mění se jen pořadí a číslování.
+     */
+    order: z.array(z.string().regex(/^q[1-8]$/)).length(8),
     questions: z.array(questionSchema).length(8),
     rules: z.array(ruleSchema),
     demographics: z.object({
@@ -71,6 +76,9 @@ export const questionsFileSchema = z
     }),
   })
   .superRefine((file, ctx) => {
+    const ids = file.questions.map((q) => q.id);
+    if (new Set(file.order).size !== ids.length || !ids.every((id) => file.order.includes(id)))
+      ctx.addIssue({ code: "custom", message: "order: musí obsahovat každou otázku právě jednou" });
     const optionIds = new Map<string, Set<string>>();
     for (const q of file.questions) {
       optionIds.set(q.id, new Set(q.options.map((o) => o.id)));
