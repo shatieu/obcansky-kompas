@@ -1,0 +1,39 @@
+# Blocklist EN (SPEC-demonstrace §4.1): nejběžnější anglické vulgarity a slury.
+# Formát a normalizace stejné jako blocklist-cs.txt (pozor: w→v, y→i, opakovaná písmena 1×,
+# např. asshole → ashole; generátor to dělá sám).
+fuck
+=fck
+=fcking
+=fking
+shit
+bitch
+cunt
+asshole
+dumbass
+jackass
+dickhead
+=dick
+=dicks
+=cock
+=cocks
+cocksuck
+whore
+=slut
+=sluts
+slutty
+=fag
+=fags
+retard
+nigga
+wanker
+=twat
+bollocks
+bastard
+motherf
+=cum
+dildo
+jerkoff
+=tits
+=porn
+porno
+fvck

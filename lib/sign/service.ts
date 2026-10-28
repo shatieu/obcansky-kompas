@@ -1,6 +1,7 @@
 import type postgres from "postgres";
 import type { Answers } from "@/lib/compose/types";
 import { emailHmac, encrypt, randomToken, sha256Hex } from "@/lib/crypto";
+import { deleteForSignature } from "@/lib/demo/service";
 import { EDIT_TTL_MS, VERIFY_TTL_MS } from "./http";
 
 /**
@@ -234,7 +235,11 @@ export interface EditData {
   showName: boolean;
 }
 
-type EditOutcome = { status: "ok"; signatureId: string } | { status: "invalid" } | { status: "expired" } | { status: "used" };
+type EditOutcome =
+  | { status: "ok"; signatureId: string; demonstrator?: { id: string; index: number } | null }
+  | { status: "invalid" }
+  | { status: "expired" }
+  | { status: "used" };
 
 async function consumeEditToken(tx: Tx, token: string): Promise<{ row: TokenRow } | { fail: EditOutcome }> {
   const row = await lockToken(tx, token, "edit");
@@ -279,6 +284,8 @@ export async function withdrawSignature(sql: postgres.Sql, token: string): Promi
     const id = c.row.signature_id;
     await tx`update app.signature set withdrawn_at = now(), comment = null where id = ${id}`;
     await tx`delete from app.signer where id = ${c.row.signer_id}`;
-    return { status: "ok", signatureId: id } as const;
+    // Odvolání odstraní i panáčka z online demonstrace (SPEC-demonstrace §3); route zneplatní dlaždici.
+    const demonstrator = await deleteForSignature(tx, id);
+    return { status: "ok", signatureId: id, demonstrator } as const;
   });
 }

@@ -8,6 +8,7 @@ import { ContentError, CONTENT_DIR, loadContent } from "../lib/content/load";
 import { crossCheck } from "../lib/content/cross-check";
 import { checkExplainer } from "../lib/content/verification";
 import { UI_SERVER_SECTIONS } from "../lib/content/schemas";
+import { loadDemoSlogans } from "../lib/demo/slogans-schema";
 
 const OUT = path.join(CONTENT_DIR, "generated");
 
@@ -54,6 +55,12 @@ try {
   write("stance.json", c.stance);
   write("share.json", c.share);
   write("slogans.json", c.slogans);
+  // Online demonstrace: předvolby sloganů davu (SPEC-demonstrace §3).
+  try {
+    write("demonstrace-slogans.json", loadDemoSlogans());
+  } catch (e) {
+    throw new ContentError((e as Error).message);
+  }
   write("explainers.json", explainers);
   console.log(
     `content: OK (verze ${c.sentences.version}, vysvětlivek ${c.explainers.length}, ověřených ${verifiedCount})`,

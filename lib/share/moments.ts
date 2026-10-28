@@ -13,7 +13,7 @@ export const _addresseeTypesCheck: _SameTypes = true;
  * Momenty sdílení (SPEC §9.4) a odkazy. Čisté funkce, použitelné na serveru i v prohlížeči.
  * Odkaz nese `?s=<moment>` pro cookieless počítání (POST /api/event {kind:"share"}).
  */
-export const MOMENTS = ["podpis", "zakon", "dopisy", "fotka", "srovnani"] as const;
+export const MOMENTS = ["podpis", "zakon", "dopisy", "fotka", "srovnani", "demonstrace"] as const;
 export type Moment = (typeof MOMENTS)[number];
 
 export const isMoment = (s: unknown): s is Moment => typeof s === "string" && (MOMENTS as readonly string[]).includes(s);
@@ -36,7 +36,8 @@ export function withMoment(url: string, moment: Moment): string {
 }
 
 /**
- * Cesta k OG obrázku (GET /api/og/<moment>). `id` = UUID podpisu (podpis, zakon, srovnani),
+ * Cesta k OG obrázku (GET /api/og/<moment>). `id` = UUID podpisu (podpis, zakon, srovnani)
+ * nebo panáčka (demonstrace),
  * `r` = počty adresátů (dopisy), `v` = cache-buster (mění se s obsahem).
  */
 export function ogImagePath(moment: Moment, q: { id?: string; r?: string; v?: string } = {}): string {

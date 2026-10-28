@@ -1,9 +1,10 @@
-import type { NextRequest } from "next/server";
+import { NextResponse, type NextRequest } from "next/server";
+import { isSecureRequest, setOwnerCookie } from "@/lib/demo/owner";
 import { z } from "zod";
 import { CONTENT_VERSION, questionsFile } from "@/lib/content";
 import { getSql } from "@/lib/db/client";
 import { revalidateSignature } from "@/lib/sign/cache";
-import { error, json, logEvent, readJson, signaturePath, unavailable, writeGate } from "@/lib/sign/http";
+import { error, logEvent, readJson, signaturePath, unavailable, writeGate } from "@/lib/sign/http";
 import { clean, failedField, signInputSchema, TOKEN_RE, validateAnswers } from "@/lib/sign/input";
 import { applyEdit } from "@/lib/sign/service";
 import { signTexts } from "@/lib/sign/texts";
@@ -42,7 +43,12 @@ export async function POST(req: NextRequest): Promise<Response> {
     if (r.status === "expired") return error("expired", 410, t.sign.edit_invalid_lead);
     if (r.status !== "ok") return error("not_found", 404, t.sign.edit_invalid_lead);
     revalidateSignature(r.signatureId);
-    return json({ ok: true, id: r.signatureId, url: signaturePath(r.signatureId) });
+    // Odkaz z e-mailu prokázal vlastnictví → cookie ok_owner pro online demonstraci.
+    return setOwnerCookie(
+      NextResponse.json({ ok: true, id: r.signatureId, url: signaturePath(r.signatureId) }, { headers: { "cache-control": "no-store" } }),
+      r.signatureId,
+      isSecureRequest(req),
+    );
   } catch (e) {
     return unavailable(e, "edit");
   }

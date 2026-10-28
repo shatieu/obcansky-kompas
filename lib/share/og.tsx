@@ -1,5 +1,10 @@
 import { ImageResponse } from "next/og";
-import type { ShareCard } from "./card";
+import { generateStickman } from "@/lib/stickman/params";
+import { poseAt } from "@/lib/stickman/poses";
+import { figureGeometry } from "@/lib/stickman/geometry";
+import { stickmanLayout, figureSvg } from "@/lib/stickman/svg";
+import type { ShareCard, ShareFigure } from "./card";
+import { CROWD_PALETTE, demoScene, FG_PALETTE, type Box, type Placed } from "./demonstrace";
 import { COLORS, OG_SIZE } from "./style";
 
 /**
@@ -154,9 +159,110 @@ export function OgCard({ card }: { card: ShareCard }) {
   );
 }
 
+/* ---------------- Online demonstrace (SPEC-demonstrace §8) ---------------- */
+
+const n2 = (v: number) => String(Math.round(v * 100) / 100);
+
+/** Celá scéna (dav + panáček bez textu cedule) jako jedno SVG; text cedule se sází zvlášť (next/og). */
+export function sceneSvg(placed: Placed[], box: Box): string {
+  const parts = placed.map((p) => {
+    const params = generateStickman(p.seed);
+    const fig = figureGeometry(params, poseAt(params, p.pose));
+    const body = figureSvg(fig, { signColor: p.signColor, signText: "", palette: p.layer === "fg" ? FG_PALETTE : CROWD_PALETTE, signShape: params.signShape });
+    return `<g transform="translate(${n2(p.x - box.x)} ${n2(p.y - box.y)}) scale(${n2(p.scale)})">${body}</g>`;
+  });
+  return `<svg xmlns="http://www.w3.org/2000/svg" width="${box.w}" height="${box.h}" viewBox="0 0 ${box.w} ${box.h}">${parts.join("")}</svg>`;
+}
+
+/** Text cedule panáčka v popředí: řádky, střed, natočení a velikost v px (souřadnice boxu). */
+export function fgSignText(p: Placed, box: Box) {
+  const params = generateStickman(p.seed);
+  const lay = stickmanLayout(params, { pose: p.pose, signText: p.signText });
+  const fig = lay.figure;
+  return {
+    lines: lay.text.lines,
+    fontSize: lay.text.fontSize * p.scale,
+    lineHeight: lay.text.lineHeight * p.scale,
+    cx: p.x - box.x + lay.text.x * p.scale,
+    cy: p.y - box.y + lay.text.y * p.scale,
+    w: fig.sign.w * p.scale,
+    h: fig.sign.h * p.scale,
+    angle: lay.text.angle,
+    color: FG_PALETTE.signText[p.signColor],
+  };
+}
+
+export const OG_DEMO_BOX: Box = { x: 600, y: 24, w: 576, h: 606 };
+
+function OgScene({ figure }: { figure: ShareFigure }) {
+  const box = OG_DEMO_BOX;
+  const placed = demoScene(figure, box);
+  const fg = placed[placed.length - 1]!;
+  const svg = sceneSvg(placed, box);
+  const txt = fg.signText.trim() ? fgSignText(fg, box) : null;
+  return (
+    <div style={{ display: "flex", position: "absolute", left: box.x, top: box.y, width: box.w, height: box.h }}>
+      {/* eslint-disable-next-line @next/next/no-img-element */}
+      <img src={`data:image/svg+xml;base64,${Buffer.from(svg).toString("base64")}`} width={box.w} height={box.h} alt="" />
+      {txt && (
+        <div
+          style={{
+            display: "flex",
+            position: "absolute",
+            left: txt.cx - txt.w / 2,
+            top: txt.cy - txt.h / 2,
+            width: txt.w,
+            height: txt.h,
+            flexDirection: "column",
+            alignItems: "center",
+            justifyContent: "center",
+            transform: `rotate(${txt.angle}deg)`,
+            color: txt.color,
+            fontFamily: WIDE,
+            fontWeight: 800,
+            fontSize: txt.fontSize,
+            lineHeight: 1,
+          }}
+        >
+          {txt.lines.map((l, i) => (
+            <div key={i} style={{ display: "flex", height: txt.lineHeight, alignItems: "center", whiteSpace: "nowrap" }}>
+              {l}
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
+export function OgDemoCard({ card }: { card: ShareCard }) {
+  const len = card.headline.length;
+  return (
+    <div style={{ width: "100%", height: "100%", display: "flex", position: "relative", background: COLORS.night, color: COLORS.onNight, fontFamily: SANS }}>
+      {card.figure && <OgScene figure={card.figure} />}
+      <div style={{ display: "flex", flexDirection: "column", width: 560, height: "100%", padding: 64 }}>
+        <div style={{ display: "flex", alignSelf: "flex-start" }}>
+          <Flag width={160} />
+        </div>
+        <div style={{ display: "flex", flexDirection: "column", flexGrow: 1, justifyContent: "flex-end" }}>
+          {card.kicker && (
+            <div style={{ display: "flex", fontFamily: WIDE, fontWeight: 800, fontSize: 18, letterSpacing: 2, color: COLORS.nightAccent }}>{card.kicker}</div>
+          )}
+          <div style={{ display: "flex", fontFamily: WIDE, fontWeight: 800, fontSize: len > 44 ? 40 : 46, lineHeight: 1.08, letterSpacing: -1.2, marginTop: 12 }}>
+            {card.headline}
+          </div>
+          {card.line && <div style={{ display: "flex", fontFamily: WIDE, fontWeight: 800, fontSize: 30, marginTop: 18 }}>{card.line}</div>}
+          {card.name && <div style={{ display: "flex", fontWeight: 600, fontSize: 24, marginTop: 14 }}>{card.name}</div>}
+          <div style={{ display: "flex", fontFamily: WIDE, fontWeight: 800, fontSize: 20, marginTop: 24 }}>{card.brand}</div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 export async function renderOg(card: ShareCard, cacheControl: string): Promise<Response> {
   const fonts = await loadOgFonts();
-  return new ImageResponse(<OgCard card={card} />, {
+  return new ImageResponse(card.figure ? <OgDemoCard card={card} /> : <OgCard card={card} />, {
     ...OG_SIZE,
     fonts,
     headers: { "cache-control": cacheControl },

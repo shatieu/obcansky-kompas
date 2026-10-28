@@ -24,7 +24,13 @@
     "seed:clear": "tsx scripts/seed-clear.ts",
     "poc:clear": "tsx scripts/poc-clear.ts",
     "measure:js": "tsx scripts/measure-js.ts",
-    "org:invite": "tsx scripts/org-invite.ts"
+    "org:invite": "tsx scripts/org-invite.ts",
+    "seed:demonstrace": "tsx scripts/content-build.ts && tsx scripts/seed-demonstrace.ts",
+    "demo:reported": "tsx scripts/demo-reported.ts",
+    "demo:hide": "tsx scripts/demo-hide.ts",
+    "demo:unhide": "tsx scripts/demo-unhide.ts",
+    "demo:ban-text": "tsx scripts/demo-ban-text.ts",
+    "moderation:recheck": "tsx scripts/moderation-recheck.ts"
   },
   "dependencies": {
     "@pdf-lib/fontkit": "1.1.1",
@@ -34,6 +40,7 @@
     "heic-to": "1.6.6",
     "next": "16.4.3",
     "pdf-lib": "1.17.1",
+    "pixi.js": "8.22.0",
     "postgres": "3.4.9",
     "react": "19.3.1",
     "react-dom": "19.3.1",

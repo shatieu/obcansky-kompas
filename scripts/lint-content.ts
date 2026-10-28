@@ -8,6 +8,9 @@ import { countWords, findBannedTerms, splitSentences } from "../lib/content/text
 import { signTextsSchema } from "../lib/sign/texts";
 import { PhotoUiSchema } from "../lib/photo/content";
 import { pagesTextsSchema } from "../lib/org/texts";
+import { loadDemoSlogans, REQUIRED_PRESET_IDS } from "../lib/demo/slogans-schema";
+import { demoTextsSchema } from "../components/demonstrace/join/texts";
+import { crowdTextsSchema } from "../lib/crowd/texts";
 
 const LIMITS = {
   question: { words: 8 },
@@ -88,6 +91,21 @@ try {
   const pages = pagesTextsSchema.safeParse({ hnuti: c.ui.hnuti, org: c.ui.org, method: c.ui.method, sources: c.ui.sources, about: c.ui.about, privacy: c.ui.privacy });
   if (!pages.success) err("ui.hnuti/org/method/sources/about/privacy", pages.error.issues.map((i) => `${i.path.join(".")}: ${i.message}`).join("; "));
   for (const k of ["akce", "zakon"]) if (!c.ui[k] || typeof c.ui[k] !== "object") err(`ui.${k}`, "sekce chybí");
+  const demo = demoTextsSchema.safeParse(c.ui.demonstrace);
+  if (!demo.success) err("ui.demonstrace", demo.error.issues.map((i) => `${i.path.join(".")}: ${i.message}`).join("; "));
+  const crowd = crowdTextsSchema.safeParse(c.ui.demonstrace_crowd);
+  if (!crowd.success) err("ui.demonstrace_crowd", crowd.error.issues.map((i) => `${i.path.join(".")}: ${i.message}`).join("; "));
+
+  // Online demonstrace: předvolby sloganů (max. 40 znaků hlídá schéma) jdou do kontroly výrazů.
+  try {
+    const ds = loadDemoSlogans();
+    // Tři slogany převzaté z content/slogans.yaml (doslova ze SPEC §9.3) jen varují.
+    const mandated = new Set<string>(REQUIRED_PRESET_IDS);
+    for (const p of ds.presets)
+      displayed.push({ where: `demonstrace/slogans.${p.id}`, text: p.text, severity: mandated.has(p.id) ? "warn" : "error" });
+  } catch (e) {
+    err("content/demonstrace/slogans.yaml", (e as Error).message);
+  }
 
   checkHeading("stance.title", c.stance.title);
   checkLead("stance.text", c.stance.text);

@@ -4,12 +4,14 @@ import { dopisyCard, fotkaCard, podpisCard, srovnaniCard, zakonCard, type ShareC
 import { comparisonFor, getCachedOrganizations, getCachedStats, lookupSignature } from "@/lib/share/data";
 import { isMoment, parseRecipients } from "@/lib/share/moments";
 import { renderOg } from "@/lib/share/og";
+import { demonstraceShareCard } from "@/lib/share/demonstrace-data";
 import { shareTexts } from "@/lib/share/texts";
 
 /**
  * GET /api/og/<moment>[?id=<uuid>][&r=<typ:počet,…>][&v=<hash>] – OG obrázek 1200×630 (SPEC §9.4).
  * podpis / zakon / srovnani čtou podpis z cache `sig:<uuid>` (jméno jen se souhlasem),
- * dopisy jen počty z URL, fotka je obecná (server fotku nikdy nedostane).
+ * dopisy jen počty z URL, fotka je obecná (server fotku nikdy nedostane),
+ * demonstrace čte veřejná data panáčka (?id=<uuid panáčka>) – jen schválený text a jméno.
  * CDN cache: obrázky s `v` (mění se s obsahem) den, srovnání 5 min, bez podpisu hodinu.
  */
 export const dynamic = "force-dynamic";
@@ -32,6 +34,10 @@ export async function GET(req: NextRequest, ctx: { params: Promise<{ moment: str
     if (moment === "dopisy") {
       card = dopisyCard(parseRecipients(q.get("r")), img, texts.recipients);
       cache = LONG;
+    } else if (moment === "demonstrace") {
+      const r = await demonstraceShareCard(q.get("id") ?? "", img);
+      card = r.card;
+      cache = r.found && versioned ? LONG : r.found ? MEDIUM : SHORT;
     } else if (moment === "fotka") {
       card = fotkaCard(img);
       cache = LONG;

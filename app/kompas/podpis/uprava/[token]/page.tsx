@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { EditPanel } from "@/components/sign/edit-panel";
+import { OwnerClaim } from "@/components/demonstrace/join/owner-claim";
 import { Notice, ScreenHeading } from "@/components/ui/typography";
 import { composeStatement } from "@/lib/compose";
 import { getSql } from "@/lib/db/client";
@@ -57,6 +58,8 @@ export default async function EditPage({ params }: { params: Promise<{ token: st
   return (
     <div className="k-wrap pt-3 pb-4 lg:pt-5 lg:pb-6">
       <ScreenHeading title={t.sign.edit_title} lead={t.sign.edit_lead} />
+      {/* Online demonstrace: cookie vlastníka i na jiném zařízení (SPEC-demonstrace §3). */}
+      {!flags.readOnly() && <OwnerClaim token={token} />}
       <EditPanel
         t={t.sign}
         token={token}

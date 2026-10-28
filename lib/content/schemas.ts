@@ -190,7 +190,7 @@ export const uiTreeSchema: z.ZodType<UiTree> = z.lazy(() =>
 );
 
 /** Sekce ui.yaml, které čtou jen serverové loadery – do klientského ui.json se nezapisují. */
-export const UI_SERVER_SECTIONS = ["sign", "verify", "page", "email", "photo", "akce", "zakon", "hnuti", "org", "method", "sources", "about", "privacy", "share", "compare_page"] as const;
+export const UI_SERVER_SECTIONS = ["sign", "verify", "page", "email", "photo", "akce", "zakon", "hnuti", "org", "method", "sources", "about", "privacy", "share", "compare_page", "demonstrace", "demonstrace_crowd"] as const;
 
 export const stanceFileSchema = z.object({
   title: z.string().min(1),

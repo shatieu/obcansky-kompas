@@ -34,6 +34,8 @@ export const pagesTextsSchema = z.object({
     "library_group_nevim", "library_group_q1", "library_group_multi", "library_group_options", "verify_title",
     "verify_body", "deviation_title", "deviation_body", "counts", "human_title", "human_none", "human_some",
     "sources_button", "data_title", "data_body", "data_button", "repo_link", "repo_url",
+    "demo_title", "demo_body", "demo_script_title", "demo_script_body", "demo_ai_title", "demo_ai_body",
+    "demo_ai_on", "demo_ai_off", "demo_reports_title", "demo_reports_body",
   ] as const),
   sources: group([
     "meta_title", "kicker", "title", "lead", "generated", "group_explainer", "group_law", "group_facts",
@@ -51,7 +53,8 @@ export const pagesTextsSchema = z.object({
     "purpose_title", "purpose_body", "basis_title", "basis_body", "processors_title", "processors_lead",
     "processor_vercel", "processor_supabase", "processor_email", "processor_turnstile", "processor_plausible",
     "retention_title", "retention_body", "logs_title", "logs_body", "rights_title", "rights_body", "how_title",
-    "how_body", "browser_title", "browser_body",
+    "how_body", "browser_title", "browser_body", "demo_title", "demo_body", "demo_check_body",
+    "demo_withdraw_body", "processor_moderation",
   ] as const),
 });
 

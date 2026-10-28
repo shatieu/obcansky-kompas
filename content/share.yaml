@@ -15,3 +15,6 @@ moments:
   - id: srovnani
     text: Shoduji se s {percent} % lidí, kteří kompas vyplnili
     image: míra shody
+  - id: demonstrace
+    text: Připojil/a jsem se k online demonstraci
+    image: panáček s cedulí v popředí, za ním výřez davu, počet účastníků

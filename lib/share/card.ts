@@ -1,6 +1,7 @@
 import { evaluate, isAnswered } from "@/lib/compose/engine";
 import type { Answers, QuestionId } from "@/lib/compose/types";
 import type { QuestionsFile } from "@/lib/content/schemas";
+import type { Pose, SignColor } from "@/lib/demo/constants";
 import type { AddresseeType } from "@/lib/letters/schema";
 import { recipientLines, shareSentence, type Moment, type RecipientCounts } from "./moments";
 
@@ -29,6 +30,24 @@ export interface ShareCard {
   numbered: boolean;
   /** Jméno podepsaného jen se souhlasem (show_name), jinak null. */
   name: string | null;
+  /** Online demonstrace: panáček v popředí a výřez davu za ním (lib/share/demonstrace.ts). */
+  figure?: ShareFigure | null;
+}
+
+/** Panáček na sdílecím obrázku. `signText` = jen schválený text (nebo předvolba). */
+export interface ShareFigure {
+  seed: number;
+  pose: Pose;
+  signColor: SignColor;
+  signText: string;
+  /** Sousedé v davu (seed, póza, barva) pro výřez za panáčkem; prázdné = dopočítá se ze seedu. */
+  crowd: CrowdFigure[];
+}
+
+export interface CrowdFigure {
+  seed: number;
+  pose: Pose;
+  signColor: SignColor;
 }
 
 export interface CardImageTexts {

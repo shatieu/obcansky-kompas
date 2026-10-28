@@ -15,6 +15,13 @@
       "when": 1793145937515,
       "tag": "20261028000537_stats_index",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1793172405759,
+      "tag": "20261028072645_demonstrace",
+      "breakpoints": true
     }
   ]
 }

@@ -1,5 +1,6 @@
 import type { NextRequest } from "next/server";
 import { getSql } from "@/lib/db/client";
+import { revalidateDemo } from "@/lib/demo/cache";
 import { revalidateSignature } from "@/lib/sign/cache";
 import { error, json, logEvent, readJson, signaturePath, unavailable, writeGate } from "@/lib/sign/http";
 import { TOKEN_RE } from "@/lib/sign/input";
@@ -22,6 +23,8 @@ export async function POST(req: NextRequest): Promise<Response> {
     if (r.status === "expired") return error("expired", 410, t.edit_invalid_lead);
     if (r.status !== "ok") return error("not_found", 404, t.edit_invalid_lead);
     revalidateSignature(r.signatureId);
+    // Panáček z online demonstrace se smazal ve stejné transakci → zneplatnit jeho dlaždici.
+    if (r.demonstrator) revalidateDemo({ index: r.demonstrator.index, id: r.demonstrator.id, meta: true });
     return json({ ok: true, id: r.signatureId, url: signaturePath(r.signatureId), message: t.withdrawn_lead });
   } catch (e) {
     return unavailable(e, "withdraw");

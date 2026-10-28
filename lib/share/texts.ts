@@ -21,7 +21,8 @@ export const shareTextsSchema = z.object({
     networks: group(["facebook", "x", "whatsapp", "telegram", "linkedin", "email"] as const),
     image: group([
       "brand", "choices_kicker", "law_title", "law_kicker", "letters_kicker", "letters_none", "match_kicker",
-      "photo_kicker", "photo_line",
+      "photo_kicker", "photo_line", "demo_kicker", "demo_count_one", "demo_count_few", "demo_count_many",
+      "demo_figure_alt",
     ] as const),
     recipients: z.object(Object.fromEntries(ADDRESSEE_TYPES.map((k) => [k, forms])) as Record<(typeof ADDRESSEE_TYPES)[number], typeof forms>),
   }),

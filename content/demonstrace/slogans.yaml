@@ -1,0 +1,58 @@
+# Předvolby sloganů pro online demonstraci (SPEC-demonstrace §3). Max. 40 znaků.
+# Patří k bloku „Kde stojíme my“, ne ke kompasu. Bez tykání i vykání.
+# `default` = co se v davu ukáže místo vlastního textu, který ještě neprošel kontrolou.
+default: nejsou-jedno
+presets:
+  - id: ruce-pryc
+    text: Ruce pryč od médií
+  - id: media-nedame
+    text: Média nedáme
+  - id: nejsou-jedno
+    text: Média veřejné služby mi nejsou jedno
+  - id: nezavisla-media
+    text: Za nezávislá veřejná média
+  - id: pravda-nema-majitele
+    text: Pravda nemá majitele
+  - id: ct-cro-patri-nam
+    text: ČT a ČRo patří nám všem
+  - id: svobodne-zpravy
+    text: Svobodné zprávy, svobodná země
+  - id: ne-politikum
+    text: Veřejná média nejsou hračka politiků
+  - id: tady-stojime
+    text: Tady stojíme
+  - id: verejna-sluzba
+    text: Veřejná služba, ne služba vládě
+
+# Neutrální vlastní slogany pro seed (pnpm seed:demonstrace). Musí projít skriptovou moderací.
+custom_seed_examples:
+  - Jsem tu za babičku
+  - Chci zprávy bez cenzury
+  - Za kvalitní zpravodajství
+  - Rádio mě budí každé ráno
+  - Večerníček musí zůstat
+  - Za dokumenty a reportáže
+  - Média pro všechny generace
+  - Kultura není luxus
+  - Za regionální vysílání
+  - Chci slyšet obě strany
+  - Fakta nade vše
+  - Za vzdělávací pořady
+  - Poplatek ano, vliv ne
+  - Za nezávislé novináře
+  - Jsem tu s rodinou
+  - Z Ostravy za média
+  - Z Brna s pozdravem
+  - Svoboda slova je základ
+  - Veřejný prostor pro všechny
+  - Kontrola moci je důležitá
+  - Za otevřenou debatu
+  - Rozhlas je můj parťák
+  - Za sport pro každého
+  - Hlas regionů musí zaznít
+  - Zprávy nejsou zboží
+  - Jsme tu poprvé a rádi
+  - Za klidné a věcné zprávy
+  - Média jsou naše společné
+  - Chci vědět, co se děje
+  - Za pořady pro děti

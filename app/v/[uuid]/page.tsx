@@ -1,10 +1,11 @@
 import type { Metadata } from "next";
+import { cookies } from "next/headers";
 import { notFound } from "next/navigation";
 import { ActionLink, ActionList } from "@/components/ui/action-list";
 import { ButtonLink } from "@/components/ui/button";
 import { Icon } from "@/components/ui/icon";
 import { SampleBadge } from "@/components/ui/sample";
-import { StanceBlock } from "@/components/ui/stance-block";
+import { StanceBlock } from "@/components/stance-block";
 import { Kicker, Notice, ScreenHeading, SectionTitle } from "@/components/ui/typography";
 import { ShareArrival } from "@/components/share/share-arrival";
 import { SharePanel } from "@/components/share/share-panel";
@@ -15,12 +16,16 @@ import { momentFromSearch, shareMetadata, signatureVersion } from "@/lib/share/m
 import { sharePanelTexts, shareTexts } from "@/lib/share/texts";
 import { composeStatement, evaluate, isAnswered, QUESTION_ORDER, type Statement } from "@/lib/compose";
 import { formatAmount } from "@/lib/compose/q1";
-import { questionsFile, stance, t as fill, ui } from "@/lib/content";
+import { questionsFile, t as fill, ui } from "@/lib/content";
 import { flags } from "@/lib/env";
 import { UUID_RE } from "@/lib/sign/input";
 import { getPublicSignature, type PublicSignature } from "@/lib/sign/read";
 import { signTexts, type SignTexts } from "@/lib/sign/texts";
 import { turnstileSiteKey } from "@/lib/turnstile";
+import { demoTexts } from "@/components/demonstrace/join/texts";
+import { getSql } from "@/lib/db/client";
+import { getOwnerSignatureId } from "@/lib/demo/owner";
+import { findBySignature } from "@/lib/demo/service";
 
 /**
  * /v/[uuid] – osobní stránka (SPEC §7.3). Data z cache s tagem `sig:<uuid>` (lib/sign/read),
@@ -60,6 +65,54 @@ function answerRows(sig: PublicSignature, t: SignTexts["page"]) {
     else value = label(v as string);
     return { qid, question: q.short, value };
   });
+}
+
+type DemoState = { kind: "invite" } | { kind: "mine"; id: string };
+
+/**
+ * Online demonstrace na osobní stránce (SPEC-demonstrace §2): vlastník (cookie ok_owner) už
+ * v davu → „Můj panáček v davu“ + úprava; jinak výzva k připojení. Návštěvník cizí stránky
+ * nevidí, zda je podpis v davu (vazba podpis ↔ panáček se nezveřejňuje), dostane jen výzvu.
+ */
+async function demoState(signatureId: string): Promise<DemoState | null> {
+  if (flags.staticDemo()) return null;
+  const owner = getOwnerSignatureId(await cookies());
+  if (owner !== signatureId) return { kind: "invite" };
+  try {
+    const mine = await findBySignature(getSql(), owner);
+    return mine ? { kind: "mine", id: mine.id } : { kind: "invite" };
+  } catch {
+    return { kind: "invite" };
+  }
+}
+
+function DemoLinks({ demo }: { demo: DemoState }) {
+  const d = demoTexts();
+  if (demo.kind === "mine") {
+    return (
+      <ActionList className="-mt-[2px]" label={d.page_title}>
+        <ActionLink href={`/demonstrace/${demo.id}`} icon="arrow-right">
+          {d.page_mine_label}
+        </ActionLink>
+        <ActionLink href="/demonstrace/pripojit?edit=1" icon="refresh">
+          {d.page_edit_button}
+        </ActionLink>
+      </ActionList>
+    );
+  }
+  return (
+    <section className="mt-4" aria-labelledby="demo-invite">
+      <h2 id="demo-invite" className="k-h k-h2">
+        {d.page_title}
+      </h2>
+      <p className="mt-1">{d.page_invite_lead}</p>
+      <ActionList className="mt-1">
+        <ActionLink href="/demonstrace/pripojit" icon="arrow-right">
+          {d.page_join_button}
+        </ActionLink>
+      </ActionList>
+    </section>
+  );
 }
 
 function Shell({ children }: { children: React.ReactNode }) {
@@ -113,6 +166,7 @@ export default async function SignaturePage({ params }: { params: Promise<{ uuid
   const signer = sig.name ? fill(t.signed_by, { name: sig.name }) : t.anonymous;
   const writesOff = flags.readOnly() ? signTexts().sign.read_only : null;
   const siteKey = turnstileSiteKey();
+  const demo = await demoState(sig.id);
 
   return (
     <>
@@ -146,6 +200,8 @@ export default async function SignaturePage({ params }: { params: Promise<{ uuid
               {t.law_button}
             </ActionLink>
           </ActionList>
+
+          {demo && <DemoLinks demo={demo} />}
 
           <details className="group border-b-2 border-ink">
             <summary className="k-action list-none">
@@ -187,14 +243,7 @@ export default async function SignaturePage({ params }: { params: Promise<{ uuid
         </div>
       </Shell>
 
-      <StanceBlock
-        kicker={stance.title}
-        text={stance.text}
-        by={ui.stance.by}
-        ariaLabel={ui.stance.region_aria}
-        primary={stance.actions[0]!}
-        secondary={stance.actions[1]}
-      />
+      <StanceBlock />
 
       <Shell>
         <details className="group max-w-main border-y-2 border-ink">

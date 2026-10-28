@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { aiEnabled } from "@/lib/moderation/ai";
 import { pagesTexts } from "@/lib/org/texts";
 import { Disclosure, Page, PageHead } from "../metodika/_ui";
 
@@ -21,6 +22,8 @@ export default function PrivacyPage() {
     p.processor_email,
     p.processor_turnstile,
     ...(process.env.NEXT_PUBLIC_PLAUSIBLE_DOMAIN ? [p.processor_plausible] : []),
+    // AI kontrola textů online demonstrace jen s nastaveným klíčem (SPEC-demonstrace §4.2).
+    ...(aiEnabled() ? [p.processor_moderation] : []),
   ];
   return (
     <Page>
@@ -52,6 +55,11 @@ export default function PrivacyPage() {
       </Disclosure>
       <Disclosure title={p.browser_title}>
         <p>{p.browser_body}</p>
+      </Disclosure>
+      <Disclosure title={p.demo_title}>
+        <p>{p.demo_body}</p>
+        <p className="mt-1">{p.demo_check_body}</p>
+        <p className="mt-1">{p.demo_withdraw_body}</p>
       </Disclosure>
       <Disclosure title={p.rights_title}>
         <p>{p.rights_body}</p>

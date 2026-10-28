@@ -1,3 +1,4 @@
+import type { ReactNode } from "react";
 import { ButtonLink } from "./button";
 import { Kicker } from "./typography";
 
@@ -12,6 +13,7 @@ export function StanceBlock({
   primary,
   secondary,
   ariaLabel,
+  extra,
 }: {
   kicker?: string;
   text: string;
@@ -19,6 +21,8 @@ export function StanceBlock({
   primary: { label: string; href: string };
   secondary?: { label: string; href: string };
   ariaLabel?: string;
+  /** Doplněk pod dvojicí tlačítek (online demonstrace: odkaz a živý počet účastníků). */
+  extra?: ReactNode;
 }) {
   return (
     <section className="k-stance" aria-label={ariaLabel ?? kicker}>
@@ -37,6 +41,7 @@ export function StanceBlock({
             </ButtonLink>
           )}
         </div>
+        {extra}
         {by && <p className="k-stance__by">{by}</p>}
       </div>
     </section>

@@ -20,6 +20,10 @@ const nextConfig: NextConfig = {
     "/hnuti": ["./content/*.yaml"],
     "/org/[token]": ["./content/*.yaml"],
     "/api/org/submit": ["./content/*.yaml"],
+    // STATIC_DEMO=1: dav ze statického exportu seedu (lib/demo/static.ts čte za běhu).
+    "/api/demonstrace/meta": ["./content/generated/demonstrace-tiles/*.json"],
+    "/api/demonstrace/tile/[n]": ["./content/generated/demonstrace-tiles/*.json"],
+    "/api/demonstrace/[id]": ["./content/generated/demonstrace-tiles/*.json"],
   },
   async headers() {
     return [

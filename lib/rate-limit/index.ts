@@ -14,6 +14,10 @@ export const LIMITS = {
   editLinkPerEmail: { limit: 3, windowSec: HOUR },
   editLinkPerIp: { limit: 10, windowSec: HOUR },
   reportPerIp: { limit: 5, windowSec: HOUR },
+  // Online demonstrace (SPEC-demonstrace §3): připojení a úpravy 10/h na podpis, 20/h na IP.
+  demoWritePerSignature: { limit: 10, windowSec: HOUR },
+  demoWritePerIp: { limit: 20, windowSec: HOUR },
+  demoReportPerIp: { limit: 30, windowSec: HOUR },
 } as const;
 
 export type LimitName = keyof typeof LIMITS;

@@ -1,0 +1,25 @@
+# Allowlist (SPEC-demonstrace §4.1): běžná slova, která obsahují zakázaný kmen.
+# Shoda kmene se ignoruje, když leží celá uvnitř výskytu některého slova odsud.
+# Stejný formát a normalizace jako blocklisty (=slovo, ^začátek).
+sranda
+srand
+smrd
+sérum
+serum
+sekunda
+sekundo
+sekundou
+sekundu
+sekundy
+negram
+dementova
+dementuj
+scunthorp
+=cumulus
+negrell
+retardér
+insulin
+pičín
+picass
+picol
+pickup

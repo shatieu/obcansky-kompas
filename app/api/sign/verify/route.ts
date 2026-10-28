@@ -1,7 +1,8 @@
-import type { NextRequest } from "next/server";
+import { NextResponse, type NextRequest } from "next/server";
+import { isSecureRequest, setOwnerCookie } from "@/lib/demo/owner";
 import { getSql } from "@/lib/db/client";
 import { revalidateSignature } from "@/lib/sign/cache";
-import { error, json, logEvent, readJson, signaturePath, unavailable, writeGate } from "@/lib/sign/http";
+import { error, logEvent, readJson, signaturePath, unavailable, writeGate } from "@/lib/sign/http";
 import { TOKEN_RE } from "@/lib/sign/input";
 import { verifySignature } from "@/lib/sign/service";
 import { signTexts } from "@/lib/sign/texts";
@@ -25,7 +26,12 @@ export async function POST(req: NextRequest): Promise<Response> {
     switch (r.status) {
       case "ok":
         revalidateSignature(r.signatureId);
-        return json({ ok: true, id: r.signatureId, url: signaturePath(r.signatureId) });
+        // Doklad vlastnictví pro online demonstraci (cookie ok_owner, lib/demo/owner.ts).
+        return setOwnerCookie(
+          NextResponse.json({ ok: true, id: r.signatureId, url: signaturePath(r.signatureId) }, { headers: { "cache-control": "no-store" } }),
+          r.signatureId,
+          isSecureRequest(req),
+        );
       case "used":
         return error("used", 409, t.used_lead, { id: r.signatureId, url: signaturePath(r.signatureId) });
       case "expired":

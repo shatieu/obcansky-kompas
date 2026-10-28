@@ -1,6 +1,12 @@
 import type { ShareCard } from "./card";
 import { layoutCard, type ClientFormat, type DrawOp, type FontKind } from "./layout";
 import { COLORS, FORMATS } from "./style";
+import { CROWD_PALETTE, FG_PALETTE, type Placed } from "./demonstrace";
+import { drawFigure } from "@/lib/stickman/canvas";
+import { figureGeometry } from "@/lib/stickman/geometry";
+import { generateStickman } from "@/lib/stickman/params";
+import { poseAt } from "@/lib/stickman/poses";
+import { layoutSignText } from "@/lib/stickman/sign";
 
 /**
  * Story 1080×1920 a čtverec 1080×1080 v prohlížeči (SPEC §9.4). Písmo Mona Sans se načte
@@ -70,9 +76,43 @@ function drawPhoto(ctx: Ctx, photo: CanvasImageSource & { width: number; height:
   ctx.restore();
 }
 
+/** Panáček demonstrace: tělo přes lib/stickman/canvas, text cedule písmem obrázku. */
+function drawStickman(ctx: Ctx, p: Placed) {
+  const params = generateStickman(p.seed);
+  const fig = figureGeometry(params, poseAt(params, p.pose));
+  const pal = p.layer === "fg" ? FG_PALETTE : CROWD_PALETTE;
+  ctx.save();
+  ctx.translate(p.x, p.y);
+  ctx.scale(p.scale, p.scale);
+  drawFigure(ctx, fig, p.signColor, pal);
+  if (p.signText.trim()) {
+    // Rozložení textu nechá v kontextu prostrkání z měření nadpisu – cedule ho mít nesmí.
+    if ("letterSpacing" in ctx) ctx.letterSpacing = "0px";
+    const measure = (t: string, size: number) => {
+      ctx.font = fontCss("wide", size);
+      return ctx.measureText(t).width;
+    };
+    // Měření v jednotkách postavy (výška 1) – stejně jako layoutSignText očekává.
+    const lay = layoutSignText(p.signText, params.signShape, measure);
+    const fs = lay.fontSize * fig.scale;
+    const lh = lay.lineHeight * fig.scale;
+    ctx.translate(fig.sign.x, fig.sign.y);
+    ctx.rotate((fig.sign.angle * Math.PI) / 180);
+    ctx.fillStyle = pal.signText[p.signColor];
+    ctx.textAlign = "center";
+    ctx.textBaseline = "middle";
+    if ("letterSpacing" in ctx) ctx.letterSpacing = "0px";
+    ctx.font = fontCss("wide", fs);
+    const top = -((lay.lines.length - 1) * lh) / 2;
+    lay.lines.forEach((l, i) => ctx.fillText(l, 0, top + i * lh));
+  }
+  ctx.restore();
+}
+
 function draw(ctx: Ctx, ops: DrawOp[], photo?: CanvasImageSource & { width: number; height: number }) {
   for (const op of ops) {
-    if (op.t === "rect") {
+    if (op.t === "stickman") drawStickman(ctx, op);
+    else if (op.t === "rect") {
       ctx.fillStyle = op.fill;
       ctx.fillRect(op.x, op.y, op.w, op.h);
     } else if (op.t === "flag") drawFlag(ctx, op.x, op.y, op.w);

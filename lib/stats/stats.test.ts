@@ -54,7 +54,8 @@ describe("statistiky v DB (PGlite přes pglite-socket + driver postgres)", () =>
       select c.relname, c.relrowsecurity from pg_class c join pg_namespace n on n.oid = c.relnamespace
       where n.nspname = 'app' and c.relkind = 'r' order by 1`;
     expect(r.map((x) => x.relname)).toEqual([
-      "email_job", "email_token", "event_counter", "organization", "rate_limit", "signature", "signature_version", "signer",
+      "demonstrator", "demonstrator_report", "email_job", "email_token", "event_counter", "moderation_job", "moderation_log",
+      "organization", "rate_limit", "signature", "signature_version", "signer",
     ]);
     expect(r.every((x) => x.relrowsecurity)).toBe(true);
     const policies = await sql`select 1 from pg_policies where schemaname = 'app'`;

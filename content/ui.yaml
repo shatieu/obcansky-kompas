@@ -580,6 +580,16 @@ method:
   data_button: Stáhnout CSV
   repo_link: Zdrojový kód na GitHubu
   repo_url: https://github.com/shatieu/obcansky-kompas
+  demo_title: Moderace online demonstrace
+  demo_body: V davu se nesmí objevit vulgarita, nenávist ani podvržené jméno. Kontrolují se jen texty, které lidé píšou sami, tedy vlastní slogan a křestní jméno. Slogany z nabídky, póza, barva cedule a vzhled panáčka kontrolu nepotřebují.
+  demo_script_title: První stupeň, pravidla v kódu
+  demo_script_body: Každý vlastní text hned při odeslání projde pravidly, stejnými na serveru i v prohlížeči. Text se nejdřív sjednotí, aby nešlo kontrolu obejít, tedy malá písmena, bez diakritiky, podobné znaky a číslice nahrazené písmeny, bez mezer, teček a pomlček mezi písmeny a bez opakovaných písmen. Pak se porovná se seznamy českých, slovenských a anglických vulgarit a urážek. Odkazy, e-maily, telefonní čísla, přezdívky se zavináčem a hashtagy nejdou. Slogan má 3 až 40 znaků, nejvýš polovinu velkých písmen (jinak je zmenšíme) a nejvýš 2 emoji. Jméno je jedno slovo z písmen, 2 až 20 znaků, a nesmí to být příjmení známé veřejné osoby nebo politika. Když text neprojde, ukážeme jen větu, že ho nelze použít, bez důvodu, aby nešlo pravidla obcházet zkoušením. Seznamy zakázaných slov jsou v otevřeném kódu, tady je celé nezveřejňujeme.
+  demo_ai_title: Druhý stupeň, kontrola umělou inteligencí
+  demo_ai_body: Když je zapnutá, text, který prošel pravidly, čeká na kontrolu jazykovým modelem. Model odmítne vulgarity i skryté nebo zakódované, nenávist, výhrůžky, útoky na konkrétní lidi, sexuální obsah, reklamu a podvržená jména. Ostrou kritiku vlády, zákona i politiků bez urážek povolí, stejně jako slogany opačného názoru. Dokud kontrola neskončí, je v davu výchozí slogan a žádné jméno. Když kontrola selže, text dál čeká, nikdy se kvůli chybě neschválí sám.
+  demo_ai_on: Kontrola umělou inteligencí je teď zapnutá.
+  demo_ai_off: Kontrola umělou inteligencí je teď vypnutá, texty, které projdou pravidly, se rovnou ukážou.
+  demo_reports_title: Nahlášení a ruční zásahy
+  demo_reports_body: Každého panáčka jde nahlásit, z jedné IP adresy jednou. Po třech nahlášeních z různých adres se vlastní slogan a jméno skryjí, dokud je nezkontroluje člověk. Každý zásah, ať ho udělají pravidla, umělá inteligence, nahlášení, nebo člověk, se zapíše do záznamu.
 
 sources:
   meta_title: Zdroje a ověření – Občanský kompas
@@ -664,6 +674,11 @@ privacy:
   how_body: "Odpovědi upravíš nebo podpis odvoláš přes odkaz, který ti pošleme e-mailem (požádáš o něj na své osobní stránce). Při odvolání smažeme jméno, e-mail i adresu, odpovědi zůstanou jen anonymně ve statistikách. Ostatní žádosti pošli na kontakt správce. TODO(owner): kontaktní e-mail."
   browser_title: Co zůstává v prohlížeči
   browser_body: Rozpracované odpovědi ukládáme jen do úložiště tvého prohlížeče, ne na server. Fotku a dopisy tvoříš taky jen v prohlížeči. Nepoužíváme reklamní ani sledovací cookies.
+  demo_title: Online demonstrace
+  demo_body: Když se připojíš k online demonstraci, zveřejníme tvůj slogan, pózu, barvu cedule, vzhled panáčka, pořadí a den připojení. Křestní jméno zveřejníme, jen když ho sám/sama vyplníš. Slogan je tvůj politický názor, proto ho zveřejníme jen s tvým výslovným souhlasem podle čl. 9 odst. 2 písm. a) GDPR, který dáváš samostatným zaškrtnutím. Panáček je navázaný na tvůj ověřený podpis, ale e-mail ani celé jméno u něj nikdy neukážeme.
+  demo_check_body: Vlastní slogan a jméno projdou kontrolou, než je ostatní uvidí (pravidla popisuje metodika). Dokud kontrola neskončí, ukazujeme v davu výchozí slogan a žádné jméno. Když někdo panáčka nahlásí, uložíme jen jednosměrný otisk IP adresy, aby nešlo hlásit opakovaně.
+  demo_withdraw_body: Panáčka upravíš přes svou osobní stránku. Když odvoláš podpis, panáček z davu zmizí i se sloganem a jménem.
+  processor_moderation: "Anthropic, PBC – automatická kontrola vlastních sloganů a jmen v online demonstraci. Dostane jen samotný text, nic dalšího."
 
 # ---------- Sdílení (SPEC §9.4) a /v/[uuid]/srovnani (SPEC §8) – jen server. Věty momentů jsou v content/share.yaml. ----------
 share:
@@ -699,6 +714,12 @@ share:
     match_kicker: MÍRA SHODY S LIDMI
     photo_kicker: PROFILOVÁ FOTKA
     photo_line: Rámeček si vyrobíš taky. Fotka zůstane v telefonu.
+    demo_kicker: ONLINE DEMONSTRACE
+    # Počet účastníků na obrázku: 1 / 2–4 / 0 a 5+
+    demo_count_one: "{count} člověk v davu"
+    demo_count_few: "{count} lidé v davu"
+    demo_count_many: "{count} lidí v davu"
+    demo_figure_alt: "Panáček s cedulí: {slogan}"
   # Tvary podle počtu: [1, 2–4, 5 a víc]
   recipients:
     poslanec: [poslanec, poslanci, poslanců]
@@ -736,3 +757,155 @@ compare_page:
   unavailable_title: Srovnání se teď nenačetlo
   unavailable_lead: Zkus to za chvíli znovu.
   static_demo: V ukázkové verzi bez databáze srovnání není.
+
+# ---------- Online demonstrace (SPEC-demonstrace §2, §3, §8) – jen server ----------
+# Čte components/demonstrace/join/texts.ts; do klientských komponent jdou jako props.
+demonstrace:
+  # Blok „Kde stojíme my“ (třetí tlačítko + živý počet) a osobní stránka /v/[uuid].
+  # stance_join_label je doslova SPEC-demonstrace §2 (4 slova), proto ne *_button.
+  stance_join_label: Připojit se k demonstraci
+  stance_count_one: "{count} člověk už stojí v davu"
+  stance_count_few: "{count} lidé už stojí v davu"
+  stance_count_many: "{count} lidí už stojí v davu"
+  stance_count_zero: Dav na tebe čeká
+  page_title: Online demonstrace
+  page_invite_lead: Vyber si slogan a postav se do davu k ostatním.
+  page_join_button: Připojit se
+  # „Můj panáček v davu“ doslova SPEC-demonstrace §2 (4 slova), proto ne *_button.
+  page_mine_label: Můj panáček v davu
+  page_edit_button: Upravit panáčka
+  join:
+    meta_title: Připojit se k demonstraci – Občanský kompas
+    kicker: Online demonstrace
+    edit_kicker: Úprava panáčka
+    nav_aria: Kroky připojení
+    nav_item: "Krok {n} z {total}: {step}"
+    nav_state_done: hotovo
+    nav_state_current: právě tady
+    nav_state_todo: zatím ne
+    progress_label: "Krok {n} z {total}"
+    step_slogan: Slogan
+    step_pose: Póza
+    step_color: Cedule
+    step_look: Vzhled
+    step_name: Jméno
+    step_consent: Souhlas
+    preview_label: "Náhled tvého panáčka s cedulí: {slogan}"
+    slogan_title: Co bude na tvé ceduli?
+    slogan_lead: Vyber heslo, nebo napiš vlastní.
+    slogan_custom_option: Napíšu vlastní
+    slogan_custom_label: Tvůj slogan
+    slogan_custom_hint: Nejvýš 40 znaků. Vlastní text projde kontrolou.
+    slogan_counter: "Zbývá znaků: {n}"
+    slogan_empty: Napiš slogan, nebo vyber jeden z nabídky.
+    moderation: Tento text nelze použít. Zkuste jiný.
+    pose_title: Jak budeš stát?
+    pose_lead: Panáček se hned začne hýbat.
+    poses:
+      drzi: Drží ceduli
+      mava: Mává cedulí
+      pochoduje: Pochoduje
+      tleska: Tleská
+      skace: Skáče
+      pest: Zdvižená pěst
+    color_title: Jakou barvu má cedule?
+    color_lead: Barvu uvidí všichni v davu.
+    colors:
+      white: Bílá
+      blue: Modrá
+      red: Červená
+    look_title: Takhle vypadáš
+    look_lead: Když se ti nelíbí, zkus jiného panáčka.
+    reroll_button: Jiný panáček
+    reroll_left: "Ještě {n}× můžeš změnit"
+    reroll_done: Víc změn nejde, zůstane tenhle panáček.
+    name_title: Ukážeme tvé jméno?
+    name_lead: Jen křestní jméno, nebo nic.
+    name_anonymous: Připojit se anonymně
+    name_show: Ukázat křestní jméno
+    name_label: Křestní jméno
+    name_hint: Jedno slovo, 2 až 20 písmen. Projde kontrolou.
+    name_empty: Napiš křestní jméno, nebo se připoj anonymně.
+    consent_title: Souhlas se zveřejněním
+    consent_lead: Slogan je tvůj politický názor, proto potřebujeme výslovný souhlas.
+    consent_label: Souhlasím se zveřejněním svého sloganu a případně křestního jména
+    consent_caption: Souhlas odvoláš tak, že odvoláš podpis. Panáček pak z davu zmizí.
+    consent_error: Bez souhlasu se připojit nejde.
+    summary_slogan: Slogan
+    summary_name: Jméno
+    summary_anonymous: Anonym
+    next_button: Další
+    submit_button: Připojit se
+    save_button: Uložit změny
+    sending: Odesílám…
+    joining_title: Jsi v davu.
+    joining_text: Hned tě tam ukážeme.
+    edit_saved: Změny jsou uložené.
+    status_pending: Čeká na kontrolu
+    status_rejected: Text neprošel kontrolou
+    status_pending_hint: V davu je zatím výchozí slogan a bez jména.
+    status_rejected_hint: Zadej jiný text. V davu je zatím výchozí slogan.
+    gate_title: Nejdřív podepiš kompas
+    gate_lead: K demonstraci se připojí jen ten, kdo ověřil svůj podpis.
+    gate_button: Spustit kompas
+    gate_signed: Už jsi podepsal/a? Otevři odkaz z e-mailu, kterým jsi podpis ověřil/a, a vrať se sem.
+    static_demo: V ukázce se k demonstraci připojit nelze.
+    read_only: Web je teď jen pro čtení. Zkus to později.
+    error_generic: Něco se nepovedlo. Zkus to prosím za chvíli.
+    error_rate_limited: Moc pokusů za krátkou dobu. Zkus to za hodinu.
+    error_unauthorized: Platnost přihlášení vypršela. Otevři znovu odkaz z e-mailu.
+    view_crowd_button: Zobrazit dav
+  list:
+    meta_title: Seznam účastníků – Online demonstrace
+    meta_description: Přístupný seznam lidí, kteří se připojili k online demonstraci.
+    kicker: Online demonstrace
+    title: Seznam účastníků
+    lead: Všichni v davu podle pořadí připojení.
+    anonymous: Anonym
+    rank: "{rank}."
+    joined: "Připojení {date}"
+    page_label: "Strana {page} z {pages}"
+    pagination_aria: Stránkování seznamu
+    prev_button: Předchozí
+    next_button: Další
+    crowd_button: Zobrazit dav
+    join_button: Připojit se
+    empty: Zatím tu nikdo nestojí. Buď první.
+    unavailable: Seznam se teď nenačetl. Zkus to za chvíli.
+
+# ---------- Dav online demonstrace (SPEC-demonstrace §2, §6) – jen server ----------
+# Čte lib/crowd/texts.ts (readUiYaml); do klientských komponent jdou jako props. Serverová sekce,
+# aby texty davu nezvětšovaly klientský ui.json a JS /kompas.
+demonstrace_crowd:
+  meta_title: Online demonstrace
+  meta_description: Dav lidí, kteří podepsali Občanský kompas a připojili se k online demonstraci.
+  kicker: Online demonstrace
+  count_one: "{count} účastník"
+  count_few: "{count} účastníci"
+  count_many: "{count} účastníků"
+  join_button: Připojit se
+  list_button: Zobrazit jako seznam
+  find_me_button: Najdi mě
+  start_button: Na začátek
+  end_button: Na konec davu
+  zoom_in: Přiblížit
+  zoom_out: Oddálit
+  canvas_label: Dav účastníků online demonstrace
+  canvas_help: Táhni nebo použij šipky pro posun. Kolečkem, dvěma prsty nebo klávesami plus a minus přibližuješ. Enter otevře kartu panáčka uprostřed. Stejné údaje najdeš v seznamu.
+  minimap_label: Minimapa davu, klepnutím se přesuneš
+  loading: Načítám dav…
+  empty: Zatím tu nikdo nestojí. Buď první.
+  error: Dav se nepodařilo načíst.
+  retry_button: Zkusit znovu
+  not_found: Tenhle panáček v davu není.
+  card:
+    anonymous: Anonym
+    rank: "{rank}. účastník"
+    joined: "Připojení {date}"
+    share_button: Sdílet
+    report_button: Nahlásit
+    copied: Odkaz je zkopírovaný.
+    reported: Díky. Podíváme se na to.
+    report_error: Nahlášení se nepovedlo. Zkus to znovu.
+    close: Zavřít
+    figure_label: "Panáček s cedulí: {slogan}"

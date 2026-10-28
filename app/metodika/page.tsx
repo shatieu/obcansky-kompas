@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { questionsFile, sentencesFile, t } from "@/lib/content";
 import { branchingRules, sentenceLibrary, type LibraryGroup } from "@/lib/methodology/library";
 import { buildSourcesIndex, humanReviewedItems } from "@/lib/methodology/sources";
+import { aiEnabled } from "@/lib/moderation/ai";
 import { pagesTexts } from "@/lib/org/texts";
 import { Icon } from "@/components/ui/icon";
 import { Disclosure, ExternalLink, Page, PageHead, PrimaryAction } from "./_ui";
@@ -101,6 +102,17 @@ export default function MethodPage() {
 
       <Disclosure title={m.human_title} sub={String(human.length)}>
         <p>{human.length ? t(m.human_some, { items: human.join(", ") }) : m.human_none}</p>
+      </Disclosure>
+
+      {/* Online demonstrace (SPEC-demonstrace §4, §13): jen popis pravidel, seznamy se nezveřejňují. */}
+      <Disclosure title={m.demo_title} sub={aiEnabled() ? m.demo_ai_on : m.demo_ai_off}>
+        <p>{m.demo_body}</p>
+        <h3 className="k-h3">{m.demo_script_title}</h3>
+        <p>{m.demo_script_body}</p>
+        <h3 className="k-h3">{m.demo_ai_title}</h3>
+        <p>{m.demo_ai_body}</p>
+        <h3 className="k-h3">{m.demo_reports_title}</h3>
+        <p>{m.demo_reports_body}</p>
       </Disclosure>
 
       <Disclosure title={m.data_title}>
