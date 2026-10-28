@@ -1,5 +1,5 @@
 /* Občanský kompas — design system (docs/design-system/project/assets/Developer/kompas.css).
-   Light is default; dark follows the OS unless <html data-theme="light|dark"> forces one.
+   Always light (owner decision 2026-10-28); the OS dark preference is ignored.
    Mona Sans is self-hosted through next/font/local (app/layout.tsx → --font-mona, --font-mona-wide),
    so the @font-face block of kompas.css is not needed here. */
 @import "tailwindcss";
@@ -29,13 +29,8 @@
   --tint-edge: transparent;
   color-scheme: light;
 }
-@media (prefers-color-scheme: dark) {
-  :root:not([data-theme="light"]) {
-    --surface: #0B1B33; --ink: #FFFFFF; --ink-secondary: #B8C2CF; --blue: #82B6F0; --blue-hover: #A8CBF5;
-    --on-blue: #0B1B33; --red: #F79A9C; --blue-tint: #132540; --muted: #8A94A3; --rule-soft: #2B4166;
-    --scrim: #000000B3; --tint-edge: var(--rule-soft); color-scheme: dark;
-  }
-}
+/* Vlastník (2026-10-28): web je vždy světlý, systémový tmavý režim se nepřebírá.
+   Tmavé tokeny zůstávají jen pro explicitní <html data-theme="dark"> (nepoužívá se). */
 [data-theme="dark"] {
   --surface: #0B1B33; --ink: #FFFFFF; --ink-secondary: #B8C2CF; --blue: #82B6F0; --blue-hover: #A8CBF5;
   --on-blue: #0B1B33; --red: #F79A9C; --blue-tint: #132540; --muted: #8A94A3; --rule-soft: #2B4166;
@@ -434,7 +429,9 @@
   .k-qnav__summary { margin-left: auto; }
   .k-qnav__summary[aria-current="page"] { text-decoration: none; color: var(--ink); }
   /* Přehled odpovědí: neplatná odpověď = 4px linka v ink (chyby nikdy červeně). */
-  .k-sumrow { padding: 16px 0; border-bottom: 2px solid var(--ink); }
+  .k-sumrow { padding: 16px 0; border-bottom: 2px solid var(--ink); scroll-margin-top: 24px; }
+  .k-sumrow:focus { outline: none; }
+  .k-sumrow:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; }
   .k-sumrow[data-invalid="true"] { border-left: 4px solid var(--ink); padding-left: 12px; }
   .k-sumrow[data-skipped="true"] .k-sumrow__value { color: var(--muted); }
 
@@ -545,6 +542,18 @@
   .k-letter__head { display: flex; align-items: center; justify-content: space-between; gap: 16px; margin-bottom: 8px; }
   @media (min-width: 1024px) { .k-letter { padding: 32px; } }
 
+  /* Text k podpisu po odstavcích: úvod, blok za otázku se štítkem, závěr (StatementText) */
+  .k-stmt p { margin: 0; }
+  .k-stmt__end { font-weight: 600; }
+  .k-stmt__block { margin-top: 12px; padding-top: 12px; border-top: 1px solid var(--rule-soft); }
+  .k-stmt__block + .k-stmt__end { margin-top: 12px; padding-top: 12px; border-top: 1px solid var(--rule-soft); }
+  .k-stmt__end + .k-stmt__end { margin-top: 12px; }
+  .k-stmt__label {
+    display: block; margin-bottom: 4px; color: var(--ink-secondary);
+    font-family: var(--font-wide); font-size: 13px; line-height: 16px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase;
+  }
+  a.k-stmt__label { display: inline-flex; align-items: center; min-height: 48px; margin: -16px 0 -12px; text-decoration: underline; text-decoration-thickness: 1px; text-underline-offset: 3px; }
+  a.k-stmt__label:hover { color: var(--ink); }
   /* Action list (rows, not button rows) */
   .k-actionlist { margin: 0; padding: 0; list-style: none; border-top: 2px solid var(--ink); }
   .k-actionlist > li { border-bottom: 2px solid var(--ink); }
