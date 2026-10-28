@@ -1,7 +1,8 @@
 import { describe, expect, it } from "vitest";
-import { MAX_ZOOM } from "./constants";
+import { MAX_ZOOM, MIN_ZOOM } from "./constants";
 import {
   clampCrop,
+  coversFrame,
   displaySize,
   drawRect,
   fitWithin,
@@ -54,13 +55,37 @@ describe("ořez", () => {
     expect(covers(c1, landscape)).toBe(true);
   });
 
-  it("zoom je omezený na 1..MAX_ZOOM a fotka vždy pokryje čtverec", () => {
+  it("zoom je omezený na MIN_ZOOM..MAX_ZOOM, při zoom ≥ 1 fotka pokryje čtverec", () => {
     const c = initialCrop(portrait);
     expect(zoomAt(c, 100, { x: 0, y: 0 }, portrait).zoom).toBe(MAX_ZOOM);
-    const out = zoomAt(zoomAt(c, 3, { x: 1, y: 1 }, portrait), 0.1, { x: 0, y: 0 }, portrait);
-    expect(out.zoom).toBe(1);
-    expect(covers(out, portrait)).toBe(true);
+    const back = zoomAt(zoomAt(c, 3, { x: 1, y: 1 }, portrait), 1, { x: 0, y: 0 }, portrait);
+    expect(back.zoom).toBe(1);
+    expect(covers(back, portrait)).toBe(true);
+    expect(zoomAt(c, 0.01, { x: 0, y: 0 }, portrait).zoom).toBe(MIN_ZOOM);
     expect(clampCrop({ zoom: NaN, ox: 0, oy: 0 }, portrait).zoom).toBe(1);
+  });
+
+  it("oddálení pod 100 %: fotka je menší než rámeček a celá v něm leží", () => {
+    expect(MIN_ZOOM).toBeLessThanOrEqual(0.5);
+    const sq = { w: 1000, h: 1000 };
+    const c = zoomAt(initialCrop(sq), 0.5, { x: 0.5, y: 0.5 }, sq);
+    expect(c).toEqual({ zoom: 0.5, ox: 0.25, oy: 0.25 }); // vystředěná
+    expect(coversFrame(c, sq)).toBe(false);
+    expect(coversFrame(initialCrop(sq), sq)).toBe(true);
+    // posun: kamkoli uvnitř čtverce, ne přes okraj
+    expect(panBy(c, 5, 5, sq)).toMatchObject({ ox: 0.5, oy: 0.5 });
+    expect(panBy(c, -5, -5, sq)).toMatchObject({ ox: 0, oy: 0 });
+    expect(panBy(c, 0.1, -0.1, sq)).toMatchObject({ ox: 0.35, oy: 0.15 });
+  });
+
+  it("oddálení u obdélníkové fotky: delší osa pokryje, kratší leží uvnitř", () => {
+    // 4:3 při 0,9 → 1,2 × 0,9: vodorovně pokrývá, svisle je menší
+    const c = clampCrop({ zoom: 0.9, ox: 0.3, oy: 0.3 }, landscape);
+    expect(c.ox).toBeCloseTo(0); // větší než čtverec → nesmí odhalit levý okraj
+    expect(c.oy).toBeCloseTo(0.1); // menší → nejvýš k dolnímu okraji
+    const d = clampCrop({ zoom: 0.9, ox: -5, oy: -5 }, landscape);
+    expect(d.ox).toBeCloseTo(1 - 1.2);
+    expect(d.oy).toBe(0);
   });
 
   it("drawRect škáluje na velikost plátna", () => {
@@ -75,7 +100,8 @@ describe("ořez", () => {
     expect(pinch({ x: 0, y: 0 }, { x: 3, y: 4 })).toEqual({ dist: 5, mid: { x: 1.5, y: 2 } });
     expect(wheelZoom(2, -100)).toBeGreaterThan(2);
     expect(wheelZoom(2, 100)).toBeLessThan(2);
-    expect(wheelZoom(1, 1000)).toBe(1);
+    expect(wheelZoom(1, 100)).toBeLessThan(1); // kolečko jde i pod 100 %
+    expect(wheelZoom(1, 10000)).toBe(MIN_ZOOM);
   });
 
   it("fitWithin nikdy nezvětšuje a drží poměr", () => {

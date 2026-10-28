@@ -4,7 +4,7 @@
  * Rámečky jsou statické (design system pohyb.md §6).
  */
 import { COLORS, FRAME_R, FRAME_SIZE, JPEG_QUALITY, type Variant } from "./constants";
-import { drawRect, type Crop, type Size } from "./crop";
+import { coversFrame, drawRect, initialCrop, type Crop, type Size } from "./crop";
 import { stripJpegMetadata, stripPngMetadata } from "./exif";
 import { exportPlan, type ExportFormat } from "./export";
 import {
@@ -13,11 +13,11 @@ import {
   RIBBON,
   DUOTONE,
   applyDuotone,
-  arcLayout,
   duotoneLayout,
-  fitArcFontSize,
   flagGeometry,
+  photoClipRadius,
   ribbonLayout,
+  ringLayout,
   type Measure,
 } from "./frames";
 
@@ -50,8 +50,70 @@ function makeMeasure(ctx: CanvasRenderingContext2D, font: FrameFont, letterSpaci
   };
 }
 
-function drawPhoto(ctx: CanvasRenderingContext2D, input: RenderInput) {
+type PhotoInput = NonNullable<RenderInput["photo"]>;
+
+/** Zdrobnělina fotky (výchozí ořez) pro rozmazané pozadí; jedna na zdroj. */
+const tinyCache = new WeakMap<object, HTMLCanvasElement>();
+const TINY = 24;
+
+function tinyPhoto(photo: PhotoInput): HTMLCanvasElement | null {
+  const key = photo.source as object;
+  const hit = tinyCache.get(key);
+  if (hit) return hit;
+  const c = document.createElement("canvas");
+  c.width = TINY;
+  c.height = TINY;
+  const t = c.getContext("2d");
+  if (!t) return null;
+  const r = drawRect(initialCrop(photo.size), photo.size, TINY);
+  t.imageSmoothingQuality = "high";
+  t.drawImage(photo.source, r.x, r.y, r.w, r.h);
+  tinyCache.set(key, c);
+  return c;
+}
+
+/** Bílý závoj přes rozmazané pozadí: fotka se od něj jemně odliší. */
+const BACKDROP_VEIL = 0.35;
+/** Rozmazání pozadí v jednotkách rámečku (1080). */
+const BACKDROP_BLUR = 36;
+
+/**
+ * Fotka do čtverce o straně `side` (souřadnice kontextu). Když je fotka menší než
+ * rámeček (zoom < 1), pod ní je rozmazaná zvětšená kopie téže fotky se závojem.
+ * `devicePerUnit` = kolik pixelů plátna je jedna jednotka (pro poloměr rozmazání).
+ */
+function paintPhoto(ctx: CanvasRenderingContext2D, photo: PhotoInput, side: number, devicePerUnit: number) {
+  if (!coversFrame(photo.crop, photo.size)) {
+    const tiny = tinyPhoto(photo);
+    if (tiny) {
+      ctx.save();
+      ctx.imageSmoothingEnabled = true;
+      ctx.imageSmoothingQuality = "high";
+      const canFilter = typeof (ctx as { filter?: unknown }).filter === "string";
+      // Přesah, aby rozmazání nezesvětlilo okraje.
+      const over = canFilter ? side * 0.08 : 0;
+      if (canFilter) ctx.filter = `blur(${Math.max(1, Math.round((BACKDROP_BLUR * side * devicePerUnit) / FRAME_SIZE))}px)`;
+      ctx.drawImage(tiny, -over, -over, side + 2 * over, side + 2 * over);
+      ctx.restore();
+      ctx.fillStyle = `rgba(255,255,255,${BACKDROP_VEIL})`;
+      ctx.fillRect(0, 0, side, side);
+    }
+  }
+  const r = drawRect(photo.crop, photo.size, side);
+  ctx.imageSmoothingQuality = "high";
+  ctx.drawImage(photo.source, r.x, r.y, r.w, r.h);
+}
+
+/** Fotka (nebo zástupný text). U kruhu jen uvnitř pruhu – ne pod ním a ne v rozích. */
+function drawPhoto(ctx: CanvasRenderingContext2D, side: number, input: RenderInput) {
   const { photo } = input;
+  ctx.save();
+  const clipR = photoClipRadius(input.variant);
+  if (clipR !== null) {
+    ctx.beginPath();
+    ctx.arc(FRAME_R, FRAME_R, clipR, 0, 2 * Math.PI);
+    ctx.clip();
+  }
   ctx.fillStyle = COLORS.tint;
   ctx.fillRect(0, 0, FRAME_SIZE, FRAME_SIZE);
   if (!photo) {
@@ -59,12 +121,11 @@ function drawPhoto(ctx: CanvasRenderingContext2D, input: RenderInput) {
     ctx.font = fontString(input.font, 60, 700);
     ctx.textAlign = "center";
     ctx.textBaseline = "middle";
-    ctx.fillText(input.placeholder, FRAME_R, FRAME_R - 160);
-    return;
+    ctx.fillText(input.placeholder, FRAME_R, FRAME_R - (input.variant === "ring" ? 0 : 160));
+  } else {
+    paintPhoto(ctx, photo, FRAME_SIZE, side / FRAME_SIZE);
   }
-  const r = drawRect(photo.crop, photo.size, FRAME_SIZE);
-  ctx.imageSmoothingQuality = "high";
-  ctx.drawImage(photo.source, r.x, r.y, r.w, r.h);
+  ctx.restore();
 }
 
 /** Fotka v duotónu: kreslí se v rozlišení plátna, pixely se přebarví. */
@@ -78,9 +139,7 @@ function drawDuotonePhoto(ctx: CanvasRenderingContext2D, side: number, input: Re
   tmp.height = side;
   const t = tmp.getContext("2d", { willReadFrequently: true });
   if (!t) return;
-  const r = drawRect(photo.crop, photo.size, side);
-  t.imageSmoothingQuality = "high";
-  t.drawImage(photo.source, r.x, r.y, r.w, r.h);
+  paintPhoto(t, photo, side, 1);
   const img = t.getImageData(0, 0, side, side);
   applyDuotone(img.data);
   t.putImageData(img, 0, 0);
@@ -114,15 +173,13 @@ function drawRing(ctx: CanvasRenderingContext2D, input: RenderInput) {
   ctx.stroke();
 
   const text = input.slogan.toLocaleUpperCase("cs");
-  const measure = makeMeasure(ctx, input.font, 0);
-  const fontSize = fitArcFontSize(text, RING.textRadius, RING.maxTextAngle, measure);
-  const glyphs = arcLayout(text, { fontSize, measure });
-  ctx.font = fontString(input.font, fontSize);
+  const layout = ringLayout(text, makeMeasure(ctx, input.font, 0));
+  ctx.font = fontString(input.font, layout.fontSize);
   setLetterSpacing(ctx, 0);
   ctx.fillStyle = COLORS.white;
   ctx.textAlign = "center";
   ctx.textBaseline = "middle";
-  for (const g of glyphs) {
+  for (const g of [...layout.top, ...layout.bottom]) {
     ctx.save();
     ctx.translate(g.x, g.y);
     ctx.rotate(g.rotation);
@@ -149,7 +206,6 @@ function drawRibbon(ctx: CanvasRenderingContext2D, input: RenderInput) {
 function drawCorner(ctx: CanvasRenderingContext2D) {
   const g = flagGeometry(CORNER.x, CORNER.y, CORNER.w);
   ctx.fillStyle = COLORS.white;
-  ctx.fillRect(g.plate.x, g.plate.y, g.plate.w, g.plate.h);
   ctx.fillRect(g.white.x, g.white.y, g.white.w, g.white.h);
   ctx.fillStyle = COLORS.flagRed;
   ctx.fillRect(g.red.x, g.red.y, g.red.w, g.red.h);
@@ -184,7 +240,7 @@ export function renderFrame(ctx: CanvasRenderingContext2D, side: number, input: 
   ctx.setTransform(k, 0, 0, k, 0, 0);
   if ("fontStretch" in ctx) ctx.fontStretch = input.font.stretch;
   if (input.variant === "duotone") drawDuotonePhoto(ctx, side, input);
-  else drawPhoto(ctx, input);
+  else drawPhoto(ctx, side, input);
   if (input.variant === "ring") drawRing(ctx, input);
   else if (input.variant === "ribbon") drawRibbon(ctx, input);
   else if (input.variant === "corner") drawCorner(ctx);

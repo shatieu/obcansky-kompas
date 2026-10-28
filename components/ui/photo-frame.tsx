@@ -97,7 +97,7 @@ export function PhotoFrame({
     art = (
       <>
         <PhotoBase photo={photo} uid={uid} placeholder={placeholder} />
-        <FlagAt x={600} y={700} w={240} />
+        <FlagAt x={600} y={700} w={240} plate={false} />
       </>
     );
   } else {

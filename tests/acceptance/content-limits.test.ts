@@ -173,7 +173,7 @@ describe("§4.1 limity textu – ui.yaml a stance.yaml", () => {
   });
   it("slogany jsou přesně tři ze SPEC §9.3", () => {
     const s = readYaml<{ slogans: { text: string }[] }>("slogans.yaml").slogans.map((x) => x.text).sort();
-    expect(s).toEqual(["Média nedáme", "Média veřejné služby mi nejsou jedno", "Ruce pryč od médií"].sort());
+    expect(s).toEqual(["Média nedáme", "Veřejnoprávní média mi nejsou jedno", "Ruce pryč od médií"].sort());
   });
   it("§14.4 souhlas se zpracováním politického názoru má text v ui.yaml", () => {
     expect(uiStrings.some(([, v]) => /politick/i.test(v) && /souhlas/i.test(v))).toBe(true);

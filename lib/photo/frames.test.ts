@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { FRAME_R } from "./constants";
+import { loadSlogans } from "./content";
 import {
   CORNER,
   RING,
@@ -10,8 +11,10 @@ import {
   duotoneLayout,
   fitArcFontSize,
   flagGeometry,
+  photoClipRadius,
   rectInsideCircle,
   ribbonLayout,
+  ringLayout,
   splitBalanced,
   wrapWords,
   type Measure,
@@ -20,7 +23,8 @@ import {
 /** Náhrada měření: široké písmo ≈ 0,8 em na znak (Mona Sans Expanded 800 je takto široké). */
 const wide: Measure = (text, fs) => Array.from(text).length * fs * 0.8;
 
-const SLOGANS = ["RUCE PRYČ OD MÉDIÍ", "MÉDIA NEDÁME", "MÉDIA VEŘEJNÉ SLUŽBY MI NEJSOU JEDNO"];
+const SLOGANS = loadSlogans().map((s) => s.text.toLocaleUpperCase("cs"));
+const LONG = "VEŘEJNOPRÁVNÍ MÉDIA MI NEJSOU JEDNO";
 
 describe("kruhový pruh – slogan po oblouku", () => {
   it("znaky leží na kružnici, vystředěné nahoře, zleva doprava", () => {
@@ -44,6 +48,37 @@ describe("kruhový pruh – slogan po oblouku", () => {
     }
     expect(fitArcFontSize("MÉDIA NEDÁME", RING.textRadius, RING.maxTextAngle, wide)).toBe(RING.preferredFontSize);
   });
+
+  it("krátký slogan celý nahoře, dlouhý rozdělený na horní a dolní oblouk", () => {
+    expect(SLOGANS).toContain(LONG);
+    const short = ringLayout("MÉDIA NEDÁME", wide);
+    expect(short.bottom).toEqual([]);
+    expect(short.fontSize).toBe(RING.preferredFontSize);
+    for (const s of SLOGANS) {
+      const l = ringLayout(s, wide);
+      expect(l.fontSize).toBeGreaterThanOrEqual(RING.splitBelowFontSize);
+      expect(l.top.every((g) => g.y < FRAME_R)).toBe(true);
+      expect(l.bottom.every((g) => g.y > FRAME_R)).toBe(true);
+      expect([...l.top, ...l.bottom].map((g) => g.ch).join("").replace(/ /g, "")).toBe(s.replace(/ /g, ""));
+    }
+    const long = ringLayout(LONG, wide);
+    expect(long.bottom.length).toBeGreaterThan(0);
+    // dole čteno zleva doprava, písmena nahoru (uprostřed vodorovně)
+    expect(long.bottom[0]!.x).toBeLessThan(long.bottom[long.bottom.length - 1]!.x);
+    for (const g of long.bottom) expect(Math.hypot(g.x - FRAME_R, g.y - FRAME_R)).toBeCloseTo(RING.bottomTextRadius);
+    expect(long.bottom[0]!.rotation).toBeCloseTo(-long.bottom[long.bottom.length - 1]!.rotation);
+    expect(long.bottom[0]!.rotation).toBeGreaterThan(0);
+  });
+
+  it("fotka končí pod bílou linkou na vnitřní hraně pruhu, pruh končí na kruhovém ořezu", () => {
+    expect(RING.photoRadius).toBe(RING.bandRadius - RING.bandWidth / 2);
+    expect(RING.photoRadius).toBeLessThanOrEqual(RING.innerLineRadius + RING.lineWidth / 2);
+    expect(RING.photoRadius).toBeGreaterThanOrEqual(RING.innerLineRadius - RING.lineWidth / 2);
+    expect(RING.bandRadius + RING.bandWidth / 2).toBe(FRAME_R);
+    // export: fotka jen uvnitř pruhu, rohy prázdné (PNG průhledné, JPG bílé)
+    expect(photoClipRadius("ring")).toBe(RING.photoRadius);
+    for (const v of ["ribbon", "corner", "duotone"] as const) expect(photoClipRadius(v)).toBeNull();
+  });
 });
 
 describe("stuha", () => {
@@ -61,28 +96,33 @@ describe("stuha", () => {
     }
   });
   it("vyvážené rozdělení", () => {
-    expect(splitBalanced("MÉDIA VEŘEJNÉ SLUŽBY MI NEJSOU JEDNO")).toEqual(["MÉDIA VEŘEJNÉ SLUŽBY", "MI NEJSOU JEDNO"]);
+    expect(splitBalanced(LONG)).toEqual(["VEŘEJNOPRÁVNÍ MÉDIA", "MI NEJSOU JEDNO"]);
     expect(splitBalanced("JEDNO")).toEqual(["JEDNO", ""]);
   });
 });
 
 describe("vlajka v rohu", () => {
-  it("vždy 3 : 2, klín do poloviny délky, ochranný prostor ≥ ¼ výšky, celá v kruhu", () => {
+  it("vždy 3 : 2, klín do poloviny délky, bez bílé plochy, tenký obrys, celá v kruhu", () => {
     const g = flagGeometry(CORNER.x, CORNER.y, CORNER.w);
     const h = g.white.h + g.red.h;
     expect(CORNER.w / h).toBeCloseTo(3 / 2);
     expect(g.white.h).toBe(g.red.h);
     expect(g.wedge[1]).toEqual([CORNER.x + CORNER.w / 2, CORNER.y + h / 2]);
-    expect(CORNER.x - g.plate.x).toBeGreaterThanOrEqual(h / 4);
-    expect(g.plate.y + g.plate.h - (CORNER.y + h)).toBeGreaterThanOrEqual(h / 4);
-    expect(rectInsideCircle(g.plate.x, g.plate.y, g.plate.w, g.plate.h)).toBe(true);
+    expect("plate" in g).toBe(false);
+    expect(g.outline.stroke).toBeGreaterThanOrEqual(1);
+    expect(g.outline.stroke).toBeLessThanOrEqual(2);
+    // obrys těsně kolem vlajky, ne ochranná zóna
+    expect(CORNER.x - g.outline.x).toBeCloseTo(g.outline.stroke / 2);
+    const o = g.outline;
+    const far = Math.hypot(o.x + o.w + o.stroke / 2 - FRAME_R, o.y + o.h + o.stroke / 2 - FRAME_R);
+    expect(far).toBeLessThanOrEqual(FRAME_R - 24); // s rezervou uvnitř kruhového ořezu sítí
   });
 });
 
 describe("duotón", () => {
   it("zalomení po slovech jako v návrhu", () => {
     expect(wrapWords("Ruce pryč od médií", 10)).toEqual(["Ruce pryč", "od médií"]);
-    expect(wrapWords("Média veřejné služby mi nejsou jedno", 10)).toEqual(["Média", "veřejné", "služby mi", "nejsou", "jedno"]);
+    expect(wrapWords("Veřejnoprávní média mi nejsou jedno", 10)).toEqual(["Veřejnoprávní", "média mi", "nejsou", "jedno"]);
   });
 
   it("text a linka se vejdou do kruhu, linka pod textem", () => {

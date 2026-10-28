@@ -37,6 +37,7 @@ export const PhotoUiSchema = z.object({
   zoom_value: z.string(),
   frame_title: z.string(),
   frames,
+  ring_note: z.string().min(1),
   slogan_title: z.string(),
   download_title: z.string(),
   download_png_button: z.string(),

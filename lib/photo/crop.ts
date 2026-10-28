@@ -3,9 +3,10 @@
  *
  * Souřadnice jsou normalizované na stranu rámečku: čtverec = 0..1 × 0..1.
  * Fotka se při zoom = 1 vejde „cover“ (kratší strana = 1). `ox`, `oy` je levý horní
- * roh fotky v těchto jednotkách; fotka musí čtverec vždy celý pokrýt.
+ * roh fotky v těchto jednotkách. V ose, kde je fotka větší než čtverec, ho musí celý
+ * pokrýt; kde je menší (zoom < 1), musí celá ležet uvnitř čtverce.
  */
-import { MAX_ZOOM, MIN_ZOOM } from "./constants";
+import { DEFAULT_ZOOM, MAX_ZOOM, MIN_ZOOM } from "./constants";
 
 export interface Size {
   w: number;
@@ -30,7 +31,7 @@ export function displaySize(img: Size, zoom: number): Size {
 }
 
 export function clampZoom(zoom: number): number {
-  if (!Number.isFinite(zoom)) return MIN_ZOOM;
+  if (!Number.isFinite(zoom)) return DEFAULT_ZOOM;
   return Math.min(MAX_ZOOM, Math.max(MIN_ZOOM, zoom));
 }
 
@@ -38,17 +39,29 @@ function clamp(v: number, lo: number, hi: number): number {
   return Math.min(hi, Math.max(lo, v));
 }
 
-/** Zoom do povoleného rozsahu a posun tak, aby fotka pokryla celý čtverec. */
+/** Povolený posun v jedné ose: větší fotka čtverec pokryje, menší v něm celá leží. */
+function clampAxis(o: number, size: number): number {
+  return clamp(o, Math.min(0, 1 - size), Math.max(0, 1 - size));
+}
+
+/** Zoom do povoleného rozsahu a posun tak, aby fotka čtverec pokryla, nebo v něm celá ležela. */
 export function clampCrop(c: Crop, img: Size): Crop {
   const zoom = clampZoom(c.zoom);
   const d = displaySize(img, zoom);
-  return { zoom, ox: clamp(c.ox, 1 - d.w, 0), oy: clamp(c.oy, 1 - d.h, 0) };
+  return { zoom, ox: clampAxis(c.ox, d.w), oy: clampAxis(c.oy, d.h) };
+}
+
+/** Pokrývá fotka celý čtverec? Když ne, kreslí se pod ní rozmazané pozadí. */
+export function coversFrame(c: Crop, img: Size): boolean {
+  const d = displaySize(img, c.zoom);
+  const e = 1e-6;
+  return c.ox <= e && c.oy <= e && c.ox + d.w >= 1 - e && c.oy + d.h >= 1 - e;
 }
 
 /** Výchozí ořez: zoom 1, fotka vystředěná. */
 export function initialCrop(img: Size): Crop {
-  const d = displaySize(img, MIN_ZOOM);
-  return { zoom: MIN_ZOOM, ox: (1 - d.w) / 2, oy: (1 - d.h) / 2 };
+  const d = displaySize(img, DEFAULT_ZOOM);
+  return { zoom: DEFAULT_ZOOM, ox: (1 - d.w) / 2, oy: (1 - d.h) / 2 };
 }
 
 /** Posun o (dx, dy) v jednotkách rámečku. */

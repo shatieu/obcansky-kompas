@@ -27,8 +27,13 @@ export const COLORS = {
   inkSecondary: "#454E5D",
 } as const;
 
-/** Rozsah přiblížení (1 = fotka přesně pokryje čtverec). */
-export const MIN_ZOOM = 1;
+/**
+ * Rozsah přiblížení (1 = fotka přesně pokryje čtverec). Pod 1 je fotka menší než
+ * rámeček (aby se celá vešla do kruhu); prázdné místo vyplní rozmazaná kopie fotky.
+ */
+export const MIN_ZOOM = 0.5;
+/** Výchozí přiblížení po nahrání a „Vrátit ořez“. */
+export const DEFAULT_ZOOM = 1;
 export const MAX_ZOOM = 5;
 
 /** Delší strana zdrojové fotky po načtení (paměť telefonu; 1080 × MAX_ZOOM by bylo zbytečně moc). */

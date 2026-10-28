@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState, useSyncExternalStore, type DragEvent, type KeyboardEvent, type PointerEvent } from "react";
-import { VARIANTS, type Variant } from "@/lib/photo/constants";
+import { MAX_ZOOM, MIN_ZOOM, VARIANTS, type Variant } from "@/lib/photo/constants";
 import { clampCrop, initialCrop, keyAction, panBy, pinch, wheelZoom, zoomAt, type Crop, type Point, type Size } from "@/lib/photo/crop";
 import { exportFileName, frameEvent, pickSlogan, previewPixels, variantHasSlogan, type ExportFormat, type Slogan } from "@/lib/photo/export";
 import type { PhotoUi } from "@/lib/photo/content";
@@ -308,11 +308,11 @@ export function PhotoStudio({
         {photo ? (
           <div className="flex w-full max-w-[420px] flex-col gap-1">
             <div className="flex items-center justify-between gap-1">
-              <IconButton icon="minus" label={ui.zoom_out_button} onClick={() => zoomBy(1 / 1.2)} disabled={!crop || crop.zoom <= 1} />
+              <IconButton icon="minus" label={ui.zoom_out_button} onClick={() => zoomBy(1 / 1.2)} disabled={!crop || crop.zoom <= MIN_ZOOM + 1e-6} />
               <output className="k-num text-small font-semibold" aria-live="polite">
                 {fill(ui.zoom_value, { n: zoomPct })}
               </output>
-              <IconButton icon="plus" label={ui.zoom_in_button} onClick={() => zoomBy(1.2)} disabled={!crop || crop.zoom >= 5} />
+              <IconButton icon="plus" label={ui.zoom_in_button} onClick={() => zoomBy(1.2)} disabled={!crop || crop.zoom >= MAX_ZOOM - 1e-6} />
             </div>
             <div className="flex flex-wrap items-center justify-between gap-x-2">
               <Button variant="secondary" icon="refresh" onClick={() => updateCrop(initialCrop(photo.size))}>
@@ -380,6 +380,7 @@ export function PhotoStudio({
             </button>
           ))}
         </div>
+        {variant === "ring" && <p className="k-cap mt-1">{ui.ring_note}</p>}
       </section>
 
       {variantHasSlogan(variant) && (

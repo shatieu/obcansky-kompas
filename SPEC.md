@@ -355,7 +355,7 @@ Výstupy: text ke zkopírování, `mailto:`, PDF A4 (varianta pro okénkovou ob�
 
 - Nahrání fotky, ořez a posun (gesta / myš), zoom, otočení podle EXIF. HEIC fallback dekodér.
 - Varianty: kruhový pruh v trikolóře se sloganem po oblouku · stuha přes spodní třetinu · štítek v rohu · duotone se sloganem přes střed.
-- Slogany jen ze `slogans.yaml`: „Ruce pryč od médií“, „Média nedáme“, „Média veřejné služby mi nejsou jedno“.
+- Slogany jen ze `slogans.yaml`: „Ruce pryč od médií“, „Média nedáme“, „Veřejnoprávní média mi nejsou jedno“ (znění upravil vlastník 2026-10-28).
 - Výstup 1080×1080 PNG a JPG, náhled s kruhovým ořezem. Metadata se odstraní.
 - Fotka nikdy neopustí prohlížeč. Server dostane jen anonymní událost `frame_downloaded` (varianta, slogan).
 - Žádná loga ČT ani ČRo.

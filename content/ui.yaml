@@ -338,8 +338,8 @@ photo:
   placeholder: Tvoje fotka
   preview_label: "Náhled profilové fotky: {frame}"
   crop_title: Posuň a přibliž
-  crop_hint: Táhni fotku, přibliž dvěma prsty nebo kolečkem myši.
-  keyboard_hint: Šipky posouvají fotku, plus a minus přibližují, nula vrací výchozí ořez.
+  crop_hint: Táhni fotku, přibližuj a oddaluj ji dvěma prsty nebo kolečkem myši.
+  keyboard_hint: Šipky posouvají fotku, plus a minus přibližují a oddalují, nula vrací výchozí ořez.
   zoom_in_button: Přiblížit
   zoom_out_button: Oddálit
   reset_button: Vrátit ořez
@@ -350,6 +350,7 @@ photo:
     ribbon: Stuha dole
     corner: Vlajka v rohu
     duotone: Modrý duotón
+  ring_note: Sítě profilovou fotku stejně oříznou do kruhu, proto rohy necháváme prázdné.
   slogan_title: Slogan
   download_title: Stáhnout
   download_png_button: Stáhnout PNG
@@ -722,12 +723,12 @@ share:
     demo_figure_alt: "Panáček s cedulí: {slogan}"
   # Tvary podle počtu: [1, 2–4, 5 a víc]
   recipients:
-    poslanec: [poslanec, poslanci, poslanců]
-    senator: [senátor, senátoři, senátorů]
-    kraj: [krajské zastupitelstvo, krajská zastupitelstva, krajských zastupitelstev]
-    obec: [zastupitelstvo obce, zastupitelstva obcí, zastupitelstev obcí]
-    ministr-kultury: [ministr kultury, ministři kultury, ministrů kultury]
-    prezident: [prezident republiky, prezidenti, prezidentů]
+    poslanec: [ poslanec, poslanci, poslanců ]
+    senator: [ senátor, senátoři, senátorů ]
+    kraj: [ krajské zastupitelstvo, krajská zastupitelstva, krajských zastupitelstev ]
+    obec: [ zastupitelstvo obce, zastupitelstva obcí, zastupitelstev obcí ]
+    ministr-kultury: [ ministr kultury, ministři kultury, ministrů kultury ]
+    prezident: [ prezident republiky, prezidenti, prezidentů ]
 
 compare_page:
   meta_title: Srovnání

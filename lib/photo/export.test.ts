@@ -8,6 +8,8 @@ describe("export", () => {
     expect(exportPlan("png")).toMatchObject({ width: 1080, height: 1080, mime: "image/png" });
     expect(exportPlan("jpg")).toMatchObject({ width: 1080, height: 1080, mime: "image/jpeg", opaque: true });
     expect(exportPlan("jpg").quality).toBeGreaterThan(0.8);
+    // PNG nechá prázdné rohy kruhu průhledné, JPG je vyplní (bíle, render.ts)
+    expect(exportPlan("png").opaque).toBe(false);
   });
 
   it("náhled: CSS × DPR, max. 1080", () => {
@@ -29,7 +31,7 @@ describe("slogany jen ze slogans.yaml", () => {
     expect(slogans.map((s) => s.text)).toEqual([
       "Ruce pryč od médií",
       "Média nedáme",
-      "Média veřejné služby mi nejsou jedno",
+      "Veřejnoprávní média mi nejsou jedno",
     ]);
   });
   it("neznámé id → první slogan", () => {
