@@ -13,7 +13,9 @@ test("§15 m16: kompas → podpis → POC ověření → osobní stránka → sr
 
   await test.step("kompas", async () => {
     await page.goto("/kompas");
+    // Pořadí z questions.yaml (Q1 – peníze – poslední); helper odpovídá podle nadpisu obrazovky.
     await answerCompass(page, JOURNEY);
+    await expect(page.locator("main h1").first()).toHaveText(ui.compass.summary_title);
     await expect(page.getByText(sentences.intro.text).first()).toBeVisible();
     await page.getByRole("link", { name: ui.compass.sign_button }).click();
     await expect(page).toHaveURL(/\/kompas\/podpis/, { timeout: 30_000 });
@@ -21,6 +23,8 @@ test("§15 m16: kompas → podpis → POC ověření → osobní stránka → sr
 
   await test.step("podpis (§7.1)", async () => {
     await expect(page.getByText(sentences.intro.text).first()).toBeVisible();
+    // „Upravit odpovědi“ vede zpět na přehled odpovědí v kompasu.
+    await expect(page.getByRole("link", { name: ui.compass.edit_answers_button }).first()).toHaveAttribute("href", "/kompas#text");
     await page.getByLabel(/jméno/i).first().fill("Jana Akceptační");
     await page.getByLabel(/e-mail/i).first().fill(`e2e.${Date.now()}.${testInfo.project.name}@example.com`);
     // Souhlas se zobrazením jména je v design systému přepínač (Toggle, role switch).

@@ -15,8 +15,12 @@ const y = <T>(rel: string): T => parse(readFileSync(path.join(ROOT, "content", r
 export const ui = y<any>("ui.yaml");
 export const stance = y<{ title: string; text: string; actions: { label: string; href: string }[] }>("stance.yaml");
 export const questions = y<{
-  questions: { id: string; type: string; text: string; options: { id: string; label: string; nevim?: boolean }[] }[];
+  /** Pořadí zobrazení otázek (id q1…q8 se nemění, jen pořadí). */
+  order: string[];
+  questions: { id: string; type: string; text: string; short: string; options: { id: string; label: string; nevim?: boolean }[] }[];
 }>("questions.yaml");
+/** Id otázek v pořadí zobrazení. */
+export const ORDER = questions.order;
 export const sentences = y<{ intro: { text: string }; options: Record<string, { text?: string }> }>("sentences.yaml");
 export const lawBase = y<{ labels: { working_draft: string; disclaimer: string } }>("law/base.yaml");
 export const slogans = y<{ slogans: { id: string; text: string }[] }>("slogans.yaml");
