@@ -2,7 +2,7 @@ import type { AddresseeType } from "@/lib/letters";
 import type { PostalTexts } from "@/lib/export/recipients";
 
 /**
- * Typy textů z content/ui-akce.yaml. Načítá je server (load-texts.ts) a předává klientovi.
+ * Typy textů z content/ui.yaml (sekce akce, zakon). Načítá je server (load-texts.ts) a předává klientovi.
  * Po sloučení do ui.yaml stačí v load-texts.ts vrátit `ui.akce` / `ui.zakon`.
  */
 export interface AkceTexts {

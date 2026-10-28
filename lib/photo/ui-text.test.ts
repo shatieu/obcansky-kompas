@@ -1,6 +1,6 @@
 /**
- * Limity textu SPEC §4.1 pro content/ui-fotka.yaml (pnpm lint:content ho zatím nečte,
- * dokud se nesloučí do ui.yaml).
+ * Limity textu SPEC §4.1 pro sekci photo v content/ui.yaml (kontroluje i `pnpm lint:content`)
+ * a zákaz zmínek ČT/ČRo v textech fotky.
  */
 import { describe, expect, it } from "vitest";
 import { loadPhotoUi } from "./content";
@@ -8,7 +8,7 @@ import { loadPhotoUi } from "./content";
 const words = (s: string) => s.trim().split(/\s+/).filter((w) => /[\p{L}\d]/u.test(w)).length;
 const sentences = (s: string) => s.split(/[.!?…](\s|$)/).filter((x) => x && x.trim()).length;
 
-describe("ui-fotka.yaml", () => {
+describe("ui.yaml – photo", () => {
   const ui = loadPhotoUi();
   const entries = Object.entries(ui).filter((e): e is [string, string] => typeof e[1] === "string");
 

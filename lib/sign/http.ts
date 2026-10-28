@@ -20,8 +20,10 @@ export const signaturePath = (id: string) => `/v/${id}`;
 /** IP klienta – použije se jen pro HMAC rate limitu, nikdy se neukládá ani neloguje. */
 export function clientIp(req: NextRequest): string {
   const h = req.headers;
+  // Na Vercelu nastavuje x-real-ip / x-forwarded-for platforma. cf-connecting-ip by šlo
+  // podvrhnout, dokud před Vercelem není Cloudflare proxy (OPEN_QUESTIONS.md).
   const fwd = h.get("x-forwarded-for")?.split(",")[0]?.trim();
-  return h.get("cf-connecting-ip") || h.get("x-real-ip") || fwd || "unknown";
+  return h.get("x-real-ip") || fwd || "unknown";
 }
 
 export function json(body: unknown, status = 200): Response {

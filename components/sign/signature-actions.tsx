@@ -2,9 +2,10 @@
 
 import { useState, type FormEvent } from "react";
 import type { SignTexts } from "@/lib/sign/texts";
-import { Icon } from "./icon";
-import { Notice, PocBadge } from "./notice";
-import { btnPrimary, btnSecondary, h2, hint, input, label, sticky } from "./styles";
+import { Button, ButtonLink } from "@/components/ui/button";
+import { TextArea, TextInput } from "@/components/ui/fields";
+import { SampleBadge } from "@/components/ui/sample";
+import { Notice } from "@/components/ui/typography";
 import { Turnstile } from "./turnstile";
 
 type PageTexts = SignTexts["page"];
@@ -18,38 +19,7 @@ async function postJson(url: string, body: unknown): Promise<{ ok: boolean; json
   }
 }
 
-/** Primární akce „Sdílet“: Web Share API, jinak zkopírování odkazu. */
-export function ShareButton({ t, title }: { t: PageTexts; title: string }) {
-  const [copied, setCopied] = useState(false);
-  const share = async () => {
-    const url = window.location.href.split("#")[0]!.split("?")[0]!;
-    try {
-      if (navigator.share) {
-        await navigator.share({ title, url });
-        return;
-      }
-      await navigator.clipboard.writeText(url);
-      setCopied(true);
-    } catch {
-      /* zrušené sdílení */
-    }
-  };
-  return (
-    <div className={sticky}>
-      <button type="button" className={btnPrimary} onClick={share}>
-        {t.share_button}
-        <Icon name="share" />
-      </button>
-      {copied && (
-        <p role="status" className="mt-2 text-[15px] leading-[22px]">
-          {t.share_copied}
-        </p>
-      )}
-    </div>
-  );
-}
-
-/** „Pošlete mi odkaz pro úpravu“ (SPEC §7.3). V POC se odkaz ukáže tady. */
+/** „Pošli mi odkaz pro úpravu“ (SPEC §7.3). V POC se odkaz ukáže tady. Akce je sekundární (na stránce je primární „Sdílet“). */
 export function ManageLinkForm({ t, siteKey, disabledMessage }: { t: PageTexts; siteKey: string; disabledMessage: string | null }) {
   const [email, setEmail] = useState("");
   const [token, setToken] = useState("");
@@ -61,14 +31,13 @@ export function ManageLinkForm({ t, siteKey, disabledMessage }: { t: PageTexts; 
   if (disabledMessage) return <Notice tone="info">{disabledMessage}</Notice>;
   if (done) {
     return (
-      <div role="status" aria-live="polite">
-        {done.url && <PocBadge label={t.poc_badge} />}
-        <p className="mt-3">{done.message}</p>
+      <div role="status" aria-live="polite" className="flex flex-col items-start gap-1">
+        {done.url && <SampleBadge>{t.poc_badge}</SampleBadge>}
+        <p>{done.message}</p>
         {done.url && (
-          <a href={new URL(done.url, window.location.href).pathname} className={`${btnSecondary} mt-2`}>
+          <ButtonLink href={new URL(done.url, window.location.href).pathname} variant="secondary" iconEnd="arrow-right">
             {t.manage_poc_button}
-            <Icon name="arrow-right" />
-          </a>
+          </ButtonLink>
         )}
       </div>
     );
@@ -88,19 +57,13 @@ export function ManageLinkForm({ t, siteKey, disabledMessage }: { t: PageTexts; 
     setErr(typeof r?.json.message === "string" ? r.json.message : t.unavailable_lead);
   };
   return (
-    <form onSubmit={submit} className="flex flex-col gap-4">
-      <div>
-        <label htmlFor="manage-email" className={label}>
-          {t.manage_email_label}
-        </label>
-        <input id="manage-email" type="email" required autoComplete="email" maxLength={254} className={`${input} mt-2`} value={email} onChange={(e) => setEmail(e.target.value)} />
-      </div>
+    <form onSubmit={submit} className="flex flex-col gap-2">
+      <TextInput label={t.manage_email_label} type="email" required autoComplete="email" maxLength={254} value={email} onChange={(e) => setEmail(e.target.value)} />
       <Turnstile key={widget} siteKey={siteKey} onToken={setToken} label={t.manage_button} />
       {err && <Notice role="alert">{err}</Notice>}
-      <button type="submit" className={`${btnSecondary} self-start`} disabled={busy || !token}>
-        <Icon name="mail" />
+      <Button type="submit" variant="secondary" icon="mail" className="self-start" disabled={busy || !token} aria-busy={busy || undefined}>
         {t.manage_button}
-      </button>
+      </Button>
     </form>
   );
 }
@@ -131,26 +94,16 @@ export function ReportForm({ t, id, siteKey }: { t: PageTexts; id: string; siteK
     setErr(typeof r?.json.message === "string" ? r.json.message : t.unavailable_lead);
   };
   return (
-    <form onSubmit={submit} className="flex flex-col gap-4">
-      <h3 className={h2}>{t.report_title}</h3>
-      <p className={hint}>{t.report_lead}</p>
-      <div>
-        <label htmlFor="report-reason" className={label}>
-          {t.report_reason_label}
-        </label>
-        <textarea id="report-reason" required minLength={3} maxLength={1000} rows={4} className={`${input} mt-2 py-3`} value={reason} onChange={(e) => setReason(e.target.value)} />
-      </div>
-      <div>
-        <label htmlFor="report-contact" className={label}>
-          {t.report_contact_label}
-        </label>
-        <input id="report-contact" maxLength={200} className={`${input} mt-2`} value={contact} onChange={(e) => setContact(e.target.value)} />
-      </div>
+    <form onSubmit={submit} className="flex flex-col gap-2">
+      <h3 className="k-h k-h2">{t.report_title}</h3>
+      <p className="k-cap">{t.report_lead}</p>
+      <TextArea label={t.report_reason_label} required minLength={3} maxLength={1000} rows={4} value={reason} onChange={(e) => setReason(e.target.value)} />
+      <TextInput label={t.report_contact_label} maxLength={200} value={contact} onChange={(e) => setContact(e.target.value)} />
       <Turnstile key={widget} siteKey={siteKey} onToken={setToken} label={t.report_button} />
       {err && <Notice role="alert">{err}</Notice>}
-      <button type="submit" className={`${btnSecondary} self-start`} disabled={busy || !token}>
+      <Button type="submit" variant="secondary" className="self-start" disabled={busy || !token} aria-busy={busy || undefined}>
         {t.report_button}
-      </button>
+      </Button>
     </form>
   );
 }

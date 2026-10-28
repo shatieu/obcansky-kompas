@@ -10,7 +10,9 @@ export default function CompassPage() {
   return (
     <>
       <Compass />
-      <StanceBlock />
+      <div className="mt-6">
+        <StanceBlock />
+      </div>
     </>
   );
 }

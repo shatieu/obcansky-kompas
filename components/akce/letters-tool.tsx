@@ -1,7 +1,6 @@
 "use client";
 
-import Link from "next/link";
-import { useCallback, useEffect, useId, useLayoutEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useLayoutEffect, useMemo, useState } from "react";
 import { loadCompassState } from "@/lib/compass-storage";
 import { composeStatement, currentContentVersion } from "@/lib/compose";
 import type { Answers } from "@/lib/compose/types";
@@ -23,21 +22,20 @@ import { ObecPicker } from "./obec-picker";
 import { fetchSignatureAnswers, isUuid } from "./signature-answers";
 import { CUSTOM_MAX, defaultPrefs, loadPrefs, newSeed, parseStyle, savePrefs, writeStyle, type AkcePrefs, type StyleParams } from "./state";
 import { fill, type AkceTexts } from "./texts";
-import {
-  CheckRow,
-  ErrorNote,
-  Icon,
-  ScreenHeading,
-  SectionTitle,
-  StepSlider,
-  StickyBar,
-  actionRow,
-  btnPrimary,
-  btnText,
-  fieldHint,
-  fieldLabel,
-  inputBase,
-} from "./ui";
+import { ActionButton, ActionLink, ActionList } from "@/components/ui/action-list";
+import { Button, ButtonLink, StickyBar } from "@/components/ui/button";
+import { Checkbox, Select, StepSlider, TextArea, TextInput } from "@/components/ui/fields";
+import { Notice, ScreenHeading, SectionTitle } from "@/components/ui/typography";
+import { SharePanel, type SharePanelTexts } from "@/components/share/share-panel";
+import { dopisyCard, type CardImageTexts } from "@/lib/share/card";
+import { formatRecipients, type RecipientCounts } from "@/lib/share/moments";
+
+/** Texty sdílení (ze serveru, content/ui.yaml sekce share). */
+export interface AkceShareTexts {
+  panel: SharePanelTexts;
+  image: CardImageTexts;
+  recipients: Record<AddresseeType, readonly [string, string, string]>;
+}
 
 const useIsoLayoutEffect = typeof window === "undefined" ? useEffect : useLayoutEffect;
 
@@ -65,46 +63,17 @@ interface TypeBlock {
   blocked: string | null;
 }
 
-function SelectField({
-  label,
-  placeholder,
-  value,
-  options,
-  onChange,
+export function LettersTool({
+  texts,
+  letters,
+  dirs,
+  share,
 }: {
-  label: string;
-  placeholder: string;
-  value: string;
-  options: { value: string; label: string }[];
-  onChange: (v: string) => void;
+  texts: AkceTexts;
+  letters: LettersContent;
+  dirs: AkceDirectories;
+  share?: AkceShareTexts;
 }) {
-  const id = useId();
-  return (
-    <div>
-      <label htmlFor={id} className={fieldLabel}>
-        {label}
-      </label>
-      <span className="relative mt-[8px] block">
-        <select
-          id={id}
-          value={value}
-          onChange={(e) => onChange(e.target.value)}
-          className="block min-h-[56px] w-full appearance-none border-2 border-ink bg-surface py-[12px] pr-[48px] pl-[16px] text-[17px] text-ink focus-visible:outline-3 focus-visible:outline-offset-3 focus-visible:outline-focus"
-        >
-          <option value="">{placeholder}</option>
-          {options.map((o) => (
-            <option key={o.value} value={o.value}>
-              {o.label}
-            </option>
-          ))}
-        </select>
-        <Icon name="chevron-down" className="pointer-events-none absolute top-1/2 right-[16px] -translate-y-1/2" />
-      </span>
-    </div>
-  );
-}
-
-export function LettersTool({ texts, letters, dirs }: { texts: AkceTexts; letters: LettersContent; dirs: AkceDirectories }) {
   const [ready, setReady] = useState(false);
   const [source, setSource] = useState<Source | null>(null);
   const [style, setStyle] = useState<StyleParams>({ forma: 2, delka: 2, seed: "0" });
@@ -223,6 +192,11 @@ export function LettersTool({ texts, letters, dirs }: { texts: AkceTexts; letter
 
   const allRecipients = blocks.flatMap((b) => (composed.has(b.type) ? b.recipients.map((r) => ({ r, letter: composed.get(b.type)! })) : []));
 
+  /* Sdílení: počty připravených dopisů podle typu adresáta (?r=poslanec:3,…), žádná jména ani adresy. */
+  const counts: RecipientCounts = {};
+  for (const { r } of allRecipients) counts[r.type] = (counts[r.type] ?? 0) + 1;
+  const shareR = formatRecipients(counts);
+
   /* ------------------------------------------------------------ exporty */
   const sender = [prefs.senderName.trim(), ...splitAddress(prefs.senderAddress)].filter(Boolean);
 
@@ -290,21 +264,28 @@ export function LettersTool({ texts, letters, dirs }: { texts: AkceTexts; letter
   /* -------------------------------------------------------------- render */
   if (!ready) {
     return (
-      <div className="mx-auto max-w-[688px] px-[16px]">
-        <ScreenHeading kicker={texts.kicker} title={texts.title} />
-        <p className="pb-[48px]">{texts.loading}</p>
+      <div className="k-wrap">
+        <div className="mx-auto max-w-main pt-3 pb-6 lg:pt-6">
+          <ScreenHeading kicker={texts.kicker} title={texts.title} />
+          <p className="mt-3">{texts.loading}</p>
+        </div>
       </div>
     );
   }
 
   if (sentences.length === 0) {
     return (
-      <div className="mx-auto max-w-[688px] px-[16px] pb-[48px]">
-        <ScreenHeading kicker={texts.kicker} title={texts.empty_title} lead={texts.empty_lead} />
-        <Link href="/kompas" className={`${btnPrimary} no-underline`}>
-          <span>{texts.empty_button}</span>
-          <Icon name="arrow-right" />
-        </Link>
+      <div className="k-wrap">
+        <div className="mx-auto max-w-main pt-3 pb-3 lg:pt-6">
+          <ScreenHeading kicker={texts.kicker} title={texts.empty_title} lead={texts.empty_lead} />
+          <div className="mt-4">
+            <StickyBar>
+              <ButtonLink href="/kompas" block iconEnd="arrow-right">
+                {texts.empty_button}
+              </ButtonLink>
+            </StickyBar>
+          </div>
+        </div>
       </div>
     );
   }
@@ -313,262 +294,264 @@ export function LettersTool({ texts, letters, dirs }: { texts: AkceTexts; letter
   const needsPlace = prefs.types.some((t) => t !== "ministr-kultury" && t !== "prezident");
   const formaSteps = letters.common.forma_levels.map((l) => l.label);
   const delkaSteps = letters.common.delka_levels.map((l) => l.label);
+  const section = "border-t-2 border-ink pt-3 pb-4";
 
   return (
-    <div className="mx-auto max-w-[688px] px-[16px]">
-      <ScreenHeading kicker={texts.kicker} title={texts.title} lead={texts.lead} />
-      <p className="-mt-[8px] mb-[24px] text-[14px] leading-[20px] font-medium text-ink-secondary">
-        {source?.kind === "signature" ? texts.source_signature : texts.source_browser}
-      </p>
+    <div className="k-wrap">
+      <div className="mx-auto max-w-main pt-3 lg:pt-6">
+        <ScreenHeading kicker={texts.kicker} title={texts.title} lead={texts.lead} />
+        <p className="k-cap mt-1 mb-3">{source?.kind === "signature" ? texts.source_signature : texts.source_browser}</p>
 
-      {/* ------------------------------------------------ Komu */}
-      <section aria-labelledby="akce-komu" className="border-t-2 border-ink pt-[24px] pb-[32px]">
-        <SectionTitle id="akce-komu">{texts.to_title}</SectionTitle>
-        <p className="mt-[8px]">{texts.to_lead}</p>
-        <div className="mt-[16px] flex flex-col gap-[8px]">
-          {ADDRESSEE_TYPES.map((type) => {
-            const checked = prefs.types.includes(type);
-            return (
-              <div key={type}>
-                <CheckRow
-                  label={typeLabel(type)}
-                  caption={texts.captions[type]}
-                  checked={checked}
-                  onChange={(on) => update({ types: on ? ADDRESSEE_TYPES.filter((t) => t === type || prefs.types.includes(t)) : prefs.types.filter((t) => t !== type) })}
-                />
-                {type === "poslanec" && checked && poslanciKraje.length > 0 && (
-                  <fieldset className="mt-[8px] ml-[16px] border-l-2 border-ink pl-[16px]">
-                    <legend className="sr-only">{typeLabel(type)}</legend>
-                    <div className="flex flex-wrap items-center justify-between gap-x-[16px]">
-                      <span className="text-[14px] leading-[20px] font-medium" aria-live="polite">
-                        {fill(texts.poslanci_selected, {
-                          n: poslanciKraje.filter((p) => !prefs.poslanciOff.includes(p.id)).length,
-                          total: poslanciKraje.length,
-                        })}
-                      </span>
-                      <button
-                        type="button"
-                        className={btnText}
-                        aria-expanded={showPoslanci}
-                        aria-controls="akce-poslanci"
-                        onClick={() => setShowPoslanci((v) => !v)}
-                      >
-                        {showPoslanci ? texts.poslanci_hide_button : texts.poslanci_edit_button}
-                      </button>
-                    </div>
-                    {showPoslanci && (
-                    <div id="akce-poslanci" className="mt-[8px] flex flex-col gap-[4px]">
-                      <div>
-                        {prefs.poslanciOff.some((id) => poslanciKraje.some((p) => p.id === id)) ? (
-                          <button type="button" className={btnText} onClick={() => update({ poslanciOff: [] })}>
-                            {texts.poslanci_select_all}
-                          </button>
-                        ) : (
-                          <button type="button" className={btnText} onClick={() => update({ poslanciOff: poslanciKraje.map((p) => p.id) })}>
-                            {texts.poslanci_select_none}
-                          </button>
-                        )}
+        {/* ------------------------------------------------ Komu */}
+        <section aria-labelledby="akce-komu" className={section}>
+          <SectionTitle id="akce-komu">{texts.to_title}</SectionTitle>
+          <p className="k-lede">{texts.to_lead}</p>
+          <div className="mt-1 flex flex-col">
+            {ADDRESSEE_TYPES.map((type) => {
+              const checked = prefs.types.includes(type);
+              return (
+                <div key={type} className="border-b border-rule-soft">
+                  <Checkbox
+                    label={typeLabel(type)}
+                    caption={texts.captions[type]}
+                    checked={checked}
+                    onChange={(on) =>
+                      update({ types: on ? ADDRESSEE_TYPES.filter((t) => t === type || prefs.types.includes(t)) : prefs.types.filter((t) => t !== type) })
+                    }
+                  />
+                  {type === "poslanec" && checked && poslanciKraje.length > 0 && (
+                    <fieldset className="mb-2 ml-1.5 border-l-2 border-ink pl-2">
+                      <legend className="sr-only">{typeLabel(type)}</legend>
+                      <div className="flex flex-wrap items-center justify-between gap-x-2">
+                        <span className="k-cap k-num" aria-live="polite">
+                          {fill(texts.poslanci_selected, {
+                            n: poslanciKraje.filter((p) => !prefs.poslanciOff.includes(p.id)).length,
+                            total: poslanciKraje.length,
+                          })}
+                        </span>
+                        <Button variant="secondary" aria-expanded={showPoslanci} aria-controls="akce-poslanci" onClick={() => setShowPoslanci((v) => !v)}>
+                          {showPoslanci ? texts.poslanci_hide_button : texts.poslanci_edit_button}
+                        </Button>
                       </div>
-                      {poslanciKraje.map((p) => {
-                        const r = poslanecRecipient(p, texts.postal);
-                        const on = !prefs.poslanciOff.includes(p.id);
-                        return (
-                          <CheckRow
-                            key={p.id}
-                            compact
-                            label={r.name}
-                            caption={r.detail ?? undefined}
-                            checked={on}
-                            onChange={(v) => update({ poslanciOff: v ? prefs.poslanciOff.filter((x) => x !== p.id) : [...prefs.poslanciOff, p.id] })}
-                          />
-                        );
-                      })}
-                    </div>
-                    )}
-                  </fieldset>
-                )}
-              </div>
-            );
-          })}
-        </div>
-      </section>
-
-      {/* ------------------------------------------------ Kde bydlíš */}
-      {needsPlace && (
-        <section aria-labelledby="akce-kde" className="border-t-2 border-ink pt-[24px] pb-[32px]">
-          <SectionTitle id="akce-kde">{texts.where_title}</SectionTitle>
-          <div className="mt-[16px] flex flex-col gap-[24px]">
-            <SelectField
-              label={texts.region_label}
-              placeholder={texts.region_placeholder}
-              value={prefs.kraj ?? ""}
-              options={dirs.kraje.map((k) => ({ value: k.code, label: k.name }))}
-              onChange={(v) => update({ kraj: v || null, obec: null, castKod: null, obvodPick: null })}
-            />
-            {kraj && (prefs.types.includes("senator") || prefs.types.includes("obec")) && (
-              <ObecPicker key={kraj.code} kraj={kraj.code} texts={texts} value={prefs.obec} onChange={(o) => update({ obec: o, castKod: null, obvodPick: null })} />
-            )}
-            {prefs.obec && prefs.types.includes("senator") && choice && choice.casti.length > 0 && (
-              <SelectField
-                label={texts.cast_label}
-                placeholder={texts.cast_placeholder}
-                value={prefs.castKod === null ? "" : String(prefs.castKod)}
-                options={choice.casti.map((c) => ({ value: String(c.kod), label: c.nazev }))}
-                onChange={(v) => update({ castKod: v ? Number(v) : null, obvodPick: null })}
-              />
-            )}
-            {prefs.obec && prefs.types.includes("senator") && choice && choice.obvody.length > 1 && (
-              <SelectField
-                label={texts.obvod_label}
-                placeholder={texts.obvod_placeholder}
-                value={prefs.obvodPick === null ? "" : String(prefs.obvodPick)}
-                options={choice.obvody.map((n) => ({
-                  value: String(n),
-                  label: fill(texts.obvod_option, { n, name: dirs.senatori.find((s) => s.obvod_cislo === n)?.obvod_nazev ?? "" }).replace(/ – $/, ""),
-                }))}
-                onChange={(v) => update({ obvodPick: v ? Number(v) : null })}
-              />
-            )}
+                      {showPoslanci && (
+                        <div id="akce-poslanci" className="mt-1 flex flex-col">
+                          <div>
+                            {prefs.poslanciOff.some((id) => poslanciKraje.some((p) => p.id === id)) ? (
+                              <Button variant="secondary" onClick={() => update({ poslanciOff: [] })}>
+                                {texts.poslanci_select_all}
+                              </Button>
+                            ) : (
+                              <Button variant="secondary" onClick={() => update({ poslanciOff: poslanciKraje.map((p) => p.id) })}>
+                                {texts.poslanci_select_none}
+                              </Button>
+                            )}
+                          </div>
+                          {poslanciKraje.map((p) => {
+                            const r = poslanecRecipient(p, texts.postal);
+                            const on = !prefs.poslanciOff.includes(p.id);
+                            return (
+                              <Checkbox
+                                key={p.id}
+                                label={r.name}
+                                caption={r.detail ?? undefined}
+                                checked={on}
+                                onChange={(v) => update({ poslanciOff: v ? prefs.poslanciOff.filter((x) => x !== p.id) : [...prefs.poslanciOff, p.id] })}
+                              />
+                            );
+                          })}
+                        </div>
+                      )}
+                    </fieldset>
+                  )}
+                </div>
+              );
+            })}
           </div>
         </section>
-      )}
 
-      {/* ------------------------------------------------ Styl */}
-      <section aria-labelledby="akce-styl" className="border-t-2 border-ink pt-[24px] pb-[32px]">
-        <SectionTitle id="akce-styl">{texts.style_title}</SectionTitle>
-        <div className="mt-[16px] flex flex-col gap-[24px]">
-          <StepSlider label={texts.forma_label} steps={formaSteps} value={style.forma - 1} onChange={(i) => setStyle((s) => ({ ...s, forma: (i + 1) as 1 | 2 | 3 }))} />
-          <StepSlider label={texts.delka_label} steps={delkaSteps} value={style.delka - 1} onChange={(i) => setStyle((s) => ({ ...s, delka: (i + 1) as 1 | 2 | 3 }))} />
-          <div>
-            <button type="button" className={btnText} onClick={() => setStyle((s) => ({ ...s, seed: newSeed(s.seed) }))}>
-              <Icon name="refresh" />
-              <span>{texts.variant_button}</span>
-            </button>
-          </div>
-          <div className="flex flex-col gap-[8px]">
-            <CheckRow label={letters.common.process_block.title} checked={prefs.process} onChange={(v) => update({ process: v })} />
-            <CheckRow label={fill(texts.footer_label, { footer: letters.common.footer })} checked={prefs.footer} onChange={(v) => update({ footer: v })} />
-          </div>
-          <label className="block">
-            <span className={fieldLabel}>{texts.custom_label}</span>
-            <span className={fieldHint}>{texts.custom_hint}</span>
-            <textarea
+        {/* ------------------------------------------------ Kde bydlíš */}
+        {needsPlace && (
+          <section aria-labelledby="akce-kde" className={section}>
+            <SectionTitle id="akce-kde">{texts.where_title}</SectionTitle>
+            <div className="mt-2 flex flex-col gap-3">
+              <Select
+                label={texts.region_label}
+                placeholder={texts.region_placeholder}
+                placeholderSelectable
+                value={prefs.kraj ?? ""}
+                options={dirs.kraje.map((k) => ({ value: k.code, label: k.name }))}
+                onChange={(e) => update({ kraj: e.target.value || null, obec: null, castKod: null, obvodPick: null })}
+              />
+              {kraj && (prefs.types.includes("senator") || prefs.types.includes("obec")) && (
+                <ObecPicker key={kraj.code} kraj={kraj.code} texts={texts} value={prefs.obec} onChange={(o) => update({ obec: o, castKod: null, obvodPick: null })} />
+              )}
+              {prefs.obec && prefs.types.includes("senator") && choice && choice.casti.length > 0 && (
+                <Select
+                  label={texts.cast_label}
+                  placeholder={texts.cast_placeholder}
+                  placeholderSelectable
+                  value={prefs.castKod === null ? "" : String(prefs.castKod)}
+                  options={choice.casti.map((c) => ({ value: String(c.kod), label: c.nazev }))}
+                  onChange={(e) => update({ castKod: e.target.value ? Number(e.target.value) : null, obvodPick: null })}
+                />
+              )}
+              {prefs.obec && prefs.types.includes("senator") && choice && choice.obvody.length > 1 && (
+                <Select
+                  label={texts.obvod_label}
+                  placeholder={texts.obvod_placeholder}
+                  placeholderSelectable
+                  value={prefs.obvodPick === null ? "" : String(prefs.obvodPick)}
+                  options={choice.obvody.map((n) => ({
+                    value: String(n),
+                    label: fill(texts.obvod_option, { n, name: dirs.senatori.find((s) => s.obvod_cislo === n)?.obvod_nazev ?? "" }).replace(/ – $/, ""),
+                  }))}
+                  onChange={(e) => update({ obvodPick: e.target.value ? Number(e.target.value) : null })}
+                />
+              )}
+            </div>
+          </section>
+        )}
+
+        {/* ------------------------------------------------ Styl */}
+        <section aria-labelledby="akce-styl" className={section}>
+          <SectionTitle id="akce-styl">{texts.style_title}</SectionTitle>
+          <div className="mt-2 flex flex-col gap-3">
+            <StepSlider label={texts.forma_label} steps={formaSteps} value={style.forma - 1} onChange={(i) => setStyle((s) => ({ ...s, forma: (i + 1) as 1 | 2 | 3 }))} />
+            <StepSlider label={texts.delka_label} steps={delkaSteps} value={style.delka - 1} onChange={(i) => setStyle((s) => ({ ...s, delka: (i + 1) as 1 | 2 | 3 }))} />
+            <div className="flex flex-col">
+              <Checkbox label={letters.common.process_block.title} checked={prefs.process} onChange={(v) => update({ process: v })} />
+              <Checkbox label={fill(texts.footer_label, { footer: letters.common.footer })} checked={prefs.footer} onChange={(v) => update({ footer: v })} />
+            </div>
+            <TextArea
+              label={texts.custom_label}
+              hint={texts.custom_hint}
               rows={3}
               maxLength={CUSTOM_MAX}
               value={prefs.custom}
               onChange={(e) => update({ custom: e.target.value.replace(/[\r\n]+/g, " ") })}
-              className={`${inputBase} resize-y`}
             />
-          </label>
-          <label className="block">
-            <span className={fieldLabel}>{texts.sender_name_label}</span>
-            <input type="text" autoComplete="name" maxLength={120} value={prefs.senderName} onChange={(e) => update({ senderName: e.target.value })} className={inputBase} />
-          </label>
-          <label className="block">
-            <span className={fieldLabel}>{texts.sender_address_label}</span>
-            <input
-              type="text"
+            <TextInput label={texts.sender_name_label} autoComplete="name" maxLength={120} value={prefs.senderName} onChange={(e) => update({ senderName: e.target.value })} />
+            <TextInput
+              label={texts.sender_address_label}
               autoComplete="street-address"
               maxLength={200}
               value={prefs.senderAddress}
               onChange={(e) => update({ senderAddress: e.target.value })}
-              className={inputBase}
             />
-          </label>
-          <p className={fieldHint}>{texts.private_hint}</p>
-        </div>
-      </section>
+            <p className="k-cap">{texts.private_hint}</p>
+          </div>
+        </section>
 
-      {/* ------------------------------------------------ Dopisy */}
-      <section aria-labelledby="akce-dopisy" className="border-t-2 border-ink pt-[24px] pb-[16px]">
-        <SectionTitle id="akce-dopisy">{texts.letters_title}</SectionTitle>
-        {error && <ErrorNote>{error}</ErrorNote>}
-        {blocks.length === 0 && <p className="mt-[8px]">{texts.letters_empty}</p>}
-        <div className="mt-[16px] flex flex-col gap-[32px]">
-          {blocks.map((b) => {
-            const letter = composed.get(b.type);
-            return (
-              <article key={b.type} aria-labelledby={`akce-typ-${b.type}`} className="bg-blue-tint px-[16px] pt-[16px] pb-[8px]">
-                <h3 id={`akce-typ-${b.type}`} className="text-[19px] leading-[24px] font-semibold">
-                  {typeLabel(b.type)}
-                </h3>
-                {b.blocked && <p className="mt-[8px] pb-[8px]">{b.blocked}</p>}
-                {letter && b.recipients.length > 0 && (
-                  <>
-                    <div className="mt-[12px]">
-                      <button
-                        type="button"
-                        className={actionRow}
-                        aria-expanded={Boolean(openPreview[b.type])}
-                        aria-controls={`akce-text-${b.type}`}
-                        onClick={() => setOpenPreview((o) => ({ ...o, [b.type]: !o[b.type] }))}
-                      >
-                        <span>{openPreview[b.type] ? texts.hide_letter : texts.show_letter}</span>
-                        <Icon name={openPreview[b.type] ? "minus" : "plus"} />
-                      </button>
-                      {openPreview[b.type] && (
-                        <div id={`akce-text-${b.type}`} className="border-t-2 border-ink bg-surface px-[16px] py-[16px] text-[17px] leading-[26px] whitespace-pre-wrap">
-                          {letter.text}
-                        </div>
-                      )}
-                      <button type="button" className={actionRow} onClick={() => copy(b.type, letter.text)}>
-                        <span aria-live="polite">{copied === b.type ? texts.copied : texts.copy_button}</span>
-                        <Icon name="copy" />
-                      </button>
-                    </div>
-                    <ul className="mt-[16px] flex flex-col gap-[16px]">
-                      {b.recipients.map((r) => (
-                        <li key={r.key} className="border-t-4 border-ink bg-surface px-[12px] pt-[12px]">
-                          <p className="font-semibold">{r.name}</p>
-                          {r.detail && <p className="text-[14px] leading-[20px] font-medium text-ink-secondary">{r.detail}</p>}
-                          <div className="mt-[8px]">
-                            {r.email ? (
-                              <a className={actionRow} href={mailtoHref(r.email, texts.mail_subject, letter.text)} onClick={() => reportLetterPrepared(r.type)}>
-                                <span>{texts.mail_button}</span>
-                                <Icon name="mail" />
-                              </a>
-                            ) : (
-                              r.dataBox === null && <p className="border-t-2 border-ink py-[12px] text-[15px] leading-[22px]">{texts.no_email}</p>
-                            )}
-                            <button type="button" className={actionRow} aria-busy={busy === `pdf:${r.key}`} disabled={busy !== null} onClick={() => downloadPdf(r, letter)}>
-                              <span>{busy === `pdf:${r.key}` ? texts.working : texts.pdf_button}</span>
-                              <Icon name="download" />
-                            </button>
-                          </div>
-                          {r.dataBox && (
-                            <div className="border-t-2 border-ink py-[12px]">
-                              <p className="font-semibold tabular">{fill(texts.databox_label, { id: r.dataBox })}</p>
-                              <ol className="mt-[4px] list-decimal pl-[24px] text-[15px] leading-[22px]">
-                                {texts.databox_howto.map((line) => (
-                                  <li key={line}>{line}</li>
-                                ))}
-                              </ol>
-                            </div>
-                          )}
-                        </li>
-                      ))}
-                    </ul>
-                    <p className="mt-[12px] pb-[8px] text-[14px] leading-[20px] font-medium">{texts.post_hint}</p>
-                  </>
-                )}
-              </article>
-            );
-          })}
-        </div>
-      </section>
+        {/* ------------------------------------------------ Dopisy */}
+        <section aria-labelledby="akce-dopisy" className="border-t-2 border-ink pt-3 pb-2">
+          <div className="k-letter__head">
+            <SectionTitle id="akce-dopisy">{texts.letters_title}</SectionTitle>
+            {blocks.length > 0 && (
+              <Button variant="secondary" icon="refresh" onClick={() => setStyle((s) => ({ ...s, seed: newSeed(s.seed) }))}>
+                {texts.variant_button}
+              </Button>
+            )}
+          </div>
+          {error && (
+            <Notice role="alert" className="mt-1">
+              {error}
+            </Notice>
+          )}
+          {blocks.length === 0 && <p className="mt-1">{texts.letters_empty}</p>}
+          <div className="mt-2 flex flex-col gap-4">
+            {blocks.map((b) => {
+              const letter = composed.get(b.type);
+              return (
+                <article key={b.type} aria-labelledby={`akce-typ-${b.type}`}>
+                  <h3 id={`akce-typ-${b.type}`} className="k-h3">
+                    {typeLabel(b.type)}
+                  </h3>
+                  {b.blocked && <p className="mt-1">{b.blocked}</p>}
+                  {letter && b.recipients.length > 0 && (
+                    <>
+                      <ActionList className="mt-1">
+                        <ActionButton
+                          iconEnd={openPreview[b.type] ? "minus" : "plus"}
+                          aria-expanded={Boolean(openPreview[b.type])}
+                          aria-controls={`akce-text-${b.type}`}
+                          onClick={() => setOpenPreview((o) => ({ ...o, [b.type]: !o[b.type] }))}
+                        >
+                          {openPreview[b.type] ? texts.hide_letter : texts.show_letter}
+                        </ActionButton>
+                        {openPreview[b.type] && (
+                          <li id={`akce-text-${b.type}`} className="k-letter whitespace-pre-wrap">
+                            {letter.text}
+                          </li>
+                        )}
+                        <ActionButton iconEnd="copy" onClick={() => copy(b.type, letter.text)}>
+                          <span aria-live="polite">{copied === b.type ? texts.copied : texts.copy_button}</span>
+                        </ActionButton>
+                      </ActionList>
+                      <ul className="mt-2 flex flex-col gap-2">
+                        {b.recipients.map((r) => (
+                          <li key={r.key} className="border-t-4 border-ink pt-1.5">
+                            <p className="font-semibold">{r.name}</p>
+                            {r.detail && <p className="k-cap">{r.detail}</p>}
+                            <ActionList className="mt-1">
+                              {r.email ? (
+                                <ActionLink iconEnd="mail" href={mailtoHref(r.email, texts.mail_subject, letter.text)} onClick={() => reportLetterPrepared(r.type)}>
+                                  {texts.mail_button}
+                                </ActionLink>
+                              ) : (
+                                r.dataBox === null && <li className="py-1.5 text-small">{texts.no_email}</li>
+                              )}
+                              <ActionButton
+                                iconEnd="download"
+                                aria-busy={busy === `pdf:${r.key}` || undefined}
+                                disabled={busy !== null}
+                                onClick={() => downloadPdf(r, letter)}
+                              >
+                                {busy === `pdf:${r.key}` ? texts.working : texts.pdf_button}
+                              </ActionButton>
+                              {r.dataBox && (
+                                <li className="py-1.5">
+                                  <p className="k-num font-semibold">{fill(texts.databox_label, { id: r.dataBox })}</p>
+                                  <ol className="mt-0.5 list-decimal pl-3 text-small">
+                                    {texts.databox_howto.map((line) => (
+                                      <li key={line}>{line}</li>
+                                    ))}
+                                  </ol>
+                                </li>
+                              )}
+                            </ActionList>
+                          </li>
+                        ))}
+                      </ul>
+                      <p className="k-cap mt-1.5">{texts.post_hint}</p>
+                    </>
+                  )}
+                </article>
+              );
+            })}
+          </div>
+        </section>
 
-      {allRecipients.length > 0 && (
-        <StickyBar>
-          <button type="button" className={btnPrimary} aria-busy={busy === "zip"} disabled={busy !== null} onClick={downloadZip}>
-            <span className="flex flex-col items-start text-left">
-              <span>{busy === "zip" ? texts.working : texts.zip_button}</span>
-              <span className="font-sans text-[14px] leading-[20px] font-medium">{fill(texts.zip_caption, { n: allRecipients.length })}</span>
-            </span>
-            <Icon name="download" />
-          </button>
-        </StickyBar>
-      )}
-      <div className="h-[32px]" />
+        {allRecipients.length > 0 && (
+          <StickyBar>
+            <Button block icon="download" aria-busy={busy === "zip" || undefined} disabled={busy !== null} onClick={downloadZip}>
+              <span className="flex flex-col items-start text-left">
+                <span>{busy === "zip" ? texts.working : texts.zip_button}</span>
+                <span className="font-sans text-caption">{fill(texts.zip_caption, { n: allRecipients.length })}</span>
+              </span>
+            </Button>
+            {share && (
+              <SharePanel
+                card={dopisyCard(counts, share.image, share.recipients)}
+                url={shareR ? `/akce?r=${shareR}` : "/akce"}
+                texts={share.panel}
+                variant="secondary"
+                sticky={false}
+              />
+            )}
+          </StickyBar>
+        )}
+        <div className="h-4" />
+      </div>
     </div>
   );
 }

@@ -1,63 +1,86 @@
-import Link from "next/link";
-import { DemoBar } from "@/components/demo-bar";
-import { Flag } from "@/components/flag";
 import { StanceBlock } from "@/components/stance-block";
 import { QuestionChart } from "@/components/stats/stats-charts";
-import { buttonPrimary, buttonLink } from "@/components/sticky-action";
+import { ButtonLink, StickyBar, TextLink } from "@/components/ui/button";
+import { FlagHero } from "@/components/ui/flag";
+import { formatCz } from "@/components/ui/format";
+import { SampleBanner } from "@/components/ui/sample";
+import { Kicker } from "@/components/ui/typography";
 import { ui } from "@/lib/content";
 import { flags } from "@/lib/env";
 import { getStats } from "@/lib/stats/source";
 
-/** Hlavní stránka (SPEC §13), ISR po 60 s (SPEC §14.2). */
+/** Hlavní stránka (SPEC §13), ISR po 60 s (SPEC §14.2). Červený prvek obrazovky = vlajka. */
 export const revalidate = 60;
 
 export default async function HomePage() {
   const stats = await getStats({});
   return (
-    <>
-      {flags.showDemoBar() && <DemoBar />}
-      <section className="mx-auto max-w-5xl px-4 pb-12 pt-8 md:pt-16">
-        <Flag animate className="h-auto w-40 md:w-56" />
-        <h1 className="mt-8 max-w-3xl text-[2.5rem] font-bold leading-[1.05] md:text-6xl">{ui.home.title}</h1>
-        <p className="mt-4 max-w-2xl text-xl text-muted">{ui.home.lead}</p>
-        <Link href="/kompas" className={`${buttonPrimary} mt-8 w-full no-underline sm:w-auto`}>
-          {ui.home.start_button}
-        </Link>
+    <div>
+      {/* Plakát: noční plocha (hlavička nad ní přejde do noční přes data-night-top). */}
+      <section className="k-night" data-night-top aria-labelledby="h-home">
+        <div className="k-wrap pb-5 pt-5 lg:grid lg:grid-cols-[minmax(0,1fr)_400px] lg:items-center lg:gap-12 lg:pb-10 lg:pt-9">
+          <div className="lg:order-2 lg:p-3">
+            <div className="mb-6 ml-1.5 w-[200px] lg:m-0 lg:w-full">
+              <FlagHero label="" />
+            </div>
+          </div>
+          <div>
+            <Kicker>{ui.home.kicker}</Kicker>
+            <h1 id="h-home" className="k-h k-display">
+              {ui.home.title}
+            </h1>
+            <p className="k-lede mt-2 lg:mt-3 lg:text-[20px] lg:leading-[28px]">{ui.home.lead}</p>
+            <div className="mt-5 hidden w-[360px] md:block">
+              <ButtonLink href="/kompas" block iconEnd="arrow-right">
+                {ui.home.start_button}
+              </ButtonLink>
+            </div>
+          </div>
+        </div>
       </section>
 
-      <StanceBlock />
+      <div className="lg:mx-auto lg:grid lg:max-w-page lg:px-6 lg:grid-cols-2 lg:gap-6 lg:py-6">
+        <StanceBlock />
 
-      <section className="mx-auto max-w-3xl px-4 py-12" aria-labelledby="h-home-stats">
-        {stats ? (
-          <>
-            <p id="h-home-stats" className="flex flex-col">
-              <span className="tabular text-6xl font-bold leading-none">{stats.verified.toLocaleString("cs-CZ")}</span>
-              <span className="mt-2 text-xl">{ui.home.count_label}</span>
+        <section className="k-wrap pb-4 pt-4 lg:p-0" aria-labelledby="h-home-stats">
+          {flags.showDemoBar() && (
+            <div className="mb-4">
+              <SampleBanner title={ui.demo.banner_title} text={ui.demo.banner_text} />
+            </div>
+          )}
+          {stats ? (
+            <>
+              <p id="h-home-stats" className="k-stat mb-4">
+                <span className="k-stat-xl">{formatCz(stats.verified)}</span>
+                <span className="k-kicker basis-full">{ui.home.count_label}</span>
+              </p>
+              {stats.verified > 0 && <QuestionChart stats={stats} qid="q2" headingLevel={2} />}
+              <TextLink href="/statistiky" icon="arrow-right" className="mt-2">
+                {ui.home.stats_button}
+              </TextLink>
+            </>
+          ) : (
+            <p id="h-home-stats" className="text-ink-secondary">
+              {ui.stats.unavailable}
             </p>
-            {stats.verified > 0 && (
-              <div className="mt-8">
-                <QuestionChart stats={stats} qid="q2" />
-              </div>
-            )}
-            <Link href="/statistiky" className={`${buttonLink} mt-4`}>
-              {ui.home.stats_button}
-            </Link>
-          </>
-        ) : (
-          <p id="h-home-stats" className="text-muted">
-            {ui.stats.unavailable}
+          )}
+          <p className="mt-3 flex flex-wrap items-center gap-x-2 border-t border-rule-soft pt-2">
+            <span>{ui.home.method_line}</span>
+            <TextLink href="/metodika" icon="arrow-right">
+              {ui.home.method_button}
+            </TextLink>
           </p>
-        )}
-      </section>
+        </section>
+      </div>
 
-      <section className="border-t-2 border-ink">
-        <p className="mx-auto flex max-w-5xl flex-wrap items-center gap-x-3 px-4 py-6">
-          <span>{ui.home.method_line}</span>
-          <Link href="/metodika" className={buttonLink}>
-            {ui.home.method_button}
-          </Link>
-        </p>
-      </section>
-    </>
+      {/* Mobil: jediná primární akce přilepená dole. */}
+      <div className="k-wrap sticky bottom-0 z-30 md:hidden">
+        <StickyBar>
+          <ButtonLink href="/kompas" block iconEnd="arrow-right">
+            {ui.home.start_button}
+          </ButtonLink>
+        </StickyBar>
+      </div>
+    </div>
   );
 }

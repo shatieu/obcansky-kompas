@@ -9,7 +9,7 @@ import { readSignatureForLaw } from "./signature";
  * /v/[uuid]/zakon – Můj zákon (SPEC §10). Zákon se skládá z odpovědí podpisu (DB),
  * jinak z odpovědí v prohlížeči. PDF a DOCX vznikají v prohlížeči.
  *
- * Pozn. k nasazení: stránka je dynamická a čte content/law/*.yaml a content/ui-akce.yaml
+ * Pozn. k nasazení: stránka je dynamická a čte content/law/*.yaml a content/ui.yaml
  * za běhu – next.config musí tyto soubory zahrnout do trace (outputFileTracingIncludes).
  */
 export const dynamic = "force-dynamic";

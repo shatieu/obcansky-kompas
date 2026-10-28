@@ -5,6 +5,9 @@
 import { ContentError, loadContent, loadPlainLanguage } from "../lib/content/load";
 import type { UiTree } from "../lib/content/schemas";
 import { countWords, findBannedTerms, splitSentences } from "../lib/content/text";
+import { signTextsSchema } from "../lib/sign/texts";
+import { PhotoUiSchema } from "../lib/photo/content";
+import { pagesTextsSchema } from "../lib/org/texts";
 
 const LIMITS = {
   question: { words: 8 },
@@ -61,6 +64,10 @@ try {
   const walk = (tree: UiTree, prefix: string) => {
     for (const [k, v] of Object.entries(tree)) {
       const where = `ui.${prefix}${k}`;
+      if (Array.isArray(v)) {
+        v.forEach((line, i) => displayed.push({ where: `${where}[${i}]`, text: line }));
+        continue;
+      }
       if (typeof v !== "string") {
         walk(v, `${prefix}${k}.`);
         continue;
@@ -72,6 +79,15 @@ try {
     }
   };
   walk(c.ui, "");
+
+  // Serverové sekce ui.yaml (podpis, /fotka, /akce, zákon) musí odpovídat schématům loaderů.
+  const sign = signTextsSchema.safeParse({ sign: c.ui.sign, verify: c.ui.verify, page: c.ui.page, email: c.ui.email });
+  if (!sign.success) err("ui.sign/verify/page/email", sign.error.issues.map((i) => `${i.path.join(".")}: ${i.message}`).join("; "));
+  const photo = PhotoUiSchema.safeParse(c.ui.photo);
+  if (!photo.success) err("ui.photo", photo.error.issues.map((i) => `${i.path.join(".")}: ${i.message}`).join("; "));
+  const pages = pagesTextsSchema.safeParse({ hnuti: c.ui.hnuti, org: c.ui.org, method: c.ui.method, sources: c.ui.sources, about: c.ui.about, privacy: c.ui.privacy });
+  if (!pages.success) err("ui.hnuti/org/method/sources/about/privacy", pages.error.issues.map((i) => `${i.path.join(".")}: ${i.message}`).join("; "));
+  for (const k of ["akce", "zakon"]) if (!c.ui[k] || typeof c.ui[k] !== "object") err(`ui.${k}`, "sekce chybí");
 
   checkHeading("stance.title", c.stance.title);
   checkLead("stance.text", c.stance.text);

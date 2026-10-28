@@ -23,7 +23,8 @@
     "seed": "tsx scripts/content-build.ts && tsx scripts/seed.ts",
     "seed:clear": "tsx scripts/seed-clear.ts",
     "poc:clear": "tsx scripts/poc-clear.ts",
-    "measure:js": "tsx scripts/measure-js.ts"
+    "measure:js": "tsx scripts/measure-js.ts",
+    "org:invite": "tsx scripts/org-invite.ts"
   },
   "dependencies": {
     "@pdf-lib/fontkit": "1.1.1",
@@ -31,7 +32,6 @@
     "drizzle-orm": "0.45.4",
     "fflate": "0.8.3",
     "heic-to": "1.6.6",
-    "lucide-react": "1.62.0",
     "next": "16.4.3",
     "pdf-lib": "1.17.1",
     "postgres": "3.4.9",

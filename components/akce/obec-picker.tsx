@@ -4,7 +4,8 @@ import { useId, useMemo, useRef, useState } from "react";
 import type { DirObec } from "@/lib/export/recipients";
 import { searchObce, type SavedObec } from "./state";
 import { fill, type AkceTexts } from "./texts";
-import { ErrorNote, btnText, fieldLabel, inputBase } from "./ui";
+import { Button } from "@/components/ui/button";
+import { Notice } from "@/components/ui/typography";
 
 /** Obce se stahují po krajích a jen jednou za načtení stránky. */
 const cache = new Map<string, Promise<DirObec[]>>();
@@ -57,13 +58,12 @@ export function ObecPicker({
 
   if (value) {
     return (
-      <div>
-        <p className={fieldLabel}>{texts.obec_label}</p>
-        <div className="mt-[8px] flex min-h-[56px] flex-wrap items-center justify-between gap-x-[16px] border-2 border-ink px-[16px] py-[8px]">
+      <div className="k-field">
+        <p className="k-field__label">{texts.obec_label}</p>
+        <div className="flex min-h-answer flex-wrap items-center justify-between gap-x-2 border-2 border-ink py-1 pr-1 pl-2">
           <span className="font-semibold">{fill(texts.obec_result, { name: value.nazev, okres: value.okres })}</span>
-          <button
-            type="button"
-            className={btnText}
+          <Button
+            variant="secondary"
             onClick={() => {
               onChange(null);
               setQuery("");
@@ -71,7 +71,7 @@ export function ObecPicker({
             }}
           >
             {texts.obec_change_button}
-          </button>
+          </Button>
         </div>
       </div>
     );
@@ -85,8 +85,8 @@ export function ObecPicker({
   const showList = open && query.trim().length > 0 && status !== "error";
 
   return (
-    <div className="relative">
-      <label htmlFor={id} className={fieldLabel}>
+    <div className="k-field relative">
+      <label htmlFor={id} className="k-field__label">
         {texts.obec_label}
       </label>
       <input
@@ -102,7 +102,7 @@ export function ObecPicker({
         aria-activedescendant={showList && results[active] ? `${id}-opt-${results[active].kod}` : undefined}
         placeholder={texts.obec_placeholder}
         value={query}
-        className={inputBase}
+        className="k-input"
         onFocus={() => {
           ensureLoaded();
           setOpen(true);
@@ -131,39 +131,38 @@ export function ObecPicker({
       />
       {status === "error" && (
         <div>
-          <ErrorNote>{texts.obec_error}</ErrorNote>
-          <button
-            type="button"
-            className={btnText}
+          <Notice role="alert">{texts.obec_error}</Notice>
+          <Button
+            variant="secondary"
             onClick={() => {
               setStatus("idle");
               setTimeout(ensureLoaded, 0);
             }}
           >
             {texts.obec_retry_button}
-          </button>
+          </Button>
         </div>
       )}
       <div role="status" aria-live="polite" className="sr-only">
         {status === "loading" ? texts.obec_loading : showList && list && results.length === 0 ? texts.obec_none : ""}
       </div>
       {showList && (
-        <ul id={listId} role="listbox" aria-label={texts.obec_label} className="absolute right-0 left-0 z-40 border-2 border-t-0 border-ink bg-surface">
-          {status === "loading" && <li className="min-h-[48px] px-[16px] py-[12px] text-ink-secondary">{texts.obec_loading}</li>}
-          {list && results.length === 0 && <li className="min-h-[48px] px-[16px] py-[12px]">{texts.obec_none}</li>}
+        <ul id={listId} role="listbox" aria-label={texts.obec_label} className="absolute top-full right-0 left-0 z-40 border-2 border-t-0 border-ink bg-surface">
+          {status === "loading" && <li className="min-h-target px-2 py-1.5 text-ink-secondary">{texts.obec_loading}</li>}
+          {list && results.length === 0 && <li className="min-h-target px-2 py-1.5">{texts.obec_none}</li>}
           {results.map((o, i) => (
             <li
               key={o.kod}
               id={`${id}-opt-${o.kod}`}
               role="option"
               aria-selected={i === active}
-              className={`flex min-h-[48px] cursor-pointer items-center px-[16px] py-[8px] ${i === active ? "bg-blue text-on-blue" : "hover:bg-blue-tint"}`}
+              className={`flex min-h-target cursor-pointer items-center px-2 py-1 ${i === active ? "bg-blue text-on-blue" : "hover:bg-blue-tint"}`}
               onMouseDown={(e) => e.preventDefault()}
               onClick={() => choose(o)}
             >
               <span>
                 <span className="font-semibold">{o.nazev}</span>
-                <span className="text-[14px]">{` · ${o.okres}`}</span>
+                <span className="text-caption">{` · ${o.okres}`}</span>
               </span>
             </li>
           ))}

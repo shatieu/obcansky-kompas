@@ -1,12 +1,9 @@
-import { readFileSync } from "node:fs";
-import path from "node:path";
-import { parse } from "yaml";
 import { z } from "zod";
+import { readUiYaml } from "@/lib/content/ui-server";
 
 /**
- * Texty podpisu (content/ui-sign.yaml). Čtou se jen na serveru a do klientských komponent
- * se předávají jako props. Až je jádro přenese do ui.yaml (klíč `sign`, `verify`, `page`,
- * `email`), stačí tady vrátit `ui` z `@/lib/content`.
+ * Texty podpisu (content/ui.yaml, sekce sign, verify, page, email). Čtou se jen na serveru
+ * a do klientských komponent se předávají jako props (do klientského ui.json se nezapisují).
  */
 const str = z.string().min(1);
 const group = <T extends readonly string[]>(keys: T) =>
@@ -28,7 +25,7 @@ export const signTextsSchema = z.object({
     "expired_title", "expired_lead", "invalid_title", "invalid_lead", "sign_again_button",
   ] as const),
   page: group([
-    "meta_title", "kicker", "anonymous", "signed_by", "date_label", "level_label", "level_unverified",
+    "meta_title", "kicker", "title", "anonymous", "signed_by", "date_label", "level_label", "level_unverified",
     "level_email", "level_sms", "level_bankid", "answers_title", "not_answered", "skipped", "comment_title",
     "share_button", "share_copied", "compare_button", "law_button", "withdrawn_title", "withdrawn_lead",
     "not_found_title", "not_found_lead", "unavailable_title", "unavailable_lead", "retry_button", "static_demo",
@@ -47,8 +44,8 @@ let cached: SignTexts | undefined;
 
 export function signTexts(): SignTexts {
   if (!cached) {
-    const file = path.join(process.cwd(), "content", "ui-sign.yaml");
-    cached = signTextsSchema.parse(parse(readFileSync(file, "utf8")));
+    const raw = readUiYaml();
+    cached = signTextsSchema.parse({ sign: raw.sign, verify: raw.verify, page: raw.page, email: raw.email });
   }
   return cached;
 }

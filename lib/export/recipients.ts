@@ -92,7 +92,7 @@ export interface Recipient {
   fileBase: string;
 }
 
-/** Texty adres, které nejsou v adresářích (ui-akce.yaml → akce.postal). */
+/** Texty adres, které nejsou v adresářích (ui.yaml → akce.postal). */
 export interface PostalTexts {
   poslanec_org: string;
   poslanec_address: string;

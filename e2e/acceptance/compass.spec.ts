@@ -93,7 +93,8 @@ test("živý náhled textu se aktualizuje (§6)", async ({ page }) => {
   await gotoQ(page, "q2");
   await page.getByRole("radio", { name: "Poplatek jako dnes", exact: true }).click();
   if (isMobile(page)) {
-    const show = page.getByRole("button", { name: ui.preview.show_button });
+    // Sbalený řádek „Můj text“ (design system StatementPreview).
+    const show = page.getByRole("button", { name: new RegExp(`^${ui.preview.title}`), expanded: false });
     if (await show.count()) await show.first().click();
   }
   await expect(page.getByText(sentences.options[optionId("q2", "Poplatek jako dnes")]!.text!).first()).toBeVisible();
@@ -121,7 +122,9 @@ test("vysvětlivka: mobil = bottom sheet u spodního okraje, desktop = rozbalen�
 
 test("Q1 posuvník: kotvy, −/+, klávesnice, přepočet na dospělého (§4.4, §5.1)", async ({ page }) => {
   expect(await currentHeading(page)).toBe(q("q1").text);
-  for (const a of ["Návrh vlády", "Dnes", "Dnes +10 %"]) await expect(page.getByText(a, { exact: true }).first()).toBeVisible();
+  // Design system: kotvy jsou klikací zářezy (bez statických popisků pod dráhou), název nese aria-label.
+  for (const a of ["Návrh vlády", "Dnes", "Dnes +10 %"])
+    await expect(page.getByRole("button", { name: new RegExp(`${a.replace(/[+]/g, "\\+")}:`) }).first()).toBeVisible();
   const slider = page.getByRole("slider").first();
   const before = Number(await slider.getAttribute("aria-valuenow") ?? (await slider.inputValue()));
   await slider.focus();

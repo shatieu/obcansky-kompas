@@ -3,10 +3,8 @@ import type { Answers } from "@/lib/compose/types";
 /**
  * HOOK(signature-api): odpovědi podpisu pro /akce?sig=<uuid> a /v/<uuid>/zakon v prohlížeči.
  *
- * GET endpoint s odpověďmi podpisu vlastní agent podpisů a zatím nemusí existovat.
- * Až bude, stačí upravit SIGNATURE_ANSWERS_URL (a případně parseSignatureAnswers).
- * Když endpoint chybí nebo selže, volající použije odpovědi z prohlížeče.
- * Očekávaný tvar: { answers, contentVersion | content_version, region? } (případně zabalené v { signature }).
+ * Endpoint: GET /api/signature/[uuid] → { answers, content_version } (jen neodvolaný podpis,
+ * žádné osobní údaje, 404 když neexistuje, 503 bez DB). Když selže, volající použije odpovědi z prohlížeče.
  */
 export const SIGNATURE_ANSWERS_URL = (uuid: string) => `/api/signature/${encodeURIComponent(uuid)}`;
 

@@ -7,6 +7,7 @@ import path from "node:path";
 import { ContentError, CONTENT_DIR, loadContent } from "../lib/content/load";
 import { crossCheck } from "../lib/content/cross-check";
 import { checkExplainer } from "../lib/content/verification";
+import { UI_SERVER_SECTIONS } from "../lib/content/schemas";
 
 const OUT = path.join(CONTENT_DIR, "generated");
 
@@ -46,7 +47,10 @@ try {
   write("facts.json", c.facts);
   // Pro aplikaci (i klientský bundle) jen id + hodnota; plná tvrzení zůstávají ve facts.json.
   write("fact-values.json", c.facts.map((f) => ({ id: f.id, value: f.value })));
-  write("ui.json", c.ui);
+  // Klientský bundle dostane jen sekce pro prohlížeč; serverové sekce (podpis, e-maily, /fotka,
+  // /akce, zákon) čtou loadery přímo z content/ui.yaml.
+  const server = new Set<string>(UI_SERVER_SECTIONS);
+  write("ui.json", Object.fromEntries(Object.entries(c.ui).filter(([k]) => !server.has(k))));
   write("stance.json", c.stance);
   write("share.json", c.share);
   write("slogans.json", c.slogans);

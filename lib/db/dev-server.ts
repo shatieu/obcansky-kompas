@@ -45,7 +45,8 @@ export async function startPgliteServer(opts: { dataDir?: string; port?: number 
   };
 }
 
-export const DEV_DATA_DIR = path.join(process.cwd(), ".pglite", "dev");
+/** `PGLITE_DATA_DIR` = vlastní data (např. e2e server vedle běžícího `pnpm dev`). */
+export const DEV_DATA_DIR = process.env.PGLITE_DATA_DIR ? path.resolve(process.env.PGLITE_DATA_DIR) : path.join(process.cwd(), ".pglite", "dev");
 
 /**
  * Pro skripty (seed, seed:clear, …): použije DATABASE_URL, jinak běžící dev server,

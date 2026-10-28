@@ -1,14 +1,14 @@
-import { Info } from "lucide-react";
 import { ui } from "@/lib/content";
+import { SampleBanner } from "@/components/ui/sample";
 
-/** Pruh „Ukázková data“ na stránkách se statistikami (DEMO_MODE / STATIC_DEMO). */
+/**
+ * Pruh „Ukázková data“ (DEMO_MODE / STATIC_DEMO) – obal nad SampleBanner z components/ui.
+ * Ponechán kvůli stránkám, které ho importují (app/hnuti, app/v/[uuid]/srovnani).
+ */
 export function DemoBar() {
   return (
-    <div role="note" className="border-b-2 border-ink bg-blue-tint">
-      <p className="mx-auto flex max-w-5xl items-center gap-2 px-4 py-2 font-semibold">
-        <Info aria-hidden className="size-5 shrink-0" />
-        {ui.demo.bar}
-      </p>
+    <div className="k-wrap py-2">
+      <SampleBanner title={ui.demo.banner_title} text={ui.demo.banner_text} />
     </div>
   );
 }

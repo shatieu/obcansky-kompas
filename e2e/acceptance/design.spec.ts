@@ -132,11 +132,12 @@ test.describe("§4.4 komponenty", () => {
     expect(box.width).toBeGreaterThan(vp.width * 0.5);
   });
 
-  test("mobil: nadpis otázky 32–40 px", async ({ page }) => {
+  // Design system: h1 na mobilu 30/32 px (tokens.json), přepisuje SPEC §4.3 (32–40 px).
+  test("mobil: nadpis otázky 30–40 px", async ({ page }) => {
     test.skip(!isMobile(page), "jen mobil");
     await page.goto("/kompas");
     const size = await page.locator("main h1").first().evaluate((e) => parseFloat(getComputedStyle(e).fontSize));
-    expect(size).toBeGreaterThanOrEqual(32);
+    expect(size).toBeGreaterThanOrEqual(30);
     expect(size).toBeLessThanOrEqual(40);
   });
 

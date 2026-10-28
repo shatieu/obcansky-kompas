@@ -4,14 +4,14 @@ import { useState } from "react";
 import { saveCompassState } from "@/lib/compass-storage";
 import type { Answers, Demographics } from "@/lib/compose/types";
 import type { SignTexts } from "@/lib/sign/texts";
+import { Button, StickyBar } from "@/components/ui/button";
+import { Notice, SectionTitle } from "@/components/ui/typography";
 import { saveEditSession } from "./edit-session";
-import { Icon } from "./icon";
-import { Notice } from "./notice";
-import { btnPrimary, btnSecondary, h2, sticky } from "./styles";
 
 /**
  * Stránka z odkazu pro úpravu: „Upravit odpovědi“ nahraje uložené odpovědi do kompasu a token
  * do sessionStorage (uloží se na /kompas/podpis), „Odvolat podpis“ smaže osobní údaje.
+ * Jedno primární tlačítko (úprava); odvolání je sekundární textové.
  */
 export function EditPanel({
   t,
@@ -33,9 +33,9 @@ export function EditPanel({
 
   if (withdrawn) {
     return (
-      <section className="mt-8" role="status">
-        <h2 className={h2}>{t.withdrawn_title}</h2>
-        <p className="mt-2">{t.withdrawn_lead}</p>
+      <section className="mt-4" role="status">
+        <SectionTitle>{t.withdrawn_title}</SectionTitle>
+        <p className="k-lede">{t.withdrawn_lead}</p>
       </section>
     );
   }
@@ -62,41 +62,40 @@ export function EditPanel({
   };
 
   return (
-    <>
-      <section className="mt-6 bg-blue-tint p-4">
-        <h2 className="text-[13px] font-bold uppercase leading-4 tracking-[0.08em]">{t.statement_title}</h2>
-        <p className="mt-3">{statement}</p>
+    <div className="mt-4 grid gap-4 lg:grid-cols-[minmax(0,688px)_minmax(0,448px)] lg:gap-6">
+      <section className="k-letter" aria-labelledby="edit-statement">
+        <h2 id="edit-statement" className="k-letter__meta">
+          {t.statement_title}
+        </h2>
+        <p className="mt-1">{statement}</p>
       </section>
-      {readOnly && (
-        <div className="mt-6">
-          <Notice tone="info">{t.read_only}</Notice>
-        </div>
-      )}
-      <div className={`${sticky} mt-6`}>
-        <button type="button" className={btnPrimary} onClick={editAnswers} disabled={readOnly}>
-          {t.edit_answers_button}
-          <Icon name="arrow-right" />
-        </button>
-      </div>
+      <div className="flex min-w-0 flex-col gap-3">
+        {readOnly && <Notice tone="info">{t.read_only}</Notice>}
+        <StickyBar>
+          <Button block iconEnd="arrow-right" onClick={editAnswers} disabled={readOnly}>
+            {t.edit_answers_button}
+          </Button>
+        </StickyBar>
 
-      <section className="mt-12 border-t-2 border-ink pt-6">
-        <h2 className={h2}>{t.withdraw_title}</h2>
-        <p className="mt-2">{t.withdraw_lead}</p>
-        {err && (
-          <div className="mt-4">
-            <Notice role="alert">{err}</Notice>
-          </div>
-        )}
-        {confirming ? (
-          <button type="button" className={`${btnSecondary} mt-3`} onClick={withdraw} disabled={busy || readOnly}>
-            {t.withdraw_confirm_button}
-          </button>
-        ) : (
-          <button type="button" className={`${btnSecondary} mt-3`} onClick={() => setConfirming(true)} disabled={readOnly}>
-            {t.withdraw_button}
-          </button>
-        )}
-      </section>
-    </>
+        <section className="border-t-2 border-ink pt-3">
+          <SectionTitle>{t.withdraw_title}</SectionTitle>
+          <p className="k-lede">{t.withdraw_lead}</p>
+          {err && (
+            <Notice role="alert" className="mt-2">
+              {err}
+            </Notice>
+          )}
+          {confirming ? (
+            <Button variant="secondary" className="mt-1" onClick={withdraw} disabled={busy || readOnly} aria-busy={busy || undefined}>
+              {t.withdraw_confirm_button}
+            </Button>
+          ) : (
+            <Button variant="secondary" className="mt-1" onClick={() => setConfirming(true)} disabled={readOnly}>
+              {t.withdraw_button}
+            </Button>
+          )}
+        </section>
+      </div>
+    </div>
   );
 }

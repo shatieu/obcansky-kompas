@@ -5,7 +5,13 @@ import { VARIANTS, type Variant } from "@/lib/photo/constants";
 import { clampCrop, initialCrop, keyAction, panBy, pinch, wheelZoom, zoomAt, type Crop, type Point, type Size } from "@/lib/photo/crop";
 import { exportFileName, frameEvent, pickSlogan, previewPixels, variantHasSlogan, type ExportFormat, type Slogan } from "@/lib/photo/export";
 import type { PhotoUi } from "@/lib/photo/content";
-import { Icon, PhotoErrorBox, PhotoOption } from "./parts";
+import { AnswerOption } from "@/components/ui/answer";
+import { Button, IconButton, StickyBar } from "@/components/ui/button";
+import { Icon } from "@/components/ui/icon";
+import { PhotoFrame } from "@/components/ui/photo-frame";
+import { Kicker, Notice } from "@/components/ui/typography";
+import { SharePanel, type SharePanelTexts } from "@/components/share/share-panel";
+import { fotkaCard, type CardImageTexts } from "@/lib/share/card";
 
 /* Těžší části (dekódování, kreslení) se načtou až v prohlížeči. */
 const loadDecode = () => import("@/lib/photo/decode");
@@ -38,7 +44,16 @@ const getCoarse = () => window.matchMedia(COARSE).matches;
 
 const FALLBACK_FONT: FrameFont = { family: "sans-serif", stretch: "normal" };
 
-export function PhotoStudio({ ui, slogans }: { ui: PhotoUi; slogans: Slogan[] }) {
+export function PhotoStudio({
+  ui,
+  slogans,
+  share,
+}: {
+  ui: PhotoUi;
+  slogans: Slogan[];
+  /** Texty sdílení (ze serveru, content/ui.yaml sekce share). */
+  share?: { panel: SharePanelTexts; image: CardImageTexts };
+}) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const pickRef = useRef<HTMLInputElement>(null);
   const cameraRef = useRef<HTMLInputElement>(null);
@@ -49,6 +64,8 @@ export function PhotoStudio({ ui, slogans }: { ui: PhotoUi; slogans: Slogan[] })
   const [variant, setVariant] = useState<Variant>("ring");
   const [sloganId, setSloganId] = useState<string>(slogans[0]?.id ?? "");
   const [status, setStatus] = useState<Status>({ kind: "idle" });
+  /** Poslední stažená fotka s rámečkem – jen pro obrázek ke sdílení v prohlížeči, nikam se neposílá. */
+  const [framed, setFramed] = useState<Blob | null>(null);
   const [dragging, setDragging] = useState(false);
   const [busy, setBusy] = useState(false);
   const [font, setFont] = useState<FrameFont>(FALLBACK_FONT);
@@ -237,6 +254,7 @@ export function PhotoStudio({ ui, slogans }: { ui: PhotoUi; slogans: Slogan[] })
       a.remove();
       setTimeout(() => URL.revokeObjectURL(url), 10_000);
       setStatus({ kind: "downloaded" });
+      setFramed(blob);
       // Jen anonymní počítadlo (varianta, slogan). Fotka nikam neodchází.
       void fetch("/api/event", {
         method: "POST",
@@ -253,6 +271,7 @@ export function PhotoStudio({ ui, slogans }: { ui: PhotoUi; slogans: Slogan[] })
 
   const reset = () => {
     setPhoto(null);
+    setFramed(null);
     updateCrop(null);
     setStatus({ kind: "idle" });
     if (pickRef.current) pickRef.current.value = "";
@@ -261,27 +280,15 @@ export function PhotoStudio({ ui, slogans }: { ui: PhotoUi; slogans: Slogan[] })
 
   const loading = status.kind === "loading";
   const zoomPct = crop ? Math.round(crop.zoom * 100) : 100;
-  const btnSquare =
-    "inline-flex size-[48px] items-center justify-center border-2 border-ink bg-surface text-ink transition-colors duration-100 hover:bg-blue-tint disabled:hatch disabled:border-muted disabled:text-muted";
-  const btnText =
-    "inline-flex min-h-[48px] items-center gap-[8px] px-[4px] text-[17px] font-semibold text-blue underline underline-offset-4";
-  const btnPrimary =
-    "inline-flex min-h-[60px] w-full flex-1 items-center justify-center gap-[8px] border-2 border-blue bg-blue px-[24px] font-wide text-[17px] font-bold text-on-blue transition-colors duration-100 hover:bg-blue-hover disabled:hatch disabled:border-muted disabled:bg-surface disabled:text-muted md:w-auto md:flex-none";
 
   return (
-    <div className="flex flex-col gap-[24px]">
+    <div className="flex flex-col gap-3">
       {/* Náhled + ořez. Kruhový náhled je jediné zaoblení na stránce (spolu s výběrovou značkou). */}
-      <div
-        className="flex flex-col items-center gap-[16px]"
-        onDragOver={onDragOver}
-        onDragLeave={() => setDragging(false)}
-        onDrop={onDrop}
-      >
-        <div className={`relative w-full max-w-[420px] ${dragging ? "outline outline-[3px] outline-offset-[6px] outline-blue" : ""}`}>
+      <div className="flex flex-col items-center gap-2" onDragOver={onDragOver} onDragLeave={() => setDragging(false)} onDrop={onDrop}>
+        <div className={`relative w-full max-w-[420px] ${dragging ? "outline-3 outline-offset-6 outline-blue" : ""}`}>
           <canvas
             ref={canvasRef}
-            className={`block aspect-square w-full touch-none select-none ${photo ? "cursor-grab active:cursor-grabbing" : "cursor-pointer"}`}
-            style={{ borderRadius: "50%" }}
+            className={`block aspect-square w-full touch-none rounded-round select-none ${photo ? "cursor-grab active:cursor-grabbing" : "cursor-pointer"}`}
             role={photo ? "application" : "img"}
             aria-label={fill(ui.preview_label, { frame: ui.frames[variant] })}
             aria-describedby={photo ? "fotka-klavesy" : undefined}
@@ -294,41 +301,34 @@ export function PhotoStudio({ ui, slogans }: { ui: PhotoUi; slogans: Slogan[] })
             onKeyDown={onKeyDown}
           />
           {dragging && (
-            <p className="pointer-events-none absolute inset-x-0 bottom-0 bg-ink py-[8px] text-center text-[17px] font-semibold text-surface">
-              {ui.drop_active}
-            </p>
+            <p className="pointer-events-none absolute inset-x-0 bottom-0 bg-ink py-1 text-center font-semibold text-surface">{ui.drop_active}</p>
           )}
         </div>
 
         {photo ? (
-          <div className="flex w-full max-w-[420px] flex-col gap-[8px]">
-            <div className="flex items-center justify-between gap-[8px]">
-              <button type="button" className={btnSquare} onClick={() => zoomBy(1 / 1.2)} disabled={!crop || crop.zoom <= 1} aria-label={ui.zoom_out_button}>
-                <Icon name="minus" />
-              </button>
-              <output className="tabular text-[15px] font-semibold" aria-live="polite">
+          <div className="flex w-full max-w-[420px] flex-col gap-1">
+            <div className="flex items-center justify-between gap-1">
+              <IconButton icon="minus" label={ui.zoom_out_button} onClick={() => zoomBy(1 / 1.2)} disabled={!crop || crop.zoom <= 1} />
+              <output className="k-num text-small font-semibold" aria-live="polite">
                 {fill(ui.zoom_value, { n: zoomPct })}
               </output>
-              <button type="button" className={btnSquare} onClick={() => zoomBy(1.2)} disabled={!crop || crop.zoom >= 5} aria-label={ui.zoom_in_button}>
-                <Icon name="plus" />
-              </button>
+              <IconButton icon="plus" label={ui.zoom_in_button} onClick={() => zoomBy(1.2)} disabled={!crop || crop.zoom >= 5} />
             </div>
-            <div className="flex flex-wrap items-center justify-between gap-x-[16px]">
-              <button type="button" className={btnText} onClick={() => updateCrop(initialCrop(photo.size))}>
-                <Icon name="refresh" className="size-5" />
+            <div className="flex flex-wrap items-center justify-between gap-x-2">
+              <Button variant="secondary" icon="refresh" onClick={() => updateCrop(initialCrop(photo.size))}>
                 {ui.reset_button}
-              </button>
-              <button type="button" className={btnText} onClick={reset}>
+              </Button>
+              <Button variant="secondary" onClick={reset}>
                 {ui.change_button}
-              </button>
+              </Button>
             </div>
-            <p className="text-[14px] leading-[20px] text-ink-secondary">{ui.crop_hint}</p>
+            <p className="k-cap">{ui.crop_hint}</p>
             <p id="fotka-klavesy" className="sr-only">
               {ui.keyboard_hint}
             </p>
           </div>
         ) : (
-          <p className="hidden text-[15px] text-ink-secondary md:block">{ui.drop_hint}</p>
+          <p className="k-cap hidden md:block">{ui.drop_hint}</p>
         )}
 
         <input
@@ -353,38 +353,61 @@ export function PhotoStudio({ ui, slogans }: { ui: PhotoUi; slogans: Slogan[] })
       </div>
 
       <div aria-live="polite" className="empty:hidden">
-        {loading && <p className="text-[17px] font-semibold">{status.heic ? ui.heic_loading : ui.loading}</p>}
-        {status.kind === "error" && <PhotoErrorBox>{status.message}</PhotoErrorBox>}
-        {status.kind === "downloaded" && <p className="border-l-4 border-blue pl-[12px] text-[17px] font-semibold">{ui.downloaded}</p>}
+        {loading && <p className="font-semibold">{status.heic ? ui.heic_loading : ui.loading}</p>}
+        {status.kind === "error" && <Notice>{status.message}</Notice>}
+        {status.kind === "downloaded" && (
+          <Notice tone="info" role="status">
+            {ui.downloaded}
+          </Notice>
+        )}
       </div>
-
-      <fieldset className="flex flex-col gap-[8px]">
-        <legend className="mb-[8px] font-wide text-[13px] font-bold uppercase tracking-[0.08em]">{ui.frame_title}</legend>
-        <div className="grid gap-[8px] sm:grid-cols-2">
-          {VARIANTS.map((v) => (
-            <PhotoOption key={v} name="ramecek" value={v} checked={variant === v} onChange={(x) => setVariant(x as Variant)}>
-              {ui.frames[v]}
-            </PhotoOption>
-          ))}
+      {/* Sdílení až po stažení: sekundární akce v obsahu, primární zůstává stažení ve StickyBar. */}
+      {share && framed && (
+        <div>
+          <SharePanel card={fotkaCard(share.image)} photo={framed} url="/fotka" texts={share.panel} variant="secondary" sticky={false} />
         </div>
-      </fieldset>
-
-      {variantHasSlogan(variant) && (
-        <fieldset className="flex flex-col gap-[8px]">
-          <legend className="mb-[8px] font-wide text-[13px] font-bold uppercase tracking-[0.08em]">{ui.slogan_title}</legend>
-          {slogans.map((s) => (
-            <PhotoOption key={s.id} name="slogan" value={s.id} checked={slogan.id === s.id} onChange={setSloganId}>
-              {s.text}
-            </PhotoOption>
-          ))}
-        </fieldset>
       )}
 
-      <div className="flex flex-col gap-[8px]">
-        <p className="text-[15px] leading-[22px]">{ui.facebook_note}</p>
-        <details className="border-t-2 border-ink">
-          <summary className="flex min-h-[48px] cursor-pointer items-center font-semibold">{ui.howto_title}</summary>
-          <ol className="list-decimal bg-blue-tint py-[16px] pl-[40px] pr-[16px] text-[17px] leading-[26px]">
+      <section aria-labelledby="fotka-ramecek" className="border-t-2 border-ink pt-3">
+        <Kicker as="div">
+          <span id="fotka-ramecek">{ui.frame_title}</span>
+        </Kicker>
+        <div className="k-swatches mt-1" role="radiogroup" aria-labelledby="fotka-ramecek">
+          {VARIANTS.map((v) => (
+            <button key={v} type="button" role="radio" aria-checked={variant === v} className="k-swatch" onClick={() => setVariant(v)}>
+              <PhotoFrame variant={v} slogan={slogan.text} size={48} label="" placeholder="" />
+              {ui.frames[v]}
+            </button>
+          ))}
+        </div>
+      </section>
+
+      {variantHasSlogan(variant) && (
+        <section aria-labelledby="fotka-slogan" className="border-t-2 border-ink pt-3">
+          <Kicker as="div">
+            <span id="fotka-slogan">{ui.slogan_title}</span>
+          </Kicker>
+          <div role="radiogroup" aria-labelledby="fotka-slogan" className="mt-1 flex flex-col gap-1">
+            {slogans.map((s) => (
+              <AnswerOption key={s.id} label={s.text} selected={slogan.id === s.id} onSelect={() => setSloganId(s.id)} />
+            ))}
+          </div>
+        </section>
+      )}
+
+      <div className="flex flex-col gap-1 border-t-2 border-ink pt-3">
+        <p className="text-small">{ui.facebook_note}</p>
+        <details className="group">
+          <summary className="flex min-h-target cursor-pointer list-none items-center justify-between gap-2 font-semibold [&::-webkit-details-marker]:hidden">
+            {ui.howto_title}
+            <span className="group-open:hidden">
+              <Icon name="plus" />
+            </span>
+            <span className="hidden group-open:inline">
+              <Icon name="minus" />
+            </span>
+          </summary>
+          <ol className="k-letter list-decimal pl-5">
             {ui.howto_steps.map((s) => (
               <li key={s}>{s}</li>
             ))}
@@ -393,31 +416,29 @@ export function PhotoStudio({ ui, slogans }: { ui: PhotoUi; slogans: Slogan[] })
       </div>
 
       {/* Primární akce: na mobilu přilepená dole přes celou šířku. */}
-      <div className="sticky bottom-0 z-30 -mx-[16px] border-t-2 border-ink bg-surface px-[16px] py-[12px] md:static md:mx-0 md:border-t-0 md:px-0">
+      <StickyBar>
         {photo ? (
-          <div className="flex flex-col items-stretch gap-[4px] md:flex-row md:items-center md:gap-[24px]">
-            <button type="button" className={btnPrimary} onClick={() => void download("png")} disabled={busy}>
-              <Icon name="download" />
+          <>
+            <Button block icon="download" onClick={() => void download("png")} disabled={busy} aria-busy={busy || undefined}>
               {ui.download_png_button}
-            </button>
-            <button type="button" className={`${btnText} justify-center`} onClick={() => void download("jpg")} disabled={busy}>
+            </Button>
+            <Button variant="secondary" onClick={() => void download("jpg")} disabled={busy}>
               {ui.download_jpg_button}
-            </button>
-          </div>
+            </Button>
+          </>
         ) : (
-          <div className="flex flex-col items-stretch gap-[4px] md:flex-row md:items-center md:gap-[24px]">
-            <button type="button" className={btnPrimary} onClick={() => pickRef.current?.click()} disabled={loading}>
+          <>
+            <Button block iconEnd="arrow-right" onClick={() => pickRef.current?.click()} disabled={loading}>
               {ui.pick_button}
-              <Icon name="arrow-right" />
-            </button>
+            </Button>
             {coarse && (
-              <button type="button" className={`${btnText} justify-center`} onClick={() => cameraRef.current?.click()} disabled={loading}>
+              <Button variant="secondary" onClick={() => cameraRef.current?.click()} disabled={loading}>
                 {ui.camera_button}
-              </button>
+              </Button>
             )}
-          </div>
+          </>
         )}
-      </div>
+      </StickyBar>
     </div>
   );
 }

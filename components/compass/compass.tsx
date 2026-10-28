@@ -1,7 +1,6 @@
 "use client";
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { AlertCircle, ArrowLeft } from "lucide-react";
 import { facts, questionsFile, t, ui } from "@/lib/content";
 import type { Question } from "@/lib/content/schemas";
 import { composeStatement, currentContentVersion, evaluate, isAnswered } from "@/lib/compose";
@@ -9,13 +8,16 @@ import type { Cause, QuestionState } from "@/lib/compose/engine";
 import { formatAmount, formatInt, perAdultMonthly, q1Anchors } from "@/lib/compose/q1";
 import { QUESTION_IDS, type Answers, type AnswerValue, type Demographics, type QuestionId } from "@/lib/compose/types";
 import { emptyState, loadCompassState, saveCompassState, clearCompassState, type CompassState } from "@/lib/compass-storage";
-import { AmountSlider } from "@/components/amount-slider";
-import { Choice } from "@/components/choice";
-import { Explainer } from "@/components/explainer";
-import { Progress, type ProgressSegment } from "@/components/progress";
-import { StickyAction, buttonLink, buttonPrimary, buttonSecondary } from "@/components/sticky-action";
+import { ExplainerBody } from "@/components/explainer";
+import { ActionButton, ActionList } from "@/components/ui/action-list";
+import { AnswerGroup, AnswerOption } from "@/components/ui/answer";
+import { BudgetSlider } from "@/components/ui/budget-slider";
+import { Button, ButtonLink, StickyBar } from "@/components/ui/button";
+import { BottomSheet, Disclosure } from "@/components/ui/disclosure";
+import { ProgressBar, type ProgressState } from "@/components/ui/progress";
+import { Notice, ScreenHeading } from "@/components/ui/typography";
 import { Demographics as DemographicsStep } from "./demographics";
-import { StatementPreview } from "./statement-preview";
+import { StatementAside, StatementPreview } from "./statement-preview";
 
 const STEP_IDS = [...QUESTION_IDS, "o-vas", "text"] as const;
 type StepId = (typeof STEP_IDS)[number];
@@ -23,6 +25,7 @@ const DEMO_STEP = 8;
 const SUMMARY_STEP = 9;
 
 const anchors = q1Anchors(questionsFile, facts);
+const sliderAnchors = anchors.map((a) => ({ value: a.value, label: a.label }));
 const units = { unit_decimal: ui.slider.unit_decimal, unit_whole: ui.slider.unit_whole };
 
 function optionLabel(id: string): string {
@@ -108,91 +111,93 @@ export function Compass() {
   };
 
   const setDemographics = (d: Demographics) => setState((s) => ({ ...s, demographics: d }));
+  const setHide = (v: boolean) => setState((s) => ({ ...s, hideUnknown: v }));
 
-  const segments: ProgressSegment[] = QUESTION_IDS.map((qid, i) => ({
-    id: qid,
-    state: isSkipped(i) ? "skipped" : isAnswered(evaluation.effective[qid]) ? "done" : "todo",
-  }));
+  const segments: ProgressState[] = QUESTION_IDS.map((qid, i) =>
+    isSkipped(i) ? "skipped" : i === step ? "current" : isAnswered(evaluation.effective[qid]) ? "done" : "todo",
+  );
 
   const stepId = STEP_IDS[step]!;
   const progressLabel = t(ui.compass.progress_label, { n: Math.min(step + 1, 8), total: 8 });
 
   return (
-    <div className="mx-auto max-w-5xl px-4 pb-6 pt-4 md:grid md:grid-cols-[minmax(0,1fr)_340px] md:gap-10 md:pt-8">
+    <div className="k-wrap pb-3 pt-3 lg:grid lg:grid-cols-[minmax(0,688px)_448px] lg:justify-between lg:gap-6 lg:pt-5">
       <div className="min-w-0">
-        <div className="mb-6">
-          <Progress segments={segments} current={step < 8 ? step : -1} label={progressLabel} />
-          {step < 8 && <p className="tabular mt-3 text-sm text-muted">{progressLabel}</p>}
+        <ProgressBar segments={segments} current={step < 8 ? step + 1 : 0} labelText={progressLabel} ariaLabel={progressLabel} />
+
+        <div className="mt-4">
+          {step < 8 && (
+            <QuestionStep
+              key={stepId}
+              question={questionOf(stepId as QuestionId)}
+              state={evaluation.states[stepId as QuestionId]}
+              value={evaluation.effective[stepId as QuestionId]}
+              userValue={state.answers[stepId as QuestionId]}
+              invalidated={state.invalidated.includes(stepId as QuestionId)}
+              onAnswer={(v) => setAnswer(stepId as QuestionId, v)}
+              onGoToCause={(c) => goTo(QUESTION_IDS.indexOf(c.question))}
+              headingRef={headingRef}
+            />
+          )}
+          {step === DEMO_STEP && <DemographicsStep value={state.demographics} onChange={setDemographics} headingRef={headingRef} />}
+          {step === SUMMARY_STEP && (
+            <Summary
+              statementText={statement.text}
+              effective={evaluation.effective}
+              states={evaluation.states}
+              onEdit={(i) => goTo(i)}
+              onRestart={() => {
+                clearCompassState();
+                setState(emptyState());
+                goTo(0);
+              }}
+              headingRef={headingRef}
+            />
+          )}
         </div>
 
-        <div className="md:hidden">
-          <StatementPreview statement={statement} hideUnknown={state.hideUnknown} collapsible onToggleHide={(v) => setState((s) => ({ ...s, hideUnknown: v }))} />
-        </div>
-
-        {step < 8 && (
-          <QuestionStep
-            key={stepId}
-            question={questionOf(stepId as QuestionId)}
-            state={evaluation.states[stepId as QuestionId]}
-            value={evaluation.effective[stepId as QuestionId]}
-            userValue={state.answers[stepId as QuestionId]}
-            invalidated={state.invalidated.includes(stepId as QuestionId)}
-            onAnswer={(v) => setAnswer(stepId as QuestionId, v)}
-            onGoToCause={(c) => goTo(QUESTION_IDS.indexOf(c.question))}
-            headingRef={headingRef}
-          />
-        )}
-        {step === DEMO_STEP && <DemographicsStep value={state.demographics} onChange={setDemographics} headingRef={headingRef} />}
-        {step === SUMMARY_STEP && (
-          <Summary
-            statementText={statement.text}
-            effective={evaluation.effective}
-            states={evaluation.states}
-            onEdit={(i) => goTo(i)}
-            onRestart={() => {
-              clearCompassState();
-              setState(emptyState());
-              goTo(0);
-            }}
-            headingRef={headingRef}
-          />
+        {step < SUMMARY_STEP && (
+          <div className="mt-4 lg:hidden">
+            <StatementPreview statement={statement} hideUnknown={state.hideUnknown} onToggleHide={setHide} />
+          </div>
         )}
 
-        <div className="mt-8">
-          <StickyAction>
-            {step > 0 && (
-              <button type="button" onClick={back} className={buttonSecondary} aria-label={ui.compass.back_button}>
-                <ArrowLeft aria-hidden className="size-5" />
-                <span className="hidden sm:inline">{ui.compass.back_button}</span>
-              </button>
-            )}
+        <div className="mt-2 md:mt-4">
+          <StickyBar>
             {step < DEMO_STEP && (
-              <button type="button" onClick={next} className={buttonPrimary}>
+              <Button block iconEnd="arrow-right" onClick={next}>
                 {ui.compass.next_button}
-              </button>
+              </Button>
             )}
             {step === DEMO_STEP && (
-              <button type="button" onClick={next} className={buttonPrimary}>
+              <Button block iconEnd="arrow-right" onClick={next}>
                 {ui.compass.finish_button}
-              </button>
+              </Button>
             )}
             {step === SUMMARY_STEP && (
-              <a href="/kompas/podpis" className={`${buttonPrimary} no-underline`}>
+              <ButtonLink href="/kompas/podpis" block iconEnd="arrow-right">
                 {ui.compass.sign_button}
-              </a>
+              </ButtonLink>
             )}
-          </StickyAction>
+            {step > 0 && (
+              <Button variant="secondary" icon="chevron-left" onClick={back}>
+                {ui.compass.back_button}
+              </Button>
+            )}
+          </StickyBar>
         </div>
       </div>
 
-      <aside className="hidden md:block">
-        <div className="sticky top-6">
-          <StatementPreview statement={statement} hideUnknown={state.hideUnknown} onToggleHide={(v) => setState((s) => ({ ...s, hideUnknown: v }))} />
+      <aside className="hidden lg:block">
+        <div className="sticky top-3 border-l-2 border-ink pl-4">
+          <StatementAside statement={statement} hideUnknown={state.hideUnknown} onToggleHide={setHide} />
         </div>
       </aside>
     </div>
   );
 }
+
+type OpenExplainer = { id: string; title: string; inline: boolean } | null;
 
 function QuestionStep({
   question: q,
@@ -214,9 +219,17 @@ function QuestionStep({
   headingRef: React.RefObject<HTMLHeadingElement | null>;
 }) {
   const [openDisabled, setOpenDisabled] = useState<string | null>(null);
+  const [expl, setExpl] = useState<OpenExplainer>(null);
   const qid = q.id as QuestionId;
   const skipped = state.status === "skipped";
   const causeQuestion = (c: Cause) => questionOf(c.question).text;
+
+  const toggleExplainer = (id: string, title: string) => {
+    if (expl?.id === id) return setExpl(null);
+    const inline = window.matchMedia("(min-width: 768px)").matches;
+    setExpl({ id, title, inline });
+  };
+  const inlineOpen = (id: string) => expl?.id === id && expl.inline;
 
   const select = (optionId: string) => {
     const opt = q.options.find((o) => o.id === optionId)!;
@@ -237,90 +250,127 @@ function QuestionStep({
 
   return (
     <section aria-labelledby={`h-${qid}`}>
-      <h1 id={`h-${qid}`} ref={headingRef} tabIndex={-1} className="text-[2rem] font-bold leading-tight outline-none md:text-[2.5rem]">
-        {q.text}
-      </h1>
-      {q.type === "multi" && !skipped && <p className="mt-2 text-muted">{ui.compass.multi_lead}</p>}
-      <div className="mt-2">
-        <Explainer id={qid} texts={ui.explainer} label={q.text} />
-      </div>
+      <AnswerGroup
+        legend={q.text}
+        headingId={`h-${qid}`}
+        headingRef={headingRef}
+        multiple={q.type === "multi"}
+        lede={skipped ? undefined : q.type === "multi" ? ui.compass.multi_lead : q.type === "slider" ? ui.slider.lead : ui.compass.single_lead}
+      >
+        {invalidated && !isAnswered(userValue) && (
+          <Notice role="alert">
+            <p className="font-semibold">{ui.compass.invalidated_note}</p>
+          </Notice>
+        )}
+        {skipped && state.skippedBy && (
+          <Notice tone="info">
+            <p className="font-semibold">{ui.compass.skipped_title}</p>
+            <p>{t(ui.compass.skipped_lead, { option: optionLabel(state.skippedBy.option) })}</p>
+            <Button variant="secondary" className="-ml-1" onClick={() => onGoToCause(state.skippedBy!)}>
+              {ui.compass.disabled_go_button}
+            </Button>
+          </Notice>
+        )}
+        {state.forced && state.forcedBy && (
+          <Notice tone="info">
+            <p>{t(ui.compass.forced_note, { option: optionLabel(state.forcedBy.option) })}</p>
+          </Notice>
+        )}
 
-      {invalidated && !isAnswered(userValue) && (
-        <p role="alert" className="mt-4 flex items-start gap-2 border-l-4 border-ink py-1 pl-3 font-semibold">
-          <AlertCircle aria-hidden className="mt-0.5 size-5 shrink-0" />
-          {ui.compass.invalidated_note}
-        </p>
-      )}
-      {skipped && state.skippedBy && (
-        <div className="mt-4 border-l-4 border-muted py-1 pl-3">
-          <p className="font-semibold">{ui.compass.skipped_title}</p>
-          <p className="text-muted">{t(ui.compass.skipped_lead, { option: optionLabel(state.skippedBy.option) })}</p>
-          <button type="button" className={buttonLink} onClick={() => onGoToCause(state.skippedBy!)}>
-            {ui.compass.disabled_go_button}
-          </button>
-        </div>
-      )}
-      {state.forced && state.forcedBy && (
-        <p className="mt-4 border-l-4 border-blue py-1 pl-3 text-muted">
-          {t(ui.compass.forced_note, { option: optionLabel(state.forcedBy.option) })}
-        </p>
-      )}
+        {q.type === "slider" && q.slider && (
+          <div className="mb-2 mt-1">
+            <BudgetSlider
+              value={sliderValue}
+              min={q.slider.min}
+              max={q.slider.max}
+              step={q.slider.step}
+              snap={0.15}
+              anchors={sliderAnchors}
+              idle={typeof userValue !== "number"}
+              onChange={(v) => onAnswer(v)}
+              live={perAdult !== null ? t(ui.slider.per_adult, { amount: formatInt(perAdult) }) : null}
+              texts={{
+                label: ui.slider.slider_aria,
+                unit: ui.slider.unit_short,
+                perYear: ui.slider.per_year_long,
+                decreaseAria: ui.slider.decrease_aria,
+                increaseAria: ui.slider.increase_aria,
+                valueText: ui.slider.value_text,
+                notchAria: ui.slider.notch_aria,
+              }}
+            />
+            {!isAnswered(userValue) && <p className="k-cap mt-1">{ui.slider.untouched}</p>}
+            <span className="k-sr" aria-live="polite">
+              {typeof userValue === "number" ? formatAmount(userValue, units) : ""}
+            </span>
+          </div>
+        )}
 
-      {q.type === "slider" && q.slider && (
-        <div className="mt-6">
-          <AmountSlider
-            value={sliderValue}
-            min={q.slider.min}
-            max={q.slider.max}
-            step={q.slider.step}
-            anchors={anchors}
-            active={typeof userValue === "number"}
-            onChange={(v) => onAnswer(v)}
-            perAdult={perAdult !== null ? t(ui.slider.per_adult, { amount: formatInt(perAdult) }) : null}
-            texts={{
-              unit: Number.isInteger(sliderValue) ? ui.slider.unit_whole : ui.slider.unit_decimal,
-              perYear: ui.slider.per_year,
-              sliderAria: ui.slider.slider_aria,
-              decreaseAria: ui.slider.decrease_aria,
-              increaseAria: ui.slider.increase_aria,
-            }}
-          />
-          {!isAnswered(userValue) && <p className="mt-2 text-sm text-muted">{ui.slider.untouched}</p>}
-          <span className="sr-only" aria-live="polite">
-            {typeof userValue === "number" ? formatAmount(userValue, units) : ""}
-          </span>
-        </div>
-      )}
-
-      <div role={q.type === "multi" ? "group" : "radiogroup"} aria-labelledby={`h-${qid}`} className="mt-6 space-y-4">
         {q.options.map((o) => {
           const cause = state.disabled[o.id];
           const explId = `dis-${o.id}`;
+          const panelId = `ex-${o.id}`;
+          const withExplainer = !o.nevim && !cause;
           return (
             <div key={o.id}>
-              <Choice
-                label={o.label}
-                multi={q.type === "multi"}
-                selected={isSelected(o.id)}
-                disabledLabel={cause ? t(ui.compass.disabled_label, { option: optionLabel(cause.option) }) : undefined}
-                onSelect={() => select(o.id)}
-                onDisabledClick={() => setOpenDisabled((x) => (x === o.id ? null : o.id))}
-                disabledOpen={openDisabled === o.id}
-                describedBy={cause && openDisabled === o.id ? explId : undefined}
-              />
-              {cause && openDisabled === o.id && (
-                <div id={explId} className="border-x-2 border-b-2 border-muted bg-blue-tint p-3">
-                  <p>{t(ui.compass.disabled_explain, { option: optionLabel(cause.option), question: causeQuestion(cause) })}</p>
-                  <button type="button" className={buttonLink} onClick={() => onGoToCause(cause)}>
-                    {ui.compass.disabled_go_button}
+              <div className={withExplainer ? "k-optwrap" : undefined}>
+                <AnswerOption
+                  label={o.label}
+                  multiple={q.type === "multi"}
+                  selected={isSelected(o.id)}
+                  disabled={Boolean(cause)}
+                  tag={cause ? t(ui.compass.disabled_label, { option: optionLabel(cause.option) }) : undefined}
+                  explainLabel={ui.compass.disabled_why}
+                  onSelect={() => select(o.id)}
+                  onExplain={() => setOpenDisabled((x) => (x === o.id ? null : o.id))}
+                  expanded={cause ? openDisabled === o.id : undefined}
+                  describedBy={cause && openDisabled === o.id ? explId : undefined}
+                />
+                {withExplainer && (
+                  <button
+                    type="button"
+                    className="k-optq"
+                    aria-label={`${ui.explainer.open} ${o.label}`}
+                    aria-expanded={inlineOpen(o.id)}
+                    aria-controls={inlineOpen(o.id) ? panelId : undefined}
+                    onClick={() => toggleExplainer(o.id, o.label)}
+                  >
+                    <span aria-hidden="true">?</span>
                   </button>
+                )}
+              </div>
+              {cause && openDisabled === o.id && (
+                <div id={explId} className="k-disc__panel">
+                  <p>{t(ui.compass.disabled_explain, { option: optionLabel(cause.option), question: causeQuestion(cause) })}</p>
+                  <Button variant="secondary" className="-ml-1" onClick={() => onGoToCause(cause)}>
+                    {ui.compass.disabled_go_button}
+                  </Button>
                 </div>
               )}
-              {!o.nevim && <Explainer id={o.id} texts={ui.explainer} label={o.label} />}
+              {inlineOpen(o.id) && (
+                <div id={panelId} className="k-disc__panel">
+                  <ExplainerBody id={o.id} texts={ui.explainer} />
+                </div>
+              )}
             </div>
           );
         })}
+      </AnswerGroup>
+
+      <div className="mt-2">
+        <Disclosure
+          label={ui.explainer.open}
+          mode={expl?.id === qid && !expl.inline ? "sheet" : "inline"}
+          open={inlineOpen(qid)}
+          onToggle={() => toggleExplainer(qid, q.text)}
+        >
+          <ExplainerBody id={qid} texts={ui.explainer} />
+        </Disclosure>
       </div>
+
+      <BottomSheet open={Boolean(expl && !expl.inline)} title={expl?.title ?? ""} onClose={() => setExpl(null)} closeLabel={ui.explainer.close}>
+        {expl && !expl.inline && <ExplainerBody id={expl.id} texts={ui.explainer} />}
+      </BottomSheet>
     </section>
   );
 }
@@ -349,27 +399,22 @@ function Summary({
   };
   return (
     <section aria-labelledby="h-summary">
-      <h1 id="h-summary" ref={headingRef} tabIndex={-1} className="text-[2rem] font-bold leading-tight outline-none md:text-[2.5rem]">
-        {ui.compass.summary_title}
-      </h1>
-      <p className="mt-2 text-muted">{ui.compass.summary_lead}</p>
-      <blockquote className="mt-6 border-l-4 border-blue bg-blue-tint p-4 text-lg">{statementText}</blockquote>
+      <ScreenHeading id="h-summary" headingRef={headingRef} title={ui.compass.summary_title} lead={ui.compass.summary_lead} />
+      <div className="k-letter mt-3">
+        <p>{statementText}</p>
+      </div>
 
-      <h2 className="mt-8 text-xl font-bold">{ui.compass.answers_title}</h2>
-      <dl className="mt-3 divide-y-2 divide-blue-tint border-y-2 border-ink">
+      <h2 className="k-h k-h2 mb-2 mt-5">{ui.compass.answers_title}</h2>
+      <ActionList>
         {QUESTION_IDS.map((qid, i) => (
-          <div key={qid} className="flex items-center justify-between gap-3 py-2">
-            <div className="min-w-0">
-              <dt className="text-sm text-muted">{questionOf(qid).text}</dt>
-              <dd className="font-semibold">{answerText(qid)}</dd>
-            </div>
-            <button type="button" onClick={() => onEdit(i)} className={`${buttonLink} shrink-0`}>
-              {ui.compass.edit_answers_button}
-            </button>
-          </div>
+          <ActionButton key={qid} onClick={() => onEdit(i)}>
+            <span className="k-cap block">{questionOf(qid).text}</span>
+            <span className="block">{answerText(qid)}</span>
+            <span className="k-sr"> – {ui.compass.edit_answers_button}</span>
+          </ActionButton>
         ))}
-      </dl>
-      <button type="button" onClick={onRestart} className={`${buttonLink} mt-4`}>
+      </ActionList>
+      <button type="button" onClick={onRestart} className="k-link mt-2">
         {ui.compass.restart_button}
       </button>
     </section>

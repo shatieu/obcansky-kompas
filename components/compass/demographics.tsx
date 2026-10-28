@@ -2,7 +2,9 @@
 
 import { questionsFile, t, ui } from "@/lib/content";
 import type { Demographics as DemographicsValue } from "@/lib/compose/types";
-import { Choice } from "@/components/choice";
+import { AnswerOption } from "@/components/ui/answer";
+import { Select, TextArea } from "@/components/ui/fields";
+import { ScreenHeading } from "@/components/ui/typography";
 
 /** Demografie (SPEC §5.3) – vše nepovinné. Opětovné klepnutí volbu zruší. */
 export function Demographics({
@@ -24,35 +26,25 @@ export function Demographics({
 
   return (
     <section aria-labelledby="h-demo">
-      <h1 id="h-demo" ref={headingRef} tabIndex={-1} className="text-[2rem] font-bold leading-tight outline-none md:text-[2.5rem]">
-        {ui.demographics.title}
-      </h1>
-      <p className="mt-2 text-muted">{ui.demographics.lead}</p>
+      <ScreenHeading id="h-demo" headingRef={headingRef} title={ui.demographics.title} lead={ui.demographics.lead} />
 
-      <div className="mt-6">
-        <label htmlFor="demo-region" className="block font-semibold">
-          {ui.demographics.region_label}
-        </label>
-        <select
+      <div className="mt-4">
+        <Select
           id="demo-region"
+          label={ui.demographics.region_label}
           value={value.region ?? ""}
           onChange={(e) => set({ region: e.target.value || undefined })}
-          className="mt-2 min-h-14 w-full border-2 border-ink bg-surface px-3 text-lg"
-        >
-          <option value="">{ui.demographics.region_placeholder}</option>
-          {d.regions.map((r) => (
-            <option key={r.id} value={r.id}>
-              {r.label}
-            </option>
-          ))}
-        </select>
+          placeholder={ui.demographics.region_placeholder}
+          placeholderSelectable
+          options={d.regions.map((r) => ({ value: r.id, label: r.label }))}
+        />
       </div>
 
-      <fieldset className="mt-8">
-        <legend className="font-semibold">{ui.demographics.age_label}</legend>
-        <div role="radiogroup" className="mt-2 grid grid-cols-2 gap-3">
+      <fieldset className="mt-4">
+        <legend className="k-field__label mb-1">{ui.demographics.age_label}</legend>
+        <div role="radiogroup" aria-label={ui.demographics.age_label} className="grid grid-cols-2 gap-1">
           {d.age_groups.map((a) => (
-            <Choice
+            <AnswerOption
               key={a.id}
               label={a.label}
               selected={value.ageGroup === a.id}
@@ -62,11 +54,11 @@ export function Demographics({
         </div>
       </fieldset>
 
-      <fieldset className="mt-8">
-        <legend className="font-semibold">{ui.demographics.size_label}</legend>
-        <div role="radiogroup" className="mt-2 grid grid-cols-1 gap-3 sm:grid-cols-2">
+      <fieldset className="mt-4">
+        <legend className="k-field__label mb-1">{ui.demographics.size_label}</legend>
+        <div role="radiogroup" aria-label={ui.demographics.size_label} className="grid grid-cols-1 gap-1 sm:grid-cols-2">
           {d.municipality_sizes.map((m) => (
-            <Choice
+            <AnswerOption
               key={m.id}
               label={m.label}
               selected={value.municipalitySize === m.id}
@@ -76,25 +68,17 @@ export function Demographics({
         </div>
       </fieldset>
 
-      <div className="mt-8">
-        <label htmlFor="demo-comment" className="block font-semibold">
-          {ui.demographics.comment_label}
-        </label>
-        <p id="demo-comment-hint" className="text-sm text-muted">
-          {ui.demographics.comment_hint}
-        </p>
-        <textarea
+      <div className="mt-4">
+        <TextArea
           id="demo-comment"
-          aria-describedby="demo-comment-hint demo-comment-count"
+          label={ui.demographics.comment_label}
+          hint={ui.demographics.comment_hint}
+          counter={t(ui.demographics.chars_left, { n: d.comment_max - comment.length })}
           maxLength={d.comment_max}
           rows={4}
           value={comment}
           onChange={(e) => set({ comment: e.target.value.slice(0, d.comment_max) || undefined })}
-          className="mt-2 w-full border-2 border-ink bg-surface p-3 text-lg"
         />
-        <p id="demo-comment-count" className="tabular text-sm text-muted">
-          {t(ui.demographics.chars_left, { n: d.comment_max - comment.length })}
-        </p>
       </div>
     </section>
   );

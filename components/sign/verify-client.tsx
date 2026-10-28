@@ -3,9 +3,10 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import type { SignTexts } from "@/lib/sign/texts";
-import { FlagUnfold } from "./flag-unfold";
-import { Icon } from "./icon";
-import { btnPrimary, h1, sticky } from "./styles";
+import { Button, ButtonLink, StickyBar } from "@/components/ui/button";
+import { FlagUnfold } from "@/components/ui/flag";
+import { ScreenHeading } from "@/components/ui/typography";
+import { WaitBar } from "@/components/ui/wait-bar";
 
 type State =
   | { s: "working" }
@@ -20,7 +21,7 @@ const AUTO_CONTINUE_MS = 800 + 1500;
 
 /**
  * /overeni/[token]: token se spotřebuje až POSTem z prohlížeče (ne samotným otevřením odkazu,
- * které umí udělat i náhled v poště).
+ * které umí udělat i náhled v poště). Hotovo = noční plakátová plocha FlagUnfold (pohyb.md §2).
  */
 export function VerifyClient({ token, t }: { token: string; t: SignTexts["verify"] }) {
   const router = useRouter();
@@ -55,8 +56,30 @@ export function VerifyClient({ token, t }: { token: string; t: SignTexts["verify
     return () => window.clearTimeout(id);
   }, [state, go]);
 
-  if (state.s === "working") return <p className="py-12" aria-live="polite">{t.working}</p>;
-  if (state.s === "done") return <FlagUnfold title={t.done_title} text={t.done_lead} onContinue={go} continueLabel={t.continue_button} />;
+  if (state.s === "working")
+    return (
+      <div className="py-6">
+        <WaitBar label={t.working} />
+        <p className="mt-2" aria-live="polite">
+          {t.working}
+        </p>
+      </div>
+    );
+  if (state.s === "done")
+    return (
+      <FlagUnfold fixed headingLevel={1} title={t.done_title} text={t.done_lead} onContinue={go}>
+        <Button
+          className="mt-4"
+          iconEnd="arrow-right"
+          onClick={(e) => {
+            e.stopPropagation();
+            go();
+          }}
+        >
+          {t.continue_button}
+        </Button>
+      </FlagUnfold>
+    );
 
   const [title, lead, href, cta] =
     state.s === "used"
@@ -67,15 +90,15 @@ export function VerifyClient({ token, t }: { token: string; t: SignTexts["verify
           ? [t.invalid_title, t.invalid_lead, "/kompas/podpis", t.sign_again_button]
           : [t.invalid_title, state.message, null, null];
   return (
-    <section className="py-8 md:py-12">
-      <h1 className={h1}>{title}</h1>
-      <p className="mt-3">{lead}</p>
+    <section className="max-w-main py-4 lg:py-6">
+      <ScreenHeading title={title} lead={lead} />
       {href && cta && (
-        <div className={`${sticky} mt-8`}>
-          <a href={href} className={btnPrimary}>
-            {cta}
-            <Icon name="arrow-right" />
-          </a>
+        <div className="mt-4">
+          <StickyBar>
+            <ButtonLink href={href} block iconEnd="arrow-right">
+              {cta}
+            </ButtonLink>
+          </StickyBar>
         </div>
       )}
     </section>

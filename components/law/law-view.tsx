@@ -3,7 +3,9 @@
 import { useEffect, useMemo, useState } from "react";
 import { fetchSignatureAnswers } from "@/components/akce/signature-answers";
 import type { ZakonTexts } from "@/components/akce/texts";
-import { ErrorNote, Icon, ScreenHeading, StickyBar, btnPrimary, btnText } from "@/components/akce/ui";
+import { Button, StickyBar } from "@/components/ui/button";
+import { Icon } from "@/components/ui/icon";
+import { Notice, ScreenHeading, SectionTitle } from "@/components/ui/typography";
 import { loadCompassState } from "@/lib/compass-storage";
 import type { Answers } from "@/lib/compose/types";
 import { lawFileBase, lawMetaLines } from "@/lib/export/law-meta";
@@ -63,9 +65,11 @@ export function LawView({
 
   if (!law || !source) {
     return (
-      <div className="mx-auto max-w-[688px] px-[16px]">
-        <ScreenHeading kicker={texts.kicker} title={content.base.title} />
-        <p className="pb-[48px]">{texts.loading}</p>
+      <div className="k-wrap">
+        <div className="mx-auto max-w-main pt-3 pb-6 lg:pt-6">
+          <ScreenHeading kicker={texts.kicker} title={content.base.title} />
+          <p className="mt-3">{texts.loading}</p>
+        </div>
       </div>
     );
   }
@@ -97,92 +101,91 @@ export function LawView({
   };
 
   return (
-    <div className="mx-auto max-w-[688px] px-[16px]">
-      <ScreenHeading kicker={texts.kicker} title={law.header.lawTitle} lead={texts.lead} />
+    <div className="k-wrap">
+      <div className="mx-auto max-w-main pt-3 pb-3 lg:pt-6">
+        <ScreenHeading kicker={texts.kicker} title={law.header.lawTitle} lead={texts.lead} />
 
-      {law.workingDraftLabel && (
-        <p className="flex items-start gap-[12px] border-l-4 border-ink bg-blue-tint py-[12px] pr-[16px] pl-[12px] font-wide text-[15px] leading-[20px] font-bold tracking-[0.04em] uppercase">
-          <Icon name="alert" className="shrink-0" />
-          <span>{law.workingDraftLabel}</span>
+        {law.workingDraftLabel && (
+          <Notice role="note" className="mt-3 bg-blue-tint py-1.5 pr-2">
+            <span className="font-wide text-kicker uppercase">{law.workingDraftLabel}</span>
+          </Notice>
+        )}
+        <p className="mt-2 font-semibold">{law.disclaimer}</p>
+        <p className="k-cap mt-1">
+          {source.kind === "signature" ? texts.source_signature : empty ? texts.source_empty : texts.source_browser}
         </p>
-      )}
-      <p className="mt-[12px] font-semibold">{law.disclaimer}</p>
-      <p className="mt-[8px] text-[14px] leading-[20px] font-medium text-ink-secondary">
-        {source.kind === "signature" ? texts.source_signature : empty ? texts.source_empty : texts.source_browser}
-      </p>
 
-      <section aria-label={texts.meta_title_section} className="mt-[24px] border-t-2 border-ink pt-[12px]">
-        <ul className="text-[14px] leading-[20px] font-medium break-words text-ink-secondary">
-          {lawMetaLines(law).map((line) => (
-            <li key={line}>{line}</li>
-          ))}
-        </ul>
-      </section>
+        <section aria-label={texts.meta_title_section} className="mt-3 border-t-2 border-ink pt-1.5">
+          <ul className="k-cap break-words">
+            {lawMetaLines(law).map((line) => (
+              <li key={line}>{line}</li>
+            ))}
+          </ul>
+        </section>
 
-      <section aria-labelledby="zakon-obsah" className="mt-[24px] border-t-2 border-ink pt-[24px] pb-[16px]">
-        <h2 id="zakon-obsah" className="font-wide text-[22px] leading-[26px] font-bold tracking-[-0.01em]">
-          {texts.contents_title}
-        </h2>
-        {law.parts.map((part) => (
-          <div key={part.id} className="mt-[24px]">
-            <h3 className="font-wide text-[13px] leading-[16px] font-bold tracking-[0.08em] uppercase">
-              {part.label} · {part.title}
-            </h3>
-            <div className="mt-[8px]">
-              {part.paragraphs.map((p) => (
-                <details key={p.id} className="group border-t-2 border-ink last:border-b-2">
-                  <summary className="flex min-h-[56px] cursor-pointer list-none items-center justify-between gap-[16px] px-[4px] py-[8px] hover:bg-blue-tint focus-visible:outline-3 focus-visible:outline-offset-[-3px] focus-visible:outline-focus [&::-webkit-details-marker]:hidden">
-                    <span>
-                      <span className="font-semibold tabular">{p.label}</span>
-                      {p.title && <span className="font-semibold">{` ${p.title}`}</span>}
-                      {p.isPlaceholder && <span className="block text-[14px] leading-[20px] font-medium text-ink-secondary">{texts.placeholder_tag}</span>}
-                    </span>
-                    <span className="shrink-0 group-open:hidden">
-                      <Icon name="plus" />
-                    </span>
-                    <span className="hidden shrink-0 group-open:inline">
-                      <Icon name="minus" />
-                    </span>
-                  </summary>
-                  <div className="bg-blue-tint px-[16px] py-[12px] text-[17px] leading-[26px]">
-                    {p.subsections.map((s, i) => (
-                      <div key={i} className={i > 0 ? "mt-[8px]" : undefined}>
-                        <p>
-                          {s.label && <span className="tabular">{s.label} </span>}
-                          {s.text}
-                        </p>
-                        {s.points.length > 0 && (
-                          <ul className="mt-[4px] pl-[24px]">
-                            {s.points.map((pt) => (
-                              <li key={pt.label}>
-                                <span className="tabular">{pt.label}</span> {pt.text}
-                              </li>
-                            ))}
-                          </ul>
-                        )}
-                      </div>
-                    ))}
-                  </div>
-                </details>
-              ))}
+        <section aria-labelledby="zakon-obsah" className="mt-3 border-t-2 border-ink pt-3 pb-2">
+          <SectionTitle id="zakon-obsah">{texts.contents_title}</SectionTitle>
+          {law.parts.map((part) => (
+            <div key={part.id} className="mt-3">
+              <h3 className="k-kicker">
+                {part.label} · {part.title}
+              </h3>
+              <div className="mt-1">
+                {part.paragraphs.map((p) => (
+                  <details key={p.id} className="group border-t-2 border-ink last:border-b-2">
+                    <summary className="flex min-h-answer cursor-pointer list-none items-center justify-between gap-2 px-0.5 py-1 hover:bg-blue-tint focus-visible:-outline-offset-3 [&::-webkit-details-marker]:hidden">
+                      <span>
+                        <span className="k-num font-semibold">{p.label}</span>
+                        {p.title && <span className="font-semibold">{` ${p.title}`}</span>}
+                        {p.isPlaceholder && <span className="k-cap block">{texts.placeholder_tag}</span>}
+                      </span>
+                      <span className="shrink-0 group-open:hidden">
+                        <Icon name="plus" />
+                      </span>
+                      <span className="hidden shrink-0 group-open:inline">
+                        <Icon name="minus" />
+                      </span>
+                    </summary>
+                    <div className="k-letter">
+                      {p.subsections.map((s, i) => (
+                        <div key={i} className={i > 0 ? "mt-1" : undefined}>
+                          <p>
+                            {s.label && <span className="k-num">{s.label} </span>}
+                            {s.text}
+                          </p>
+                          {s.points.length > 0 && (
+                            <ul className="mt-0.5 pl-3">
+                              {s.points.map((pt) => (
+                                <li key={pt.label}>
+                                  <span className="k-num">{pt.label}</span> {pt.text}
+                                </li>
+                              ))}
+                            </ul>
+                          )}
+                        </div>
+                      ))}
+                    </div>
+                  </details>
+                ))}
+              </div>
             </div>
-          </div>
-        ))}
-      </section>
+          ))}
+        </section>
 
-      {error && <ErrorNote>{error}</ErrorNote>}
-      <StickyBar>
-        <div className="flex flex-col items-stretch gap-[4px] md:flex-row md:items-center md:gap-[24px]">
-          <button type="button" className={btnPrimary} aria-busy={busy === "pdf"} disabled={busy !== null} onClick={() => download("pdf")}>
-            <span>{busy === "pdf" ? texts.working : texts.pdf_button}</span>
-            <Icon name="download" />
-          </button>
-          <button type="button" className={`${btnText} justify-center`} aria-busy={busy === "docx"} disabled={busy !== null} onClick={() => download("docx")}>
-            <span>{busy === "docx" ? texts.working : texts.docx_button}</span>
-          </button>
-        </div>
-      </StickyBar>
-      <div className="h-[32px]" />
+        {error && (
+          <Notice role="alert" className="mb-2">
+            {error}
+          </Notice>
+        )}
+        <StickyBar>
+          <Button block icon="download" aria-busy={busy === "pdf" || undefined} disabled={busy !== null} onClick={() => download("pdf")}>
+            {busy === "pdf" ? texts.working : texts.pdf_button}
+          </Button>
+          <Button variant="secondary" aria-busy={busy === "docx" || undefined} disabled={busy !== null} onClick={() => download("docx")}>
+            {busy === "docx" ? texts.working : texts.docx_button}
+          </Button>
+        </StickyBar>
+      </div>
     </div>
   );
 }

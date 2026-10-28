@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import { EditPanel } from "@/components/sign/edit-panel";
-import { Notice } from "@/components/sign/notice";
-import { container, h1 } from "@/components/sign/styles";
+import { Notice, ScreenHeading } from "@/components/ui/typography";
 import { composeStatement } from "@/lib/compose";
 import { getSql } from "@/lib/db/client";
 import { flags } from "@/lib/env";
@@ -24,7 +23,7 @@ export default async function EditPage({ params }: { params: Promise<{ token: st
   const t = signTexts();
   if (flags.staticDemo()) {
     return (
-      <div className={`${container} py-8 md:py-12`}>
+      <div className="k-wrap pt-3 pb-4 lg:pt-5 lg:pb-6">
         <Notice tone="info">{t.sign.static_demo}</Notice>
       </div>
     );
@@ -41,9 +40,11 @@ export default async function EditPage({ params }: { params: Promise<{ token: st
   }
   if (failed || !sig) {
     return (
-      <div className={`${container} py-8 md:py-12`}>
-        <h1 className={h1}>{failed ? t.page.unavailable_title : t.sign.edit_invalid_title}</h1>
-        <p className="mt-3">{failed ? t.page.unavailable_lead : t.sign.edit_invalid_lead}</p>
+      <div className="k-wrap pt-3 pb-4 lg:pt-5 lg:pb-6">
+        <ScreenHeading
+          title={failed ? t.page.unavailable_title : t.sign.edit_invalid_title}
+          lead={failed ? t.page.unavailable_lead : t.sign.edit_invalid_lead}
+        />
       </div>
     );
   }
@@ -54,9 +55,8 @@ export default async function EditPage({ params }: { params: Promise<{ token: st
     text = "";
   }
   return (
-    <div className={`${container} py-8 md:py-12`}>
-      <h1 className={h1}>{t.sign.edit_title}</h1>
-      <p className="mt-3">{t.sign.edit_lead}</p>
+    <div className="k-wrap pt-3 pb-4 lg:pt-5 lg:pb-6">
+      <ScreenHeading title={t.sign.edit_title} lead={t.sign.edit_lead} />
       <EditPanel
         t={t.sign}
         token={token}

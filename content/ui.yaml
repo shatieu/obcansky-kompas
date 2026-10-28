@@ -1,9 +1,13 @@
-# Všechny texty UI (SPEC §3). Nic natvrdo v komponentách.
+# Všechny texty UI (SPEC §3). Nic natvrdo v komponentách. Tykání (design system, README „Voice“);
+# vykání jen v dopisech zástupcům (content/letters/*.yaml) a v jejich PDF částech (akce.pdf_*).
 # Konvence klíčů kontrolovaná `pnpm lint:content` (SPEC §4.1):
 #   title, *_title  = nadpis obrazovky, max. 8 slov
 #   lead, *_lead    = text pod nadpisem, max. 1 věta a 120 znaků
 #   *_button        = tlačítko, max. 3 slova
 # Zástupné symboly ve složených závorkách doplní kód.
+# Sekce sign, verify, page, email, photo, akce a zakon čtou jen serverové loadery
+# (lib/sign/texts.ts, lib/photo/content.ts, components/akce/load-texts.ts) – do klientského
+# content/generated/ui.json se nezapisují (velikost bundlu /kompas).
 
 site:
   name: Občanský kompas
@@ -14,12 +18,14 @@ site:
 nav:
   compass: Kompas
   stats: Statistiky
+  parties: Strany a hnutí
   method: Metodika
   about: O projektu
 
 footer:
   lead: Občanský kompas – jak financovat ČT a ČRo.
   privacy: Soukromí
+  parties: Strany a hnutí
   method: Metodika
   about: O projektu
   source: Zdrojový kód
@@ -28,9 +34,10 @@ footer:
 
 home:
   meta_title: Občanský kompas – financování ČT a ČRo
-  meta_description: Odpovězte na 8 otázek o financování České televize a Českého rozhlasu a porovnejte se s ostatními.
+  meta_description: Odpověz na 8 otázek o financování České televize a Českého rozhlasu a porovnej se s ostatními.
+  kicker: 8 otázek · 5 minut
   title: Jak by se měla platit veřejnoprávní média?
-  lead: Odpovězte na 8 otázek a podívejte se, jak to vidí ostatní.
+  lead: Tvůj názor na papíře, který pak můžeš podepsat.
   start_button: Spustit kompas
   count_label: vyplněných a ověřených kompasů
   stats_button: Všechny statistiky
@@ -40,24 +47,26 @@ home:
 compass:
   meta_title: Kompas – Občanský kompas
   progress_label: Otázka {n} z {total}
-  next_button: Další
+  next_button: Další otázka
   back_button: Zpět
   skip_button: Přeskočit
   finish_button: Hotovo
   sign_button: Podepsat text
   restart_button: Začít znovu
-  multi_lead: Můžete vybrat více možností.
-  skipped_title: Tato otázka odpadá
-  skipped_lead: Nejde dohromady s vaší volbou „{option}“.
-  invalidated_note: Původní odpověď už neplatí kvůli změně dřívější volby. Vyberte znovu.
+  single_lead: Vyber jednu možnost.
+  multi_lead: Můžeš vybrat víc možností.
+  skipped_title: Tahle otázka odpadá
+  skipped_lead: Nejde dohromady s tvou volbou „{option}“.
+  invalidated_note: Původní odpověď už neplatí, protože se změnila dřívější volba. Vyber znovu.
   forced_note: Předvyplněno podle volby „{option}“.
   disabled_label: "Nejde s: {option}"
-  disabled_explain: Tato možnost nejde dohromady s volbou „{option}“ v otázce „{question}“. Změňte nejdřív tu.
+  disabled_explain: Tahle možnost nejde dohromady s volbou „{option}“ v otázce „{question}“. Změň nejdřív tu.
+  disabled_why: Proč to nejde?
   disabled_go_button: Změnit volbu
-  summary_title: Váš text je hotový
-  summary_lead: Text se mění jen podle vašich voleb, ručně se nepřepisuje.
+  summary_title: Tvůj text je hotový
+  summary_lead: Text se mění jen podle tvých voleb, ručně se nepřepisuje.
   edit_answers_button: Upravit odpovědi
-  answers_title: Vaše odpovědi
+  answers_title: Tvoje odpovědi
   not_answered: Bez odpovědi
   skipped_short: Odpadá
 
@@ -71,39 +80,46 @@ explainer:
   loading: Načítám…
 
 slider:
+  lead: Posuň jezdec, bublina ukáže, kde jsi.
   unit_decimal: miliardy Kč
   unit_whole: miliard Kč
+  unit_short: mld
   per_year: ročně
+  per_year_long: Kč ročně
   per_adult: ≈ {amount} Kč měsíčně na dospělého
   slider_aria: Částka v miliardách Kč ročně
+  value_text: "{value} miliardy korun ročně, {where}"
+  notch_aria: "Nastavit na {label}: {value} miliardy"
   decrease_aria: Snížit o 0,1 miliardy
   increase_aria: Zvýšit o 0,1 miliardy
-  untouched: Posuňte posuvník nebo vyberte Nevím.
+  untouched: Posuň jezdec, nebo vyber Nevím.
 
 demographics:
-  title: Pár otázek o vás
-  lead: Vše je nepovinné a slouží jen pro statistiky.
+  title: Pár otázek o tobě
+  lead: Všechno je nepovinné a slouží jen pro statistiky.
   region_label: Kraj
   region_placeholder: Nevyplněno
   age_label: Věk
   size_label: Velikost obce (počet obyvatel)
   comment_label: Osobní komentář
-  comment_hint: Zobrazí se jen na vaší osobní stránce.
+  comment_hint: Zobrazí se jen na tvé osobní stránce.
   chars_left: Zbývá {n} znaků
 
 preview:
   title: Můj text
   show_button: Zobrazit text
   hide_button: Skrýt text
-  empty: Text se složí z vašich odpovědí.
+  empty: Text se složí z tvých odpovědí.
   hide_nevim: Vynechat věty k otázkám, kde jsem zvolil/a Nevím
+  aside_note: Text se skládá z tvých odpovědí. Podepíšeš ho na konci.
 
 stance:
   region_aria: Postoj spolku, oddělený od kompasu
+  by: Postoj spolku, který kompas provozuje. Kompas výše je neutrální.
 
 stats:
   meta_title: Statistiky – Občanský kompas
-  title: Jak lidé odpovídají
+  title: Jak odpovídají ostatní
   lead: Odpovědi lidí, kteří kompas vyplnili a ověřili svůj podpis.
   disclaimer: Vzorek lidí, kteří kompas vyplnili. Není to reprezentativní průzkum.
   verified_label: ověřených podpisů
@@ -118,7 +134,7 @@ stats:
   combos_lead: Kombinace odpovědí na otázky 2, 3 a 4, nejvýš 10.
   respondents: "Odpovědí: {n}"
   no_data: Zatím tu nejsou žádné odpovědi.
-  unavailable: Statistiky jsou teď nedostupné. Zkuste to za chvíli.
+  unavailable: Statistiky jsou teď nedostupné. Zkus to za chvíli.
   open_data_title: Otevřená data
   open_data_lead: Souhrnná čísla ke stažení, skupiny pod 10 lidí jsou sloučené.
   open_data_button: Stáhnout CSV
@@ -132,14 +148,577 @@ compare:
   agreement: "Shoda {percent} %"
   not_answered_org: Neodpověděl/a
 
-# Podpis (milník 7 – formulář dodá jiná část; text souhlasu je tady kvůli SPEC §14.4).
-sign:
-  # TODO(owner): právní znění souhlasu nechat zkontrolovat (správce, účel, odvolání souhlasu).
-  consent_label: Výslovně souhlasím se zpracováním svého politického názoru pro účely tohoto kompasu.
-
 demo:
   bar: Ukázková data – čísla nejsou skutečná.
+  banner_title: Ukázková data
+  banner_text: Čísla nejsou skutečná.
+  badge: Ukázkový režim
 
 common:
   loading_aria: Načítání
   error_prefix: Chyba
+
+# ---------- Podpis, ověření, osobní stránka, e-maily (SPEC §7) – jen server ----------
+sign:
+  meta_title: Podpis – Občanský kompas
+  title: Podepiš své prohlášení
+  lead: Text se skládá z tvých odpovědí, ručně se nepřepisuje.
+  statement_title: Můj text
+  no_answers_title: Nejdřív vyplň kompas
+  no_answers_lead: Prohlášení se složí z tvých odpovědí v kompasu.
+  compass_button: Spustit kompas
+  edit_answers_button: Upravit odpovědi
+  name_label: Jméno a příjmení
+  email_label: E-mail
+  email_hint: E-mail nikde nezobrazíme, pošleme na něj jen ověřovací odkaz.
+  show_name_label: Zobrazit mé jméno
+  show_name_hint: Jinak bude prohlášení na tvé stránce bez jména.
+  address_label: Adresa (nepovinné)
+  address_hint: Hodí se do dopisů zástupcům, nikde ji nezobrazíme.
+  # TODO(owner): právní znění souhlasu nechat zkontrolovat (správce, účel, odvolání souhlasu).
+  consent_label: Výslovně souhlasím se zpracováním svého politického názoru pro účely tohoto kompasu.
+  consent_hint: Souhlas můžeš kdykoli odvolat odkazem z e-mailu.
+  privacy_link: Jak zacházíme s údaji
+  turnstile_label: Ochrana proti robotům
+  turnstile_wait: Počkej, než se načte ochrana proti robotům.
+  submit_button: Podepsat
+  sending: Odesílám…
+  sent_title: Zkontroluj e-mail
+  sent_lead: Poslali jsme ti odkaz pro ověření, platí 7 dní.
+  poc_label: Ukázkový režim
+  poc_lead: E-mail se teď neposílá, podpis ověříš tímhle odkazem.
+  poc_verify_button: Ověřit podpis
+  static_demo: V ukázce zatím nelze podepsat.
+  read_only: Podepisování je teď vypnuté kvůli údržbě. Tvoje odpovědi zůstávají v prohlížeči.
+  unavailable: Teď se to nepovedlo uložit, zkus to za chvíli. Tvoje odpovědi zůstávají v prohlížeči.
+  rate_limited: Moc pokusů za krátkou dobu. Zkus to za hodinu.
+  invalid: Zkontroluj vyplněná pole.
+  disposable: Jednorázové e-mailové adresy nebereme. Použij svůj běžný e-mail.
+  turnstile_failed: Ochrana proti robotům tě nepustila. Načti stránku a zkus to znovu.
+  errors:
+    name: Vyplň jméno.
+    email: Vyplň platný e-mail.
+    consent: Bez souhlasu podpis uložit nejde.
+    comment: Komentář je moc dlouhý.
+    answers: Odpovědi z kompasu nesedí. Projdi kompas znovu.
+  # Úprava existujícího podpisu (odkaz z e-mailu).
+  edit_title: Uprav svůj podpis
+  edit_lead: Změň odpovědi, nebo podpis odvolej.
+  edit_save_title: Ulož upravené odpovědi
+  edit_save_lead: Podpis zůstane na stejné adrese.
+  edit_save_button: Uložit změny
+  edit_cancel_button: Zrušit úpravu
+  edit_invalid_title: Odkaz už neplatí
+  edit_invalid_lead: Požádej na své stránce o nový odkaz pro úpravu.
+  withdraw_title: Odvolat podpis
+  withdraw_lead: Smažeme jméno, e-mail i adresu, odpovědi zůstanou anonymně ve statistikách.
+  withdraw_button: Odvolat podpis
+  withdraw_confirm_button: Ano, odvolat
+  withdrawn_title: Podpis je odvolaný
+  withdrawn_lead: Osobní údaje jsme smazali.
+
+verify:
+  meta_title: Ověření podpisu – Občanský kompas
+  working: Ověřuju podpis…
+  done_title: Podepsáno.
+  done_lead: Díky, tvůj hlas je započítaný.
+  continue_button: Moje stránka
+  used_title: Podpis už je ověřený
+  used_lead: Tenhle odkaz už jednou posloužil.
+  expired_title: Odkaz vypršel
+  expired_lead: Ověřovací odkaz platí 7 dní, podepiš znovu a přijde nový.
+  invalid_title: Odkaz neplatí
+  invalid_lead: Zkontroluj, že jsi zkopíroval/a celý odkaz z e-mailu.
+  sign_again_button: Podepsat znovu
+
+page:
+  meta_title: Prohlášení – Občanský kompas
+  kicker: PROHLÁŠENÍ
+  title: Prohlášení
+  anonymous: Podepsáno bez jména
+  signed_by: "Podepsal/a: {name}"
+  date_label: Podepsáno
+  level_label: Ověření
+  level_unverified: Čeká na ověření e-mailem
+  level_email: Ověřeno e-mailem
+  level_sms: Ověřeno SMS
+  level_bankid: Ověřeno BankID
+  answers_title: Odpovědi
+  not_answered: Bez odpovědi
+  skipped: Odpadá
+  comment_title: Komentář
+  share_button: Sdílet
+  share_copied: Odkaz je zkopírovaný.
+  compare_button: Porovnat se
+  law_button: Můj zákon
+  withdrawn_title: Tento podpis byl odvolán
+  withdrawn_lead: Odpovědi zůstávají anonymně ve statistikách.
+  not_found_title: Prohlášení tu není
+  not_found_lead: Zkontroluj odkaz, nebo vyplň kompas sám/sama.
+  unavailable_title: Stránka se teď nenačetla
+  unavailable_lead: Zkus to za chvíli.
+  retry_button: Zkusit znovu
+  static_demo: V ukázce zatím nelze podepsat.
+  poc_badge: Ukázkový režim
+  manage_title: Je to tvůj podpis?
+  manage_lead: Pošleme ti odkaz, kterým odpovědi upravíš nebo podpis odvoláš.
+  manage_email_label: E-mail, kterým jsi podepsal/a
+  manage_button: Poslat odkaz
+  manage_sent: Pokud podpis s tímhle e-mailem existuje, poslali jsme na něj odkaz.
+  manage_poc_lead: E-mail se teď neposílá, odkaz pro úpravu najdeš tady.
+  manage_poc_button: Otevřít odkaz
+  report_open_button: Nahlásit
+  report_title: Nahlásit komentář
+  report_lead: Jen zjevně protiprávní obsah, hlášení dostane spolek e-mailem.
+  report_reason_label: Co je špatně
+  report_contact_label: Kontakt na tebe (nepovinné)
+  report_button: Odeslat hlášení
+  report_sent: Díky, hlášení jsme předali.
+  close_button: Zavřít
+
+email:
+  verify_subject: Ověř svůj podpis – Občanský kompas
+  verify_body: |-
+    Ahoj,
+
+    díky za podpis v Občanském kompasu. Ověř ho tímhle odkazem (platí 7 dní):
+
+    {url}
+
+    Pokud jsi nic nepodepisoval/a, e-mail ignoruj – bez ověření se podpis nezapočítá.
+  edit_subject: Odkaz pro úpravu podpisu – Občanský kompas
+  edit_body: |-
+    Ahoj,
+
+    tímhle odkazem upravíš odpovědi nebo odvoláš podpis (platí 24 hodin a jen jednou):
+
+    {url}
+
+    Pokud jsi o odkaz nežádal/a, e-mail ignoruj.
+  report_subject: "Hlášení komentáře: {uuid}"
+  report_body: |-
+    Hlášení obsahu komentáře na osobní stránce.
+
+    Stránka: {url}
+    Důvod: {reason}
+    Kontakt oznamovatele: {contact}
+
+# ---------- /fotka (SPEC §9.3) – jen server. Slogany jsou v content/slogans.yaml. ----------
+photo:
+  meta_title: Profilová fotka – Občanský kompas
+  meta_description: Rámeček na profilovou fotku. Fotka zůstává v tvém telefonu, nikam ji neposíláme.
+  kicker: PROFILOVÁ FOTKA
+  title: Ukaž, že ti média nejsou jedno
+  lead: Fotka zůstává v tvém telefonu, nikam ji neposíláme.
+  pick_button: Vybrat fotku
+  camera_button: Vyfotit se
+  change_button: Jiná fotka
+  drop_hint: Nebo sem fotku přetáhni.
+  drop_active: Pusť fotku sem.
+  loading: Načítám fotku…
+  heic_loading: Převádím fotku z iPhonu…
+  error_type: Tohle není obrázek. Vyber fotku JPG, PNG nebo HEIC.
+  error_decode: Tuhle fotku neumím otevřít. Zkus jinou.
+  error_heic: Fotku z iPhonu se nepodařilo převést. Ulož ji jako JPG a zkus znovu.
+  error_export: Stažení se nepovedlo. Zkus to znovu.
+  placeholder: Tvoje fotka
+  preview_label: "Náhled profilové fotky: {frame}"
+  crop_title: Posuň a přibliž
+  crop_hint: Táhni fotku, přibliž dvěma prsty nebo kolečkem myši.
+  keyboard_hint: Šipky posouvají fotku, plus a minus přibližují, nula vrací výchozí ořez.
+  zoom_in_button: Přiblížit
+  zoom_out_button: Oddálit
+  reset_button: Vrátit ořez
+  zoom_value: "Přiblížení {n} %"
+  frame_title: Rámeček
+  frames:
+    ring: Kruh se sloganem
+    ribbon: Stuha dole
+    corner: Vlajka v rohu
+    duotone: Modrý duotón
+  slogan_title: Slogan
+  download_title: Stáhnout
+  download_png_button: Stáhnout PNG
+  download_jpg_button: Stáhnout JPG
+  downloaded: Staženo. Teď ji nahraj jako profilovou fotku.
+  facebook_note: Facebook už rámečky nemá – fotku stáhni a nahraj ručně jako profilovou.
+  howto_title: Jak ji nahrát?
+  howto_steps:
+    - Stáhni fotku do telefonu nebo počítače.
+    - V profilu klepni na svou fotku a zvol nahrání nové.
+    - Vyber staženou fotku a jen ji potvrď, rámeček už v ní je.
+
+# ---------- /akce (SPEC §9.2) a /v/[uuid]/zakon (SPEC §10) – jen server ----------
+akce:
+  meta_title: Napiš svým zástupcům – Občanský kompas
+  kicker: DOPISY
+  title: Napiš svým zástupcům
+  lead: Dopis se složí z tvých odpovědí a zůstane jen v tvém prohlížeči.
+  source_signature: Podle tvého podpisu
+  source_browser: Podle odpovědí v tomto prohlížeči
+  loading: Načítám tvoje odpovědi…
+
+  empty_title: Nejdřív vyplň kompas
+  empty_lead: Dopis se skládá z tvých odpovědí.
+  empty_button: Spustit kompas
+
+  to_title: Komu napíšeš
+  to_lead: Vyber jednoho nebo víc adresátů.
+  where_title: Kde bydlíš
+  region_label: Tvůj kraj
+  region_placeholder: Vyber kraj
+  obec_label: Tvoje obec
+  obec_placeholder: Začni psát název obce
+  obec_loading: Načítám obce…
+  obec_none: Taková obec v kraji není.
+  obec_error: Seznam obcí se nenačetl.
+  obec_retry_button: Zkusit znovu
+  obec_change_button: Změnit obec
+  obec_result: "{name}, okres {okres}"
+  cast_label: Městská část nebo obvod
+  cast_placeholder: Vyber část
+  obvod_label: Senátní obvod
+  obvod_placeholder: Vyber obvod
+  obvod_option: "Obvod č. {n} – {name}"
+  needs_region: Vyber kraj výš.
+  needs_obec: Vyber obec výš.
+  needs_obvod: Vyber část nebo obvod výš.
+  poslanci_edit_button: Vybrat jednotlivě
+  poslanci_hide_button: Skrýt seznam
+  poslanci_select_all: Vybrat vše
+  poslanci_select_none: Zrušit výběr
+  poslanci_selected: "Vybráno {n} z {total}"
+  poslanci_none: Za tvůj kraj teď nemáme žádné poslance.
+  senator_missing: K obvodu teď nemáme senátora.
+
+  # Popisky pod volbou adresáta (klíč = typ adresáta).
+  captions:
+    poslanec: Vyber jednotlivě nebo všechny
+    senator: Podle tvé obce
+    kraj: Krajský úřad, datová schránka
+    obec: Obecní úřad, datová schránka
+    ministr-kultury: Ministerstvo kultury
+    prezident: Kancelář prezidenta republiky
+
+  style_title: Styl dopisu
+  forma_label: Forma
+  delka_label: Délka a důraznost
+  variant_button: Jiná varianta
+  footer_label: "Patička „{footer}“"
+  custom_label: Vlastní věta (nepovinné)
+  custom_hint: Prostý text, nejvýš 300 znaků.
+  sender_name_label: Tvoje jméno pod dopisem (nepovinné)
+  sender_address_label: Tvoje adresa do PDF (nepovinné)
+  private_hint: Jméno, adresa ani dopis se nikam neposílají.
+
+  letters_title: Tvoje dopisy
+  letters_empty: Vyber aspoň jednoho adresáta.
+  show_letter: Zobrazit dopis
+  hide_letter: Skrýt dopis
+  copy_button: Kopírovat text
+  copied: Zkopírováno
+  copy_failed: Kopírování nejde. Označ text ručně.
+  mail_button: Poslat e-mailem
+  pdf_button: Stáhnout PDF
+  no_email: E-mail nemá zveřejněný. Pošli dopis poštou nebo datovou schránkou.
+  databox_label: "Datová schránka: {id}"
+  databox_howto:
+    - Přihlas se do své datové schránky na mojedatovaschranka.cz.
+    - Napiš novou zprávu a jako příjemce zadej ID schránky.
+    - Přilož PDF dopisu a zprávu odešli.
+  post_hint: PDF je na obálku s okénkem (DL), přelož ho na třetiny.
+  zip_button: Stáhnout ZIP
+  zip_caption: "Všechny dopisy v PDF: {n}"
+  working: Připravuji…
+  error: Soubor se nepodařilo vytvořit. Zkus to znovu.
+  file_zip: dopisy-zastupcum.zip
+
+  # Části dopisu, které nejsou v content/letters (formální, vykání).
+  mail_subject: Financování České televize a Českého rozhlasu
+  pdf_subject: "Věc: Financování České televize a Českého rozhlasu"
+  pdf_page: "Strana {n} z {total}"
+  pdf_creator: Občanský kompas
+
+  # Poštovní adresy, které adresáře v data/directories nemají.
+  # TODO(owner): ověřit proti psp.cz a senat.cz (kontakty) před ostrým provozem.
+  postal:
+    poslanec_org: Poslanecká sněmovna Parlamentu České republiky
+    poslanec_address: Sněmovní 176/4, 118 26 Praha 1
+    senator_org: Senát Parlamentu České republiky
+    senator_address: Valdštejnské náměstí 17/4, 118 01 Praha 1
+    kraj_recipient: Zastupitelstvo kraje
+    obec_recipient: Zastupitelstvo obce
+    senator_detail: "Obvod č. {n} – {name}"
+
+zakon:
+  meta_title: Můj zákon – Občanský kompas
+  kicker: MŮJ ZÁKON
+  lead: Zákon složený z tvých odpovědí, ke stažení jako PDF nebo DOCX.
+  source_signature: Podle tvého podpisu
+  source_browser: Podle odpovědí v tomto prohlížeči
+  source_empty: Bez odpovědí – všude zůstane rozhodnutí na zákonodárci.
+  loading: Načítám odpovědi…
+  meta_title_section: Hlavička
+  contents_title: Obsah zákona
+  placeholder_tag: Ponecháno na zákonodárci
+  show_paragraph: Zobrazit znění
+  pdf_button: Stáhnout PDF
+  docx_button: Stáhnout DOCX
+  working: Připravuji…
+  error: Soubor se nepodařilo vytvořit. Zkus to znovu.
+  file_base: muj-zakon
+  pdf_page: "Strana {n} z {total}"
+  pdf_creator: Občanský kompas
+
+# ---------- /hnuti, /org/[token], /metodika, /metodika/zdroje, /o-projektu, /soukromi (SPEC §12–§14) – jen server ----------
+# *_body = text za rozbalovacím prvkem (Disclosure), smí být delší.
+hnuti:
+  meta_title: Strany a hnutí – Občanský kompas
+  title: Jak odpověděly strany a hnutí
+  lead: Stejné otázky jako v kompasu, s odůvodněním od každého subjektu.
+  type_strana: Strana
+  type_hnuti: Hnutí
+  type_iniciativa: Iniciativa
+  answered: Odpověděl/a {date}
+  not_answered: Neodpověděl/a (pozváno dne {date})
+  answers_open: Odpovědi a odůvodnění
+  justification_label: Odůvodnění
+  no_justification: Bez odůvodnění.
+  not_answered_question: Bez odpovědi
+  skipped_question: Odpadá
+  empty_title: Zatím tu nikdo není
+  empty_lead: Pozvánky posíláme ručně, odpovědi se tu ukážou po odeslání.
+  unavailable: Seznam je teď nedostupný. Zkus to za chvíli.
+  how_title: Jak to funguje
+  how_body: Každý subjekt dostane jednorázový odkaz. Odpoví na stejné otázky jako ty a ke každé může připsat odůvodnění do 300 znaků. Po odeslání se odpovědi uzamknou a už nejdou změnit. Za subjekty nikdy nic nevymýšlíme.
+  compass_button: Spustit kompas
+
+org:
+  meta_title: Odpovědi subjektu – Občanský kompas
+  kicker: Neveřejný formulář
+  title: Odpovědi za {name}
+  lead: Stejné otázky jako v kompasu, ke každé můžeš připsat odůvodnění.
+  lock_title: Po odeslání nejde nic změnit
+  lock_body: Odpovědi i odůvodnění se zveřejní na stránce Strany a hnutí přesně tak, jak je odešleš. Odkaz pak přestane fungovat. Otázky, na které neodpovíš, se ukážou jako bez odpovědi.
+  question_label: Otázka {n} z {total}
+  multi_lead: Můžeš vybrat víc možností.
+  skipped_lead: Odpadá kvůli volbě „{option}“.
+  forced_note: Předvyplněno podle volby „{option}“.
+  disabled_label: "Nejde s: {option}"
+  slider_label: Částka v miliardách Kč ročně
+  slider_value: "{amount} ročně"
+  slider_untouched: Posuň jezdec, nebo vyber Nevím.
+  slider_clear_button: Zrušit částku
+  justification_label: Odůvodnění (nepovinné)
+  justification_hint: Nejvýš 300 znaků, zveřejní se u odpovědi.
+  chars_left: Zbývá {n} znaků
+  confirm_label: Rozumím, že odpovědi po odeslání nejde změnit.
+  submit_button: Odeslat odpovědi
+  sending: Odesílám…
+  done_title: Díky, odpovědi jsou uložené
+  done_lead: Zveřejní se na stránce Strany a hnutí, odkaz už nefunguje.
+  done_button: Zobrazit stránku
+  error_invalid: Zkontroluj odpovědi, něco v nich nesedí.
+  error_empty: Odpověz aspoň na jednu otázku.
+  error_confirm: Potvrď, že rozumíš uzamčení odpovědí.
+  error_not_found: Odkaz už neplatí, odpovědi byly možná odeslané.
+  error_rate_limited: Moc pokusů za krátkou dobu. Zkus to za hodinu.
+  error_unavailable: Teď se to nepovedlo uložit, zkus to za chvíli.
+  error_read_only: Odesílání je teď vypnuté kvůli údržbě.
+  error_static_demo: V ukázce zatím nelze odpovědi odeslat.
+
+method:
+  meta_title: Metodika – Občanský kompas
+  kicker: Metodika
+  title: Jak kompas funguje
+  lead: Otázky, věty i zdroje jsou veřejné, tady je vidíš všechny.
+  compose_title: Jak vzniká tvůj text
+  compose_body: Text k podpisu se skládá podle pevných pravidel, nepíše ho žádná umělá inteligence. Začíná úvodní větou, pak přijde jedna věta za každou otázku, na kterou odpovíš, a nakonec závěr. Stejné odpovědi dají vždycky stejný text. U otázek s odpovědí Nevím můžeš větu vynechat.
+  branching_title: Větvení otázek
+  branching_body: Některé odpovědi spolu nejdou dohromady. Když vybereš jednu z nich, další otázka odpadne nebo se u ní některé volby zašedí. Platí tato pravidla.
+  branching_when: Když u otázky „{question}“ vybereš „{option}“
+  branching_skip: otázka „{question}“ odpadne
+  branching_only: u otázky „{question}“ zbude jen „{options}“
+  branching_disable: u otázky „{question}“ nejde vybrat „{options}“
+  library_title: Knihovna vět
+  library_body: Všechny věty, ze kterých se skládá text. Každá má ID a verzi, aby šlo i za rok přesně zrekonstruovat, co kdo podepsal.
+  library_version: Verze knihovny {version}
+  library_id: ID
+  library_ver: Verze
+  library_text: Věta
+  library_fragment: "Část věty: {text}"
+  library_group_frame: Úvod a závěr
+  library_group_nevim: Odpověď Nevím
+  library_group_q1: "Otázka 1: částka podle pásma"
+  library_group_multi: Otázky s více volbami
+  library_group_options: Odpovědi
+  verify_title: Fakta ověřují AI agenti
+  verify_body: Vysvětlivky a čísla píšou i ověřují AI agenti, ne lidé. Ověřovací agent dostane jen tvrzení, odkaz na zdroj a místo ve zdroji, zdroj otevře a řekne ano, ne, nebo navrhne opravu. Nikdy neověřuje tvrzení, které sám napsal. Zvlášť agenti kontrolují nestrannost a srozumitelnost. Vysvětlivka se ukáže, jen když všechna její tvrzení prošla.
+  deviation_title: Odchylka od původního plánu
+  deviation_body: Plán byl jeden ověřovací agent na každé tvrzení. Kvůli limitu nejvýš pěti souběžných agentů dostal každý ověřovatel dávku tvrzení, která sám nepsal, a pořád bez kontextu rešerše. Přiznáváme to tady otevřeně.
+  counts: "Tvrzení: {total} · potvrzeno: {verified} · čeká nebo k opravě: {open}"
+  human_title: Lidská kontrola
+  human_none: Zatím žádná položka neprošla lidskou kontrolou. Hledáme lidi různých názorů, kteří vysvětlivky projdou.
+  human_some: "Lidskou kontrolou prošlo: {items}"
+  sources_button: Všechny zdroje
+  data_title: Otevřená data a kód
+  data_body: Souhrnná čísla jsou ke stažení jako CSV, skupiny pod 10 lidí jsou sloučené. Celý kód webu je veřejný pod licencí AGPL-3.0.
+  data_button: Stáhnout CSV
+  repo_link: Zdrojový kód na GitHubu
+  repo_url: https://github.com/shatieu/obcansky-kompas
+
+sources:
+  meta_title: Zdroje a ověření – Občanský kompas
+  kicker: Metodika
+  title: Všechny zdroje a ověření
+  lead: Každé tvrzení z vysvětlivek a čísel, se zdrojem a posledním verdiktem.
+  generated: Vygenerováno při sestavení webu z obsahu repozitáře.
+  group_explainer: Vysvětlivka {id}
+  group_law: Vzory zákona
+  group_facts: Čísla
+  explainer_shown: Zobrazuje se
+  explainer_pending: Připravuje se
+  claims_count: "Tvrzení: {n}"
+  source: Zdroj
+  locator: Místo ve zdroji
+  verdict: Verdikt
+  round: Kolo
+  verifier: Ověřil
+  checked_at: Ověřeno
+  human_reviewed: Lidská kontrola
+  yes: ano
+  no: ne
+  verdict_ano: Potvrzeno
+  verdict_ne: Nepotvrzeno
+  verdict_oprava: K opravě
+  verdict_missing: Čeká na ověření
+  verdict_changed: Změněno po ověření
+  correction: "Navržená oprava: {text}"
+  none: "—"
+  back_button: Zpět na metodiku
+
+about:
+  meta_title: O projektu – Občanský kompas
+  kicker: O projektu
+  title: Kdo za kompasem stojí
+  lead: Kompas provozuje spolek, kód je veřejný a může ho použít kdokoli.
+  association_title: Spolek
+  # TODO(owner): název spolku, IČO, sídlo, statutární orgán.
+  association_body: "TODO(owner): název spolku, IČO, sídlo a kdo ho zastupuje."
+  contact_title: Kontakt
+  # TODO(owner): kontaktní e-mail spolku.
+  contact_body: "TODO(owner): kontaktní e-mail spolku."
+  independence_title: Kompas a postoj spolku
+  independence_body: Otázky, volby a vysvětlivky jsou neutrální a ověřené. Vlastní názor spolku stojí jen v jasně odděleném bloku „Kde stojíme my“.
+  repo_title: Zdrojový kód
+  repo_body: Kód je veřejný na GitHubu pod licencí GNU AGPL-3.0. Kdo web upraví a provozuje, musí svůj kód zveřejnit taky.
+  repo_button: Otevřít GitHub
+  repo_url: https://github.com/shatieu/obcansky-kompas
+  security_title: Hlášení zranitelností
+  security_body: Našel/našla jsi chybu v zabezpečení? Kontakt je v souboru security.txt.
+
+privacy:
+  meta_title: Soukromí – Občanský kompas
+  kicker: Soukromí
+  title: Jak zacházíme s tvými údaji
+  lead: Odpovědi bez podpisu zůstávají jen v tvém prohlížeči, k nám nic nejde.
+  controller_title: Kdo je správce
+  # TODO(owner): údaje spolku jako správce osobních údajů.
+  controller_body: "TODO(owner): název spolku, IČO, sídlo a kontaktní e-mail pro ochranu osobních údajů."
+  data_title: Jaké údaje zpracováváme
+  data_body: Když podepíšeš, uložíme tvé jméno, e-mail, volitelně adresu a tvé odpovědi. Odpovědi jsou tvůj politický názor, tedy zvláštní kategorie údajů. Kraj, věk a velikost obce jsou nepovinné a do statistik jdou jen souhrnně. Jméno, e-mail a adresa jsou zašifrované a nikde je nezobrazíme, jméno jen se tvým souhlasem.
+  purpose_title: Proč je zpracováváme
+  purpose_body: Abychom ověřili, že podpis je skutečný, zveřejnili tvou osobní stránku s textem a počítali souhrnné statistiky. Adresu použijeme jen do dopisů zástupcům, které si sám/sama stáhneš.
+  basis_title: Právní základ
+  basis_body: Tvůj výslovný souhlas podle čl. 9 odst. 2 písm. a) GDPR (a čl. 6 odst. 1 písm. a) GDPR). Souhlas dáváš samostatným zaškrtnutím před podpisem a můžeš ho kdykoli odvolat.
+  processors_title: Kdo nám s tím pomáhá
+  processors_lead: Zpracovatelé, kteří údaje zpracovávají jen podle našich pokynů.
+  processor_vercel: "Vercel Inc. – provoz webu (hosting)."
+  processor_supabase: "Supabase Inc. – databáze, server v EU (Frankfurt)."
+  # TODO(owner): doplnit konkrétního poskytovatele e-mailu.
+  processor_email: "Poskytovatel e-mailu – rozesílání ověřovacích odkazů (TODO(owner): doplnit)."
+  processor_turnstile: "Cloudflare, Inc. (Turnstile) – ochrana formuláře proti robotům."
+  processor_plausible: "Plausible Insights OÜ – anonymní návštěvnost bez cookies, jen pokud ji zapneme."
+  retention_title: Jak dlouho údaje držíme
+  # TODO(owner): rozhodnout dobu uchování (návrh 12 měsíců po skončení projektu).
+  retention_body: "TODO(owner): doba uchování. Návrh je 12 měsíců po skončení projektu, pak osobní údaje smažeme a zůstanou jen anonymní souhrnná čísla."
+  logs_title: IP adresy a logy
+  logs_body: IP adresu neukládáme. Kvůli ochraně proti zneužití z ní počítáme jen jednosměrný otisk s denní solí, který mažeme nejpozději po 7 dnech. Logy neobsahují osobní údaje.
+  rights_title: Tvoje práva
+  rights_body: Máš právo na přístup ke svým údajům, jejich opravu, výmaz, omezení zpracování a přenositelnost. Souhlas můžeš kdykoli odvolat, dřívější zpracování tím nepřestane být zákonné. Můžeš si stěžovat u Úřadu pro ochranu osobních údajů (uoou.gov.cz).
+  how_title: Jak práva uplatnit
+  how_body: "Odpovědi upravíš nebo podpis odvoláš přes odkaz, který ti pošleme e-mailem (požádáš o něj na své osobní stránce). Při odvolání smažeme jméno, e-mail i adresu, odpovědi zůstanou jen anonymně ve statistikách. Ostatní žádosti pošli na kontakt správce. TODO(owner): kontaktní e-mail."
+  browser_title: Co zůstává v prohlížeči
+  browser_body: Rozpracované odpovědi ukládáme jen do úložiště tvého prohlížeče, ne na server. Fotku a dopisy tvoříš taky jen v prohlížeči. Nepoužíváme reklamní ani sledovací cookies.
+
+# ---------- Sdílení (SPEC §9.4) a /v/[uuid]/srovnani (SPEC §8) – jen server. Věty momentů jsou v content/share.yaml. ----------
+share:
+  open_button: Sdílet
+  sheet_title: Sdílej to dál
+  sheet_lead: Odkaz ukáže obrázek s tvými volbami, žádné osobní údaje.
+  native_button: Sdílet obrázek
+  copy_button: Kopírovat odkaz
+  copied: Odkaz je zkopírovaný.
+  copy_failed: Odkaz se nepodařilo zkopírovat. Označ ho a zkopíruj ručně.
+  download_story_button: Stáhnout story
+  download_square_button: Stáhnout čtverec
+  networks_label: Sdílet na síti
+  link_label: Odkaz
+  close_button: Zavřít
+  preview_alt: "Náhled obrázku ke sdílení: {text}"
+  rendering: Připravuju obrázek…
+  render_failed: Obrázek se nepodařilo připravit. Odkaz funguje i tak.
+  networks:
+    facebook: Facebook
+    x: X
+    whatsapp: WhatsApp
+    telegram: Telegram
+    linkedin: LinkedIn
+    email: E-mail
+  image:
+    brand: Občanský kompas
+    choices_kicker: MOJE 3 KLÍČOVÉ VOLBY
+    law_title: Můj zákon
+    law_kicker: HLAVNÍ VOLBA
+    letters_kicker: KOMU JSEM NAPSAL/A
+    letters_none: Zástupcům, na kterých záleží
+    match_kicker: MÍRA SHODY S LIDMI
+    photo_kicker: PROFILOVÁ FOTKA
+    photo_line: Rámeček si vyrobíš taky. Fotka zůstane v telefonu.
+  # Tvary podle počtu: [1, 2–4, 5 a víc]
+  recipients:
+    poslanec: [poslanec, poslanci, poslanců]
+    senator: [senátor, senátoři, senátorů]
+    kraj: [krajské zastupitelstvo, krajská zastupitelstva, krajských zastupitelstev]
+    obec: [zastupitelstvo obce, zastupitelstva obcí, zastupitelstev obcí]
+    ministr-kultury: [ministr kultury, ministři kultury, ministrů kultury]
+    prezident: [prezident republiky, prezidenti, prezidentů]
+
+compare_page:
+  meta_title: Srovnání
+  kicker: SROVNÁNÍ
+  title: Kolik lidí to vidí jako ty
+  lead: U každé otázky podíl ověřených lidí se stejnou odpovědí.
+  overall_label: Průměrná shoda s lidmi
+  overall_none: Zatím není s kým srovnávat.
+  your_answer: "Ty: {answer}"
+  same_answer: "{percent} % lidí odpovědělo stejně"
+  same_count: "{same} z {total}"
+  no_answer: Bez odpovědi
+  skipped: Otázka pro tebe odpadla
+  no_data: Zatím bez ověřených odpovědí
+  disclaimer: Vzorek lidí, kteří kompas vyplnili. Není to reprezentativní průzkum.
+  orgs_title: Strany a hnutí
+  orgs_lead: Shoda = podíl otázek se stejnou odpovědí, bez „Nevím“ a odpadlých otázek.
+  org_agreement: "Shoda {percent} %"
+  org_detail: "{matches} z {compared} otázek"
+  org_not_comparable: Nejde srovnat
+  org_not_answered: Neodpověděl/a
+  orgs_empty: Zatím tu nejsou žádné strany ani hnutí.
+  share_button: Sdílet shodu
+  back_button: Zpět na podpis
+  withdrawn_title: Podpis byl odvolán
+  withdrawn_lead: Srovnání už není k dispozici.
+  unavailable_title: Srovnání se teď nenačetlo
+  unavailable_lead: Zkus to za chvíli znovu.
+  static_demo: V ukázkové verzi bez databáze srovnání není.

@@ -1,12 +1,13 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { AlertCircle } from "lucide-react";
 import { questionsFile, ui } from "@/lib/content";
 import type { StatsFilters, StatsResult } from "@/lib/stats/aggregate";
 import { filtersToQuery } from "@/lib/stats/filters";
-import { WaitBar } from "@/components/flag";
-import { buttonLink } from "@/components/sticky-action";
+import { Button } from "@/components/ui/button";
+import { Select } from "@/components/ui/fields";
+import { Notice } from "@/components/ui/typography";
+import { WaitBar } from "@/components/ui/wait-bar";
 import { StatsCharts, StatsCounts } from "./stats-charts";
 
 /**
@@ -69,49 +70,41 @@ export function StatsExplorer({ initial }: { initial: StatsResult | null }) {
 
   return (
     <div>
-      <fieldset className="mt-8 border-t-2 border-ink pt-4">
-        <legend className="sr-only">{ui.stats.filters_title}</legend>
-        <p className="text-xl font-bold" aria-hidden>
-          {ui.stats.filters_title}
-        </p>
-        <div className="mt-3 grid gap-4 sm:grid-cols-3">
+      <fieldset className="mt-3">
+        <legend className="k-sr">{ui.stats.filters_title}</legend>
+        <div className="grid gap-2 md:grid-cols-3">
           {selects.map((s) => (
-            <label key={s.key} className="block">
-              <span className="font-semibold">{s.label}</span>
-              <select
-                value={filters[s.key] ?? ""}
-                onChange={(e) => setFilters((f) => ({ ...f, [s.key]: e.target.value || undefined }))}
-                className="mt-1 min-h-12 w-full border-2 border-ink bg-surface px-3"
-              >
-                <option value="">{ui.stats.filter_all}</option>
-                {s.options.map((o) => (
-                  <option key={o.id} value={o.id}>
-                    {o.label}
-                  </option>
-                ))}
-              </select>
-            </label>
+            <Select
+              key={s.key}
+              label={s.label}
+              value={filters[s.key] ?? ""}
+              onChange={(e) => setFilters((f) => ({ ...f, [s.key]: e.target.value || undefined }))}
+              placeholder={ui.stats.filter_all}
+              placeholderSelectable
+              options={s.options.map((o) => ({ value: o.id, label: o.label }))}
+            />
           ))}
         </div>
         {Object.values(filters).some(Boolean) && (
-          <button type="button" className={buttonLink} onClick={() => setFilters({})}>
+          <Button variant="secondary" className="-ml-1 mt-1" onClick={() => setFilters({})}>
             {ui.stats.reset_button}
-          </button>
+          </Button>
         )}
       </fieldset>
 
-      <div className="mt-4 h-1">{loading && <WaitBar label={ui.stats.loading} />}</div>
+      <div className="mt-2 h-0.5">{loading && <WaitBar label={ui.stats.loading} />}</div>
 
       {failed && (
-        <p role="alert" className="mt-4 flex items-start gap-2 border-l-4 border-ink py-1 pl-3 font-semibold">
-          <AlertCircle aria-hidden className="mt-0.5 size-5 shrink-0" />
+        <Notice role="alert" className="mt-2">
           {ui.stats.unavailable}
-        </p>
+        </Notice>
       )}
       {stats && (
         <div aria-busy={loading}>
           <StatsCounts stats={stats} />
-          <StatsCharts stats={stats} />
+          <div className="mt-4">
+            <StatsCharts stats={stats} />
+          </div>
         </div>
       )}
     </div>

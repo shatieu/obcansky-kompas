@@ -1,12 +1,9 @@
 /**
- * Texty /fotka a slogany (jen na serveru, při renderu statické stránky).
- * ui-fotka.yaml je dočasně samostatný soubor; po sloučení do ui.yaml stačí
- * `loadPhotoUi` nahradit za `ui.photo` z lib/content.
+ * Texty /fotka (content/ui.yaml, sekce photo) a slogany – jen na serveru, při renderu
+ * statické stránky. Do klientského ui.json se sekce photo nezapisuje.
  */
-import { readFileSync } from "node:fs";
-import path from "node:path";
-import { parse } from "yaml";
 import { z } from "zod";
+import { readUiYaml, UI_YAML_PATH } from "@/lib/content/ui-server";
 import slogansJson from "@/content/generated/slogans.json";
 import { VARIANTS } from "./constants";
 
@@ -52,11 +49,8 @@ export const PhotoUiSchema = z.object({
 
 export type PhotoUi = z.infer<typeof PhotoUiSchema>;
 
-export const UI_FOTKA_PATH = path.join(process.cwd(), "content", "ui-fotka.yaml");
-
-export function loadPhotoUi(file = UI_FOTKA_PATH): PhotoUi {
-  const raw = parse(readFileSync(file, "utf8")) as { photo?: unknown };
-  return PhotoUiSchema.parse(raw.photo);
+export function loadPhotoUi(file = UI_YAML_PATH): PhotoUi {
+  return PhotoUiSchema.parse(readUiYaml(file).photo);
 }
 
 const SlogansSchema = z.object({ slogans: z.array(z.object({ id: z.string(), text: z.string() })).min(1) });

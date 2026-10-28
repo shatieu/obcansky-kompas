@@ -1,10 +1,14 @@
 import type { Metadata } from "next";
+import { ScreenHeading } from "@/components/ui/typography";
 import { PhotoStudio } from "@/components/photo/photo-studio";
+import { ShareArrival } from "@/components/share/share-arrival";
 import { loadPhotoUi, loadSlogans } from "@/lib/photo/content";
+import { shareMetadata } from "@/lib/share/metadata";
+import { sharePanelTexts, shareTexts } from "@/lib/share/texts";
 
 const ui = loadPhotoUi();
 
-export const metadata: Metadata = { title: ui.meta_title, description: ui.meta_description };
+export const metadata: Metadata = { title: ui.meta_title, description: ui.meta_description, ...shareMetadata("fotka") };
 
 /**
  * /fotka (SPEC §9.3): rámeček na profilovou fotku. Stránka je statická, vše se
@@ -13,15 +17,12 @@ export const metadata: Metadata = { title: ui.meta_title, description: ui.meta_d
  */
 export default function PhotoPage() {
   return (
-    <div className="mx-auto flex w-full max-w-[688px] flex-col gap-[24px] px-[16px] pb-[24px] pt-[24px] md:px-[48px]">
-      <header className="flex flex-col gap-[8px]">
-        <p className="font-wide text-[13px] font-bold uppercase leading-[16px] tracking-[0.08em]">{ui.kicker}</p>
-        <h1 className="font-wide text-[30px] font-extrabold leading-[32px] tracking-[-0.02em] md:text-[48px] md:leading-[50px]">
-          {ui.title}
-        </h1>
-        <p className="text-[17px] leading-[26px]">{ui.lead}</p>
-      </header>
-      <PhotoStudio ui={ui} slogans={loadSlogans()} />
+    <div className="k-wrap">
+      <div className="mx-auto flex w-full max-w-main flex-col gap-3 pt-3 pb-3 lg:pt-6">
+        <ScreenHeading kicker={ui.kicker} title={ui.title} lead={ui.lead} />
+        <ShareArrival />
+        <PhotoStudio ui={ui} slogans={loadSlogans()} share={{ panel: sharePanelTexts(), image: shareTexts().share.image }} />
+      </div>
     </div>
   );
 }

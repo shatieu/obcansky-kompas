@@ -59,7 +59,9 @@ test.describe("§13 stránky", () => {
 
   test("/metodika/zdroje odkazuje na otevřená data a zdroje s verdikty", async ({ page }) => {
     await page.goto("/metodika/zdroje");
-    await expect(page.locator('a[href^="http"]').first()).toBeVisible();
+    // Skupiny jsou za rozbalením „Co to znamená?“ (Disclosure) – otevři první.
+    await page.locator("main .k-disc").first().click();
+    await expect(page.locator('main a[href^="http"]').first()).toBeVisible();
   });
 
   test("/metodika otevřeně říká, že ověření dělají AI agenti (§11.3)", async ({ page }) => {
