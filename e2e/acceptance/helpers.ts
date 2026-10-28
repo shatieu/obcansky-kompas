@@ -48,8 +48,9 @@ export const SPEC_ROUTES_STATIC = [
 export async function demoSignatureId(): Promise<string> {
   if (process.env.E2E_SIGNATURE_UUID) return process.env.E2E_SIGNATURE_UUID;
   const { generateSeed } = await import("../../lib/seed/generate");
-  const { facts, questionsFile } = await import("../../lib/content");
-  const s = generateSeed(questionsFile, facts).signatures.find((x) => x.verified)!;
+  // JSON se čte přímo: lib/content importuje JSON bez `with { type: "json" }`, což loader Playwrightu (ESM) odmítne.
+  const json = (f: string) => JSON.parse(readFileSync(path.join(ROOT, "content", "generated", f), "utf8"));
+  const s = generateSeed(json("questions.json"), json("fact-values.json")).signatures.find((x) => x.verified)!;
   return s.id;
 }
 
@@ -65,8 +66,17 @@ export async function currentHeading(page: Page): Promise<string> {
   return (await h.innerText()).trim();
 }
 
+/**
+ * „Další otázka“ a počkej na změnu obrazovky. Klepnutí před hydratací Reactu nic neudělá,
+ * proto se opakuje, dokud se nadpis nezmění.
+ */
 export async function clickNext(page: Page) {
-  await page.getByRole("button", { name: ui.compass.next_button, exact: true }).click();
+  const before = await currentHeading(page);
+  await expect(async () => {
+    if ((await currentHeading(page)) !== before) return;
+    await page.getByRole("button", { name: ui.compass.next_button, exact: true }).click({ timeout: 2_000 });
+    await expect.poll(() => currentHeading(page), { timeout: 2_000 }).not.toBe(before);
+  }).toPass({ timeout: 30_000 });
 }
 
 export type Choices = Partial<Record<string, string | string[] | "slider+">>;

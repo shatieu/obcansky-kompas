@@ -58,13 +58,11 @@ export function SignForm({ t, mode, siteKey }: { t: SignTexts["sign"]; mode: Mod
       <section className="mt-4 max-w-main">
         <SectionTitle>{t.no_answers_title}</SectionTitle>
         <p className="k-lede">{t.no_answers_lead}</p>
-        <div className="mt-3">
-          <StickyBar>
-            <ButtonLink href="/kompas" block iconEnd="arrow-right">
-              {t.compass_button}
-            </ButtonLink>
-          </StickyBar>
-        </div>
+        <StickyBar className="mt-3">
+          <ButtonLink href="/kompas" block iconEnd="arrow-right">
+            {t.compass_button}
+          </ButtonLink>
+        </StickyBar>
       </section>
     );
   }

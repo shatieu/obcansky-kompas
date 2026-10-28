@@ -278,13 +278,11 @@ export function LettersTool({
       <div className="k-wrap">
         <div className="mx-auto max-w-main pt-3 pb-3 lg:pt-6">
           <ScreenHeading kicker={texts.kicker} title={texts.empty_title} lead={texts.empty_lead} />
-          <div className="mt-4">
-            <StickyBar>
-              <ButtonLink href="/kompas" block iconEnd="arrow-right">
-                {texts.empty_button}
-              </ButtonLink>
-            </StickyBar>
-          </div>
+          <StickyBar className="mt-4">
+            <ButtonLink href="/kompas" block iconEnd="arrow-right">
+              {texts.empty_button}
+            </ButtonLink>
+          </StickyBar>
         </div>
       </div>
     );

@@ -93,13 +93,11 @@ export function VerifyClient({ token, t }: { token: string; t: SignTexts["verify
     <section className="max-w-main py-4 lg:py-6">
       <ScreenHeading title={title} lead={lead} />
       {href && cta && (
-        <div className="mt-4">
-          <StickyBar>
-            <ButtonLink href={href} block iconEnd="arrow-right">
-              {cta}
-            </ButtonLink>
-          </StickyBar>
-        </div>
+        <StickyBar className="mt-4">
+          <ButtonLink href={href} block iconEnd="arrow-right">
+            {cta}
+          </ButtonLink>
+        </StickyBar>
       )}
     </section>
   );

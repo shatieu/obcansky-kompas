@@ -84,13 +84,11 @@ export function OrgForm({ token, name, t: tx }: { token: string; name: string; t
     return (
       <section role="status" aria-live="polite">
         <ScreenHeading title={tx.done_title} lead={tx.done_lead} />
-        <div className="mt-4">
-          <StickyBar>
-            <ButtonLink href="/hnuti" block iconEnd="arrow-right">
-              {tx.done_button}
-            </ButtonLink>
-          </StickyBar>
-        </div>
+        <StickyBar className="mt-4">
+          <ButtonLink href="/hnuti" block iconEnd="arrow-right">
+            {tx.done_button}
+          </ButtonLink>
+        </StickyBar>
       </section>
     );
   }
@@ -216,13 +214,11 @@ export function OrgForm({ token, name, t: tx }: { token: string; name: string; t
         </Notice>
       )}
 
-      <div className="mt-4">
-        <StickyBar>
-          <Button type="submit" block iconEnd="arrow-right" aria-busy={status.kind === "sending"} disabled={status.kind === "sending"}>
-            {status.kind === "sending" ? tx.sending : tx.submit_button}
-          </Button>
-        </StickyBar>
-      </div>
+      <StickyBar className="mt-4">
+        <Button type="submit" block iconEnd="arrow-right" aria-busy={status.kind === "sending"} disabled={status.kind === "sending"}>
+          {status.kind === "sending" ? tx.sending : tx.submit_button}
+        </Button>
+      </StickyBar>
     </form>
   );
 }

@@ -27,13 +27,11 @@ export function ExternalLink({ href, children }: { href: string; children: React
 /** Jediná primární akce obrazovky: na mobilu přilepená dole, na desktopu pod obsahem. */
 export function PrimaryAction({ href, children, download }: { href: string; children: ReactNode; download?: boolean }) {
   return (
-    <div className="mt-4">
-      <StickyBar>
-        <ButtonLink href={href} block iconEnd="arrow-right" download={download}>
-          {children}
-        </ButtonLink>
-      </StickyBar>
-    </div>
+    <StickyBar className="mt-4">
+      <ButtonLink href={href} block iconEnd="arrow-right" download={download}>
+        {children}
+      </ButtonLink>
+    </StickyBar>
   );
 }
 

@@ -16,24 +16,28 @@ test("§15 m16: kompas → podpis → POC ověření → osobní stránka → sr
     await answerCompass(page, JOURNEY);
     await expect(page.getByText(sentences.intro.text).first()).toBeVisible();
     await page.getByRole("link", { name: ui.compass.sign_button }).click();
-    await expect(page).toHaveURL(/\/kompas\/podpis/);
+    await expect(page).toHaveURL(/\/kompas\/podpis/, { timeout: 30_000 });
   });
 
   await test.step("podpis (§7.1)", async () => {
     await expect(page.getByText(sentences.intro.text).first()).toBeVisible();
     await page.getByLabel(/jméno/i).first().fill("Jana Akceptační");
-    await page.getByLabel(/e-mail/i).first().fill(`e2e.${Date.now()}.${testInfo.project.name}@kompas-test.cz`);
-    const showName = page.getByRole("checkbox", { name: /zobrazit/i });
-    if (await showName.count()) await expect(showName.first()).not.toBeChecked(); // výchozí vypnuto
+    await page.getByLabel(/e-mail/i).first().fill(`e2e.${Date.now()}.${testInfo.project.name}@example.com`);
+    // Souhlas se zobrazením jména je v design systému přepínač (Toggle, role switch).
+    const showName = page.getByRole("switch", { name: /zobrazit/i }).or(page.getByRole("checkbox", { name: /zobrazit/i }));
+    await expect(showName.first()).not.toBeChecked(); // výchozí vypnuto (§7.1)
     await page.getByRole("checkbox", { name: /souhlas/i }).first().check();
+    // Turnstile (testovací klíč) vyplní token do skrytého pole až po chvíli.
+    await expect(page.locator('input[name="cf-turnstile-response"]').first()).toHaveValue(/.+/, { timeout: 60_000 });
     await page.getByRole("button", { name: /podepsat|podepiš|odeslat/i }).last().click();
   });
 
   let uuid = "";
   await test.step("POC ověření – odkaz na obrazovce se štítkem Ukázkový režim (§0.3)", async () => {
-    await expect(page.getByText("Ukázkový režim").first()).toBeVisible({ timeout: 30_000 });
-    const link = page.locator('a[href*="/overeni/"]').first();
-    await expect(link).toBeVisible();
+    const link = page.locator('main a[href*="/overeni/"]').first();
+    await expect(link).toBeVisible({ timeout: 30_000 });
+    // štítek Ukázkový režim přímo u odkazu (ne jen v hlavičce)
+    await expect(page.locator("main").getByText("Ukázkový režim").first()).toBeVisible();
     await link.click();
     await page.waitForURL(/\/v\/[0-9a-f-]{36}/, { timeout: 30_000 });
     uuid = /\/v\/([0-9a-f-]{36})/.exec(page.url())![1]!;

@@ -1,7 +1,5 @@
-import { and, eq, isNull } from "drizzle-orm";
 import type { Answers } from "@/lib/compose/types";
-import { getDb, hasDatabase } from "@/lib/db/client";
-import { signature } from "@/lib/db/schema";
+import { getSql, hasDatabase } from "@/lib/db/client";
 
 /**
  * Odpovědi podpisu pro „Můj zákon“ přímo z DB (jen čtení: answers + content_version,
@@ -19,14 +17,11 @@ export interface SignatureForLaw {
 export async function readSignatureForLaw(uuid: string): Promise<SignatureForLaw | null> {
   if (!hasDatabase() || !UUID_RE.test(uuid)) return null;
   try {
-    const rows = await getDb()
-      .select({ answers: signature.answers, contentVersion: signature.contentVersion })
-      .from(signature)
-      .where(and(eq(signature.id, uuid), isNull(signature.withdrawnAt)))
-      .limit(1);
-    const row = rows[0];
+    // Přímo přes sdílený klient `postgres` (ne drizzle: ten by klientovi přepsal serializéry json/jsonb a časů).
+    const [row] = await getSql()<{ answers: unknown; content_version: string }[]>`
+      select answers, content_version from app.signature where id = ${uuid} and withdrawn_at is null limit 1`;
     if (!row || !row.answers || typeof row.answers !== "object") return null;
-    return { answers: row.answers as Answers, contentVersion: row.contentVersion };
+    return { answers: row.answers as Answers, contentVersion: row.content_version };
   } catch (e) {
     console.error("zakon: čtení podpisu selhalo", e instanceof Error ? e.message : e);
     return null;

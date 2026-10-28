@@ -5,7 +5,7 @@
  */
 import { readFileSync } from "node:fs";
 import { expect, test, type Page, type Request } from "@playwright/test";
-import { answerCompass, demoSignatureId, imageSize, JOURNEY, letterLabel, looksLikeImage, makePng, slogans } from "./helpers";
+import { answerCompass, demoSignatureId, imageSize, JOURNEY, letterLabel, looksLikeImage, makePng, slogans, ui } from "./helpers";
 
 function record(page: Page) {
   const reqs: Request[] = [];
@@ -71,9 +71,12 @@ test.describe("§9.2 /akce – dopisy", () => {
     const params = new URL(page.url()).searchParams;
     expect([...params.keys()].length).toBeGreaterThanOrEqual(3); // seed + forma + délka
     const url = page.url();
+    await page.waitForLoadState("networkidle");
     const text = await page.locator("main").innerText();
+    // Text dopisu se skládá v prohlížeči z URL – po načtení se čeká na hydrataci, ne na první HTML.
     await page.goto(url);
-    expect(await page.locator("main").innerText()).toBe(text);
+    await page.waitForLoadState("networkidle");
+    await expect.poll(() => page.locator("main").innerText(), { timeout: 15_000 }).toBe(text);
   });
 
   test("úřady: ID datové schránky a krátký návod", async ({ page }) => {
@@ -109,7 +112,12 @@ test.describe("§9.3 /fotka", () => {
     await page.goto("/fotka");
     await page.locator('input[type="file"]').first().setInputFiles({ name: "p.png", mimeType: "image/png", buffer: makePng() });
     for (const s of slogans.slogans) await expect(page.getByText(s.text).first()).toBeVisible();
-    for (const v of [/kruh/i, /stuh/i, /štítek/i, /duotone/i]) await expect(page.getByText(v).first()).toBeVisible();
+    // SPEC: kruh · stuha · štítek v rohu · duotone; design system mění štítek v rohu na vlajku v rohu.
+    const frames = ui.photo.frames as Record<string, string>;
+    expect(Object.keys(frames).sort()).toEqual(["corner", "duotone", "ribbon", "ring"]);
+    for (const v of [/kruh/i, /stuh/i, /v rohu/i, /duot[oó]n/i]) expect(Object.values(frames).some((f) => v.test(f))).toBe(true);
+    for (const label of Object.values(frames))
+      await expect(page.getByRole("radio", { name: label }).or(page.getByRole("button", { name: label })).or(page.getByText(label)).first()).toBeVisible();
   });
 });
 

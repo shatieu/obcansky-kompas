@@ -108,7 +108,8 @@ export const sentencesFileSchema = z.object({
   multi: z.record(z.string(), sentence.extend({ text: z.string().includes("{items}") })),
   options: z.record(
     z.string(),
-    z.object({ version: z.number().int().positive(), text: z.string().optional(), fragment: z.string().optional() }),
+    // strict: neuvozovkovaná čárka v YAML flow mapě `{ text: A, B }` utne text a vyrobí klíč „B“.
+    z.strictObject({ version: z.number().int().positive(), text: z.string().optional(), fragment: z.string().optional() }),
   ),
 });
 

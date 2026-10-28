@@ -32,7 +32,9 @@ if (!env.DATABASE_URL) {
   }
   await sql.end();
   env.DATABASE_URL = srv.url;
-  env.DATABASE_POOL_MAX ??= "4";
+  // PGlite je jedna session: víc spojení přes pglite-socket prokládá protokol (nepojmenované
+  // příkazy, transakce) → „bind message supplies N parameters“, špatné typy parametrů.
+  env.DATABASE_POOL_MAX ??= "1";
   env.DEMO_MODE ??= "1";
   env.POC_MODE ??= "1";
   console.log(`[dev] PGlite běží na ${srv.url} (data: .pglite/dev), DEMO_MODE=${env.DEMO_MODE}`);
@@ -40,7 +42,26 @@ if (!env.DATABASE_URL) {
 
 const require = createRequire(import.meta.url);
 const nextBin = require.resolve("next/dist/bin/next");
-const child = spawn(process.execPath, [nextBin, "dev", "--webpack", ...process.argv.slice(2)], { stdio: "inherit", env });
+
+/**
+ * `DEV_NEXT=start` (e2e): místo `next dev` produkční build + `next start` nad stejnou PGlite.
+ * `next dev` kompiluje trasy až při první návštěvě a otevřeným stránkám posílá HMR full reload,
+ * což e2e testům ruší rozjeté navigace. Build běží s env včetně DATABASE_URL (ISR stránky).
+ */
+const prodServer = env.DEV_NEXT === "start";
+if (prodServer) {
+  // Asynchronně: PGlite běží v tomto procesu a musí build obsluhovat.
+  const build = spawn(process.execPath, [nextBin, "build", "--webpack"], { stdio: "inherit", env: { ...env, NODE_ENV: "production" } });
+  const status = await new Promise<number | null>((resolve) => build.on("exit", resolve));
+  if (status !== 0) {
+    await stop?.();
+    process.exit(status ?? 1);
+  }
+}
+const child = spawn(process.execPath, [nextBin, ...(prodServer ? ["start"] : ["dev", "--webpack"]), ...process.argv.slice(2)], {
+  stdio: "inherit",
+  env: prodServer ? { ...env, NODE_ENV: "production" } : env,
+});
 
 const shutdown = async (code = 0) => {
   child.kill();

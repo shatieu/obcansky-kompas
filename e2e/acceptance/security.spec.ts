@@ -5,16 +5,32 @@
 import { expect, test } from "@playwright/test";
 
 const PAGES = ["/", "/kompas", "/kompas/podpis", "/statistiky", "/akce", "/fotka", "/metodika"];
+/**
+ * Nonce + 'strict-dynamic' jen u stránek renderovaných při každém požadavku (DECISIONS.md
+ * „Bezpečnost a výkon“); statické/ISR stránky mají pevnou CSP bez nonce a bez zástupných znaků.
+ */
+const NONCE_PAGES = new Set(["/kompas/podpis"]);
 const ALLOWED_SCRIPT_HOSTS = ["challenges.cloudflare.com", "plausible.io"];
 
 test.describe("§14.3 hlavičky", () => {
   for (const route of PAGES)
-    test(`${route}: CSP s nonce, HSTS, nosniff, Referrer-Policy, Permissions-Policy`, async ({ request }) => {
+    test(`${route}: CSP (${NONCE_PAGES.has(route) ? "nonce" : "statická"}), HSTS, nosniff, Referrer-Policy, Permissions-Policy`, async ({ request }) => {
       const res = await request.get(route);
       const h = res.headers();
       const csp = h["content-security-policy"] ?? "";
-      expect(csp).toMatch(/script-src[^;]*'nonce-[A-Za-z0-9+/=_-]+'/);
-      expect(csp).not.toMatch(/script-src[^;]*\s\*(\s|;|$)/);
+      const scriptSrc = /(?:^|;)\s*script-src([^;]*)/.exec(csp)?.[1] ?? "";
+      expect(scriptSrc).toContain("'self'");
+      if (NONCE_PAGES.has(route)) {
+        expect(scriptSrc).toMatch(/'nonce-[A-Za-z0-9+/=_-]+'/);
+        expect(scriptSrc).toContain("'strict-dynamic'");
+      } else expect(scriptSrc).not.toContain("'nonce-");
+      // žádný zástupný znak (*, https:, http:) ve script-src ani default-src
+      for (const d of ["script-src", "default-src"]) {
+        const v = new RegExp(`(?:^|;)\\s*${d}([^;]*)`).exec(csp)?.[1] ?? "";
+        expect(v).not.toMatch(/(^|\s)(\*|https?:)(\s|$)/);
+      }
+      expect(csp).toMatch(/object-src 'none'/);
+      expect(csp).toMatch(/frame-ancestors 'none'/);
       expect(h["strict-transport-security"] ?? "").toMatch(/max-age=\d+/);
       expect(h["x-content-type-options"]).toBe("nosniff");
       expect(h["referrer-policy"]).toBe("strict-origin-when-cross-origin");
@@ -24,8 +40,8 @@ test.describe("§14.3 hlavičky", () => {
     });
 
   test("nonce v CSP sedí s nonce skriptů na stránce a mění se s každým požadavkem", async ({ request }) => {
-    const a = await request.get("/");
-    const b = await request.get("/");
+    const a = await request.get("/kompas/podpis");
+    const b = await request.get("/kompas/podpis");
     const nonce = (r: typeof a) => /'nonce-([^']+)'/.exec(r.headers()["content-security-policy"] ?? "")?.[1];
     const na = nonce(a);
     expect(na).toBeTruthy();

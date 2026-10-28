@@ -54,19 +54,29 @@ test.describe("§13 stránky", () => {
   test("GET /api/stats → 200, Cache-Control s-maxage=60, stale-while-revalidate=300", async ({ request }) => {
     const res = await request.get("/api/stats");
     expect(res.status()).toBe(200);
-    expect(res.headers()["cache-control"]).toBe("public, s-maxage=60, stale-while-revalidate=300");
+    const h = res.headers();
+    // Vercel CDN s-maxage/stale-while-revalidate spotřebuje a prohlížeči pošle jen „public“;
+    // tam se ověří, že odpověď jde z CDN cache (x-vercel-cache).
+    if (h["x-vercel-id"]) {
+      expect(h["cache-control"]).toMatch(/^public\b/);
+      expect(h["x-vercel-cache"] ?? "").toMatch(/HIT|STALE|MISS|PRERENDER|REVALIDATED/);
+    } else expect(h["cache-control"]).toBe("public, s-maxage=60, stale-while-revalidate=300");
   });
 
   test("/metodika/zdroje odkazuje na otevřená data a zdroje s verdikty", async ({ page }) => {
     await page.goto("/metodika/zdroje");
     // Skupiny jsou za rozbalením „Co to znamená?“ (Disclosure) – otevři první.
     await page.locator("main .k-disc").first().click();
-    await expect(page.locator('main a[href^="http"]').first()).toBeVisible();
+    await expect(page.locator('main a[href^="http"]').filter({ visible: true }).first()).toBeVisible();
   });
 
   test("/metodika otevřeně říká, že ověření dělají AI agenti (§11.3)", async ({ page }) => {
     await page.goto("/metodika");
-    await expect(page.getByText(/AI|umělá inteligence/).first()).toBeVisible();
+    // Nadpis sekce „Fakta ověřují AI agenti“ je vidět hned, podrobnosti v rozbalení.
+    const heading = page.getByRole("heading", { name: /\bAI\b|umělá inteligence/ }).first();
+    await expect(heading).toBeVisible();
+    await heading.getByRole("button").click();
+    await expect(page.getByText(/ověřují AI agenti, ne lidé/).first()).toBeVisible();
   });
 });
 

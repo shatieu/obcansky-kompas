@@ -32,8 +32,17 @@ export function getSql(): Sql {
   return globalForDb.__kompasSql;
 }
 
+/**
+ * Drizzle nad VLASTNÍM klientem: `drizzle(client)` klientovi přepíše serializéry json/jsonb
+ * (114/3802) a parsery časů na identitu. Na sdíleném klientovi by pak `sql.json(obj)` v
+ * lib/sign/service.ts poslal objekt místo textu (ERR_INVALID_ARG_TYPE) a časy chodily jako text.
+ */
+const globalForDrizzle = globalThis as unknown as { __kompasDrizzleSql?: Sql };
 export function getDb() {
-  return drizzle(getSql(), { schema });
+  const url = process.env.DATABASE_URL;
+  if (!url) throw new Error("DATABASE_URL není nastavené");
+  globalForDrizzle.__kompasDrizzleSql ??= createSql(url, { max: 1 });
+  return drizzle(globalForDrizzle.__kompasDrizzleSql, { schema });
 }
 
 export { schema };
