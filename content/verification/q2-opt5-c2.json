@@ -1,0 +1,12 @@
+{
+  "claim_id": "q2-opt5-c2",
+  "claim_hash": "84e495b32ff787647386345dc3233593f5b0a6b42927ad33d01346767d6e7248",
+  "verdict": "ano",
+  "correction": "",
+  "note": "RIA kap. 2.1, str. 14: 'potenciální oslabení nezávislosti ... vazby na politické rozhodování o výši rozpočtu a jeho každoroční schvalování'.",
+  "url_checked": "https://www.psp.cz/sqw/text/orig2.sqw?idd=277417",
+  "checked_at": "2026-10-27T23:53:49Z",
+  "verifier": "verifier-a1",
+  "round": 1,
+  "human_reviewed": false
+}

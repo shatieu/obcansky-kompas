@@ -1,0 +1,12 @@
+{
+  "claim_id": "q2-opt2-c2",
+  "claim_hash": "5f896a934a9f32782c76005b457b71704692eda8e626e16f28b5bc4d1aa861ca",
+  "verdict": "ano",
+  "correction": "",
+  "note": "Skatteverket: 2026 max 1 184 kr; příjem do 118 300 kr platí 1 % příjmu.",
+  "url_checked": "https://skatteverket.se/privat/skatter/arbeteochinkomst/skattetabeller/publicserviceavgift.4.22501d9e166a8cb399f31dd.html",
+  "checked_at": "2026-10-27T23:53:49Z",
+  "verifier": "verifier-a1",
+  "round": 1,
+  "human_reviewed": false
+}

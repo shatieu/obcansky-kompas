@@ -1,0 +1,24 @@
+id: q7-opt2
+text: |
+  Studenti neplatí. Dnes v Česku na to zákon výjimku nemá. V Německu mohou neplatit studenti, kteří dostávají od státu peníze na studium a nebydlí u rodičů. Ve Švédsku neplatí studenti, kteří mají jen peníze od státu na studium.
+pro: "Studenti bez příjmu nemusí platit nic."
+proti: "Neplatili by ani studenti s dobrým příjmem."
+claims:
+  - id: q7-opt2-c1
+    claim: "Výčet osvobození od poplatků v českém zákoně neobsahuje výjimku pro studenty."
+    source_url: "https://www.zakonyprolidi.cz/cs/2005-348"
+    source_title: "Zákon č. 348/2005 Sb., o rozhlasových a televizních poplatcích (znění k 1. 1. 2026)"
+    locator: "§ 4 odst. 1 a 2 (výčet osvobozených osob)"
+  - id: q7-opt2-c2
+    claim: "V Německu mohou být od poplatku osvobozeni studenti, kteří dostávají státní podporu BAföG a nebydlí u rodičů."
+    source_url: "https://www.rundfunkbeitrag.de/ausnahmen-von-der-rundfunkbeitragspflicht"
+    source_title: "Beitragsservice – Ausnahmen von der Rundfunkbeitragspflicht"
+    locator: "sekce Befreiung: Soziale Gründe / Studierende"
+  - id: q7-opt2-c3
+    claim: "Ve Švédsku neplatí poplatek studenti, kteří mají jen studijní podporu od CSN."
+    source_url: "https://skatteverket.se/privat/skatter/arbeteochinkomst/skattetabeller/publicserviceavgift.4.22501d9e166a8cb399f31dd.html"
+    source_title: "Skatteverket – Public service-avgift"
+    locator: "sekce Vem ska inte betala avgiften?"
+    quote: "studenter som bara har studiemedel från CSN"
+status: draft
+human_reviewed: false

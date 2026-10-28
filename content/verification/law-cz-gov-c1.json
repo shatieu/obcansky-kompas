@@ -1,0 +1,12 @@
+{
+  "claim_id": "law-cz-gov-c1",
+  "claim_hash": "125648686349eed29d7afda10230f5aff39a76ff9bd7f2a8f0d8ae64b159a015",
+  "verdict": "ano",
+  "correction": "",
+  "note": "Článek ze dne 15. 6. 2026: 'Vláda schválila návrh zákona, kterým mění financování médií veřejné služby z poplatků na státní rozpočet.'",
+  "url_checked": "https://www.mediaguru.cz/vlada-schvalila-zruseni-poplatku-pro-ct-a-cro-z-rozpoctu-jim-da-o-1-4-mld-mene",
+  "checked_at": "2026-10-27T23:41:38Z",
+  "verifier": "verifier-b1",
+  "round": 1,
+  "human_reviewed": false
+}

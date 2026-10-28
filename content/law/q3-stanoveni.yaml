@@ -1,0 +1,76 @@
+# Modul Q3 – kdo a jak stanoví výši prostředků (SPEC §10), 3 varianty + „Nevím“.
+# Volby Q3: 1 Zákon, s růstem podle inflace · 2 Vláda a poslanci každý rok · 3 Nezávislá komise na několik let · 4 Nevím
+id: q3-stanoveni
+version: 1
+legal_review: pending
+slot: setting
+questions: [q3]
+paragraphs:
+  - id: q3-1-inflace
+    title: Změna výše prostředků podle růstu cen
+    when:
+      q3: 1
+    subsections:
+      - text: >-
+          Výše prostředků podle {{ref:amount}} se vždy k 1. lednu zvyšuje o míru
+          inflace vyjádřenou přírůstkem průměrného ročního indexu spotřebitelských
+          cen, kterou za předchozí kalendářní rok zveřejnil Český statistický úřad.
+      - text: >-
+          Je-li míra inflace podle odstavce 1 záporná, výše prostředků se pro
+          daný rok nemění.
+
+  - id: q3-2-kazdorocne
+    title: Každoroční stanovení výše prostředků
+    when:
+      q3: 2
+    subsections:
+      - when:
+          q2: [3, 4, 5]
+        text: >-
+          Výši prostředků pro každý kalendářní rok stanoví zákon o státním rozpočtu
+          na příslušný rok.
+      - when:
+          q2: [1, 2]
+        text: >-
+          Výši prostředků pro každý následující kalendářní rok navrhuje vláda
+          a schvaluje Poslanecká sněmovna usnesením; vláda poté nařízením upraví
+          výši poplatku.
+      - when:
+          q2: nevim
+        text: >-
+          Výši prostředků pro každý následující kalendářní rok navrhuje vláda
+          a schvaluje Poslanecká sněmovna.
+      - text: >-
+          Vláda předkládá návrh podle odstavce 1 spolu s vyjádřením Rady České
+          televize a Rady Českého rozhlasu k potřebám médií veřejné služby.
+
+  - id: q3-3-komise
+    title: Komise pro financování médií veřejné služby
+    when:
+      q3: 3
+    subsections:
+      - text: >-
+          Zřizuje se Komise pro financování médií veřejné služby (dále jen
+          „komise“) jako nezávislý odborný orgán.
+      - text: >-
+          Komise má pět členů, které volí Senát na návrh odborných a profesních
+          organizací na funkční období šesti let. Členem komise nesmí být člen
+          vlády, poslanec, senátor ani člen orgánu nebo zaměstnanec média veřejné
+          služby.
+      - text: >-
+          Komise vždy na období čtyř kalendářních let posoudí potřeby médií
+          veřejné služby a navrhne výši prostředků pro každý rok tohoto období.
+          Návrh s odůvodněním zveřejní.
+      - text: >-
+          Výši prostředků na období podle odstavce 3 stanoví vláda nařízením
+          v souladu s návrhem komise. Odchýlit se od něj může jen s písemným
+          odůvodněním, které zveřejní.
+      - text: >-
+          Podrobnosti o jednání komise a o odměně jejích členů stanoví vláda
+          nařízením.
+
+  - id: q3-nevim
+    title: Stanovení výše prostředků
+    when:
+      q3: nevim
+    text: "{{nevim}}"

@@ -1,0 +1,11 @@
+{
+  "explainer_id": "q4-opt2",
+  "impartiality": "ano",
+  "impartiality_notes": "text: „1 184 korun“ upřesněno na „švédských korun“.",
+  "impartiality_checked_at": "2026-10-27T23:47:22+00:00",
+  "impartiality_reviewer": "impartiality-1",
+  "clarity": "ano",
+  "clarity_notes": "Upraveno: 1 184 zaokrouhleno na asi 1 200 švédských korun; vypuštěna 4. věta (druhý švédský příklad, obsah už kryje 'dospělý s příjmem'), aby byl zahraniční příklad jednou větou. Pro/proti beze změn.",
+  "clarity_checked_at": "2026-10-27T23:50:02+00:00",
+  "clarity_reviewer": "clarity-1"
+}

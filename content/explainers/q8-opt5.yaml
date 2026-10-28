@@ -1,0 +1,19 @@
+id: q8-opt5
+text: |
+  Platí jen firmy nad určitou velikostí, malé firmy neplatí. Dnes v Česku neplatí firmy, které mají nejvýš 24 zaměstnanců. Ve Finsku neplatí firmy se ziskem pod 50 tisíc eur ročně.
+pro: "Malé firmy a živnostníci nemají žádnou starost navíc."
+proti: "Firma těsně nad hranicí platí celou částku."
+claims:
+  - id: q8-opt5-c1
+    claim: "V Česku neplatí poplatky firma nebo podnikatel, který zaměstnává nejvýše 24 osob."
+    source_url: "https://www.zakonyprolidi.cz/cs/2005-348"
+    source_title: "Zákon č. 348/2005 Sb., o rozhlasových a televizních poplatcích (znění k 1. 1. 2026)"
+    locator: "§ 5 odst. 4"
+    quote: "zaměstnává nejvýše 24 osob"
+  - id: q8-opt5-c2
+    claim: "Finská firma se zdanitelným příjmem pod 50 000 eur Yle daň neplatí."
+    source_url: "https://www.vero.fi/tietoa-verohallinnosta/tietoa_verotuksest/ylevero/"
+    source_title: "Verohallinto – Yleisradiovero"
+    locator: "sekce Yhteisöasiakkaat"
+status: draft
+human_reviewed: false

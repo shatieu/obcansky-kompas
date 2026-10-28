@@ -1,0 +1,25 @@
+id: q5-opt4
+text: |
+  Všichni platí stejnou částku, ale některé skupiny platí méně nebo nic. Dnes v Česku neplatí lidé s velmi nízkým příjmem a lidé, kteří nevidí nebo neslyší. V Německu mohou někteří lidé se zdravotním postižením požádat o nižší poplatek.
+pro: "Pravidlo zůstává jednoduché a chrání lidi v těžké situaci."
+proti: "Slevy je nutné vyřizovat a hlídat, což stojí čas i peníze."
+claims:
+  - id: q5-opt4-c1
+    claim: "V Česku neplatí poplatky člověk žijící sám, jehož čistý příjem za uplynulé kalendářní čtvrtletí je nižší než 2,15násobek životního minima; u vícečlenné domácnosti se sčítají čisté příjmy všech jejích členů."
+    source_url: "https://www.zakonyprolidi.cz/cs/2005-348"
+    source_title: "Zákon č. 348/2005 Sb., o rozhlasových a televizních poplatcích (znění k 1. 1. 2026)"
+    locator: "§ 4 odst. 2 písm. a) a b)"
+    quote: "čistý příjem za uplynulé kalendářní čtvrtletí je nižší než 2,15násobek životního minima"
+  - id: q5-opt4-c2
+    claim: "V Česku neplatí poplatky lidé s úplnou nebo praktickou slepotou obou očí a lidé s oboustrannou úplnou nebo praktickou hluchotou, pokud žijí sami nebo společně jen s dalšími takovými osobami v jedné domácnosti."
+    source_url: "https://www.zakonyprolidi.cz/cs/2005-348"
+    source_title: "Zákon č. 348/2005 Sb., o rozhlasových a televizních poplatcích (znění k 1. 1. 2026)"
+    locator: "§ 4 odst. 1 písm. g)"
+    quote: "osoby s úplnou nebo praktickou slepotou obou očí"
+  - id: q5-opt4-c3
+    claim: "V Německu mohou lidé se zdravotním postižením, kterým byl přiznán znak RF, požádat o snížení poplatku."
+    source_url: "https://www.rundfunkbeitrag.de/ausnahmen-von-der-rundfunkbeitragspflicht"
+    source_title: "Beitragsservice – Ausnahmen von der Rundfunkbeitragspflicht"
+    locator: "sekce Ermäßigung: Merkzeichen RF"
+status: draft
+human_reviewed: false

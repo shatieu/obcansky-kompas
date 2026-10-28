@@ -1,0 +1,50 @@
+# Texty stránky /fotka (SPEC §9.3). Po sloučení patří do ui.yaml pod klíč `photo`.
+# Konvence klíčů jako v ui.yaml (SPEC §4.1, kontroluje lib/photo/ui-text.test.ts):
+#   title, *_title  = nadpis, max. 8 slov
+#   lead, *_lead    = text pod nadpisem, max. 1 věta a 120 znaků
+#   *_button        = tlačítko, max. 3 slova
+# Slogany nejsou tady – jen v content/slogans.yaml.
+
+photo:
+  meta_title: Profilová fotka – Občanský kompas
+  meta_description: Rámeček na profilovou fotku. Fotka zůstává v tvém telefonu, nikam ji neposíláme.
+  kicker: PROFILOVÁ FOTKA
+  title: Ukaž, že ti média nejsou jedno
+  lead: Fotka zůstává v tvém telefonu, nikam ji neposíláme.
+  pick_button: Vybrat fotku
+  camera_button: Vyfotit se
+  change_button: Jiná fotka
+  drop_hint: Nebo sem fotku přetáhni.
+  drop_active: Pusť fotku sem.
+  loading: Načítám fotku…
+  heic_loading: Převádím fotku z iPhonu…
+  error_type: Tohle není obrázek. Vyber fotku JPG, PNG nebo HEIC.
+  error_decode: Tuhle fotku neumím otevřít. Zkus jinou.
+  error_heic: Fotku z iPhonu se nepodařilo převést. Ulož ji jako JPG a zkus znovu.
+  error_export: Stažení se nepovedlo. Zkus to znovu.
+  placeholder: Tvoje fotka
+  preview_label: "Náhled profilové fotky: {frame}"
+  crop_title: Posuň a přibliž
+  crop_hint: Táhni fotku, přibliž dvěma prsty nebo kolečkem myši.
+  keyboard_hint: Šipky posouvají fotku, plus a minus přibližují, nula vrací výchozí ořez.
+  zoom_in_button: Přiblížit
+  zoom_out_button: Oddálit
+  reset_button: Vrátit ořez
+  zoom_value: "Přiblížení {n} %"
+  frame_title: Rámeček
+  frames:
+    ring: Kruh se sloganem
+    ribbon: Stuha dole
+    corner: Vlajka v rohu
+    duotone: Modrý duotón
+  slogan_title: Slogan
+  download_title: Stáhnout
+  download_png_button: Stáhnout PNG
+  download_jpg_button: Stáhnout JPG
+  downloaded: Staženo. Teď ji nahraj jako profilovou fotku.
+  facebook_note: Facebook už rámečky nemá – fotku stáhni a nahraj ručně jako profilovou.
+  howto_title: Jak ji nahrát?
+  howto_steps:
+    - Stáhni fotku do telefonu nebo počítače.
+    - V profilu klepni na svou fotku a zvol nahrání nové.
+    - Vyber staženou fotku a jen ji potvrď, rámeček už v ní je.

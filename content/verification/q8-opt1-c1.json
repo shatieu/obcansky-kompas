@@ -1,0 +1,12 @@
+{
+  "claim_id": "q8-opt1-c1",
+  "claim_hash": "508019faa744296781b2969fcec870c629647c32ceb68ec3ad931750851aac87",
+  "verdict": "ano",
+  "correction": "",
+  "note": "",
+  "url_checked": "https://www.skatteverket.se/publicserviceavgift",
+  "checked_at": "2026-10-27T23:41:38Z",
+  "verifier": "verifier-b1",
+  "round": 1,
+  "human_reviewed": false
+}

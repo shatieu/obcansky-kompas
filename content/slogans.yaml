@@ -1,0 +1,8 @@
+# Slogany pro profilové fotky (SPEC §9.3). Jen tyto tři.
+slogans:
+  - id: ruce-pryc
+    text: Ruce pryč od médií
+  - id: media-nedame
+    text: Média nedáme
+  - id: nejsou-jedno
+    text: Média veřejné služby mi nejsou jedno

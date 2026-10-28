@@ -1,0 +1,30 @@
+id: q4
+text: |
+  Dnes platí poplatek ten, kdo má televizi, rádio, počítač nebo mobil, ale domácnost jen jednou.
+  Firmy platí podle počtu zaměstnanců.
+  Vládní návrh poplatek ruší, peníze by šly ze státního rozpočtu.
+pro: ''
+proti: ''
+claims:
+- id: q4-c1
+  claim: Poplatek platí fyzická nebo právnická osoba, která vlastní nebo drží rozhlasový či televizní přijímač.
+  source_url: https://www.zakonyprolidi.cz/cs/2005-348
+  source_title: Zákon č. 348/2005 Sb., o rozhlasových a televizních poplatcích (znění od 1. 1. 2026)
+  locator: § 3 odst. 1 a 2
+- id: q4-c2
+  claim: Fyzická osoba platí jeden poplatek i při více přijímačích a člověk ve společné domácnosti s plátcem poplatek neplatí.
+  source_url: https://www.zakonyprolidi.cz/cs/2005-348
+  source_title: Zákon č. 348/2005 Sb., o rozhlasových a televizních poplatcích (znění od 1. 1. 2026)
+  locator: § 5 odst. 1 a 2
+- id: q4-c3
+  claim: Podnikatelé s více než 24 zaměstnanci platí násobek poplatku podle počtu zaměstnanců, menší podnikatelé jako firmy neplatí.
+  source_url: https://www.zakonyprolidi.cz/cs/2005-348
+  source_title: Zákon č. 348/2005 Sb., o rozhlasových a televizních poplatcích (znění od 1. 1. 2026)
+  locator: § 5 odst. 3 a 4
+- id: q4-c4
+  claim: Vládní návrh ruší zákon o poplatcích s účinností od 1. 1. 2027 a ČT a ČRo dává příspěvek ze státního rozpočtu.
+  source_url: https://www.psp.cz/sqw/text/orig2.sqw?idd=277415
+  source_title: Vládní návrh zákona, kterým se mění zákon o České televizi a zákon o Českém rozhlasu a zrušuje zákon o poplatcích (sněmovní tisk 231/0), včetně důvodové zprávy
+  locator: Čl. I a II (nové § 10a odst. 1), Čl. IV a Čl. V, str. 1–3
+status: draft
+human_reviewed: false

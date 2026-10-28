@@ -1,0 +1,26 @@
+id: q3-opt2
+text: |
+  O částce by se rozhodovalo každý rok při schvalování státního rozpočtu.
+  Státní rozpočet navrhuje vláda a schvaluje ho Poslanecká sněmovna.
+  Vláda předkládá návrh rozpočtu každý rok na další rok.
+pro: Částku lze každý rok přizpůsobit stavu státních peněz.
+proti: Každoroční schvalování rozpočtu může oslabit nezávislost médií.
+claims:
+- id: q3-opt2-c1
+  claim: Návrh zákona o státním rozpočtu podává vláda a usnáší se o něm jen Poslanecká sněmovna.
+  source_url: https://www.zakonyprolidi.cz/cs/1993-1
+  source_title: Ústava České republiky (ústavní zákon č. 1/1993 Sb.)
+  locator: čl. 42 odst. 1 a 2
+- id: q3-opt2-c2
+  claim: Vláda podle zákona o rozpočtových pravidlech každoročně předkládá návrh státního rozpočtu na následující rok.
+  source_url: https://www.psp.cz/sqw/text/orig2.sqw?idd=277415
+  source_title: Vládní návrh zákona, kterým se mění zákon o České televizi a zákon o Českém rozhlasu a zrušuje zákon o poplatcích (sněmovní tisk 231/0), včetně důvodové zprávy
+  locator: Důvodová zpráva, Zvláštní část, K části první a druhé, str. 20
+  quote: vláda každoročně předkládá návrh státního rozpočtu na následující rok
+- id: q3-opt2-c3
+  claim: Hodnocení dopadů uvádí jako riziko rozpočtového financování možné oslabení nezávislosti kvůli každoročnímu schvalování rozpočtu.
+  source_url: https://www.psp.cz/sqw/text/orig2.sqw?idd=277417
+  source_title: Závěrečná zpráva z hodnocení dopadů regulace (RIA) k vládnímu návrhu, sněmovní tisk 231
+  locator: kap. 2.1 Zahraniční zkušenost, str. 14
+status: draft
+human_reviewed: false

@@ -1,0 +1,12 @@
+{
+  "claim_id": "law-fi-c2",
+  "claim_hash": "53fd5a6ccbc78c3c1563fafb1447498ae63b7d3596124e0393443ad34983a04e",
+  "verdict": "ano",
+  "correction": "",
+  "note": "",
+  "url_checked": "https://yle.fi/aihe/about-yle/finances",
+  "checked_at": "2026-10-27T23:41:38Z",
+  "verifier": "verifier-b1",
+  "round": 1,
+  "human_reviewed": false
+}

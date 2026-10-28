@@ -1,0 +1,78 @@
+# Modul Q6 + Q7 – důchodci a osvobození od poplatku (SPEC §10).
+# Q6: 1 Ano, stejně · 2 Ano, méně · 3 Ne · 4 Nevím
+# Q7 (více voleb): 1 Lidé s nízkým příjmem · 2 Studenti · 3 Lidé se zdravotním postižením ·
+#                  4 Lidé v hmotné nouzi · 5 Platí všichni · 6 Nevím
+# Písmena a), b)… i čísla odstavců se dopočítají podle toho, co zůstane. Interpunkci
+# písmen (čárka, na konci tečka) doplňuje skládání – v datech se nepíše.
+id: q6-q7-osvobozeni
+version: 1
+legal_review: pending
+slot: exemptions
+questions: [q6, q7]
+paragraphs:
+  - id: q67-osvobozeni
+    title: Osvobození a snížení poplatku
+    when:
+      any:
+        - q6: answered
+        - q7: answered
+    subsections:
+      - when:
+          any:
+            - q6: 3
+            - q7: [1, 2, 3, 4]
+        text: "Od poplatku je osvobozen poplatník, který je"
+        points:
+          - when: { q6: 3 }
+            text: poživatelem starobního důchodu
+          - when: { q7: 1 }
+            text: >-
+              osobou, jejíž příjem za předchozí kalendářní rok nepřesáhl hranici
+              stanovenou nařízením vlády
+          - when: { q7: 2 }
+            text: osobou, která se soustavně připravuje na budoucí povolání studiem
+          - when: { q7: 3 }
+            text: držitelem průkazu osoby se zdravotním postižením
+          - when: { q7: 4 }
+            text: osobou, které je poskytována dávka pomoci v hmotné nouzi
+      - when:
+          q7: 5
+          q6: [1, 2]
+        text: Od poplatku není nikdo osvobozen.
+      - when:
+          q4: 1
+          any:
+            - q6: 3
+            - q7: [1, 2, 3, 4]
+        text: >-
+          Je-li poplatníkem domácnost, je od poplatku osvobozena, splňuje-li
+          podmínku osvobození osoba, která za domácnost poplatek platí.
+      - when:
+          q6: 1
+        text: >-
+          Poživatelé starobního důchodu platí poplatek za stejných podmínek jako
+          ostatní poplatníci.
+      - when:
+          q6: 2
+        text: >-
+          Poplatník, který je poživatelem starobního důchodu, platí poplatek
+          snížený. Míru snížení stanoví vláda nařízením.
+      - when:
+          any:
+            - q6: [2, 3]
+            - q7: [1, 2, 3, 4]
+        text: >-
+          Osvobození nebo snížení poplatku se uplatní na základě oznámení
+          poplatníka; podrobnosti stanoví vláda nařízením.
+
+  - id: q6-nevim
+    title: Poplatek u poživatelů starobního důchodu
+    when:
+      q6: nevim
+    text: "{{nevim}}"
+
+  - id: q7-nevim
+    title: Další osvobození od poplatku
+    when:
+      q7: nevim
+    text: "{{nevim}}"

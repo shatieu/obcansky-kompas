@@ -1,0 +1,12 @@
+{
+  "claim_id": "q2-opt1-c8",
+  "claim_hash": "9f5f6f6c0071e70c1679ef4736d2384363e79d2af10e79f978ce05c9e2f760c0",
+  "verdict": "ano",
+  "correction": "",
+  "note": "DZ str. 21: náklady na správu evidence poplatků a související agendu 'dosahují až 250 mil. Kč ročně'.",
+  "url_checked": "https://www.psp.cz/sqw/text/orig2.sqw?idd=277415",
+  "checked_at": "2026-10-27T23:53:49Z",
+  "verifier": "verifier-a1",
+  "round": 1,
+  "human_reviewed": false
+}

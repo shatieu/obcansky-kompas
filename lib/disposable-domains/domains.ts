@@ -1,0 +1,36 @@
+/**
+ * Statický seznam jednorázových e-mailových domén (SPEC §14.3). Zdroj: výběr nejčastějších
+ * domén z veřejného seznamu disposable-email-domains (CC0). Doplňuje se ručně.
+ */
+export const DISPOSABLE_DOMAINS: readonly string[] = [
+  "0-mail.com", "0815.ru", "0clickemail.com", "10mail.org", "10minutemail.co.uk", "10minutemail.com",
+  "10minutemail.net", "10minutemail.de", "20minutemail.com", "20minutemail.it", "33mail.com", "anonbox.net",
+  "anonymbox.com", "binkmail.com", "bobmail.info", "bugmenot.com", "burnermail.io", "byom.de",
+  "chammy.info", "crazymailing.com", "deadaddress.com", "despam.it", "discard.email", "discardmail.com",
+  "discardmail.de", "dispostable.com", "dodgeit.com", "dodgit.com", "dropmail.me", "dumpmail.de",
+  "e4ward.com", "emailondeck.com", "emailtemporanea.net", "emailtemporar.ro", "emailtemporario.com.br",
+  "emailwarden.com", "emltmp.com", "fakeinbox.com", "fakemail.net", "fakemailgenerator.com", "fastacura.com",
+  "filzmail.com", "getairmail.com", "getnada.com", "gishpuppy.com", "guerillamail.biz", "guerillamail.com",
+  "guerillamail.de", "guerillamail.net", "guerillamail.org", "guerrillamail.biz", "guerrillamail.com",
+  "guerrillamail.de", "guerrillamail.info", "guerrillamail.net", "guerrillamail.org", "guerrillamailblock.com",
+  "harakirimail.com", "hidemail.de", "incognitomail.org", "inboxbear.com", "inboxkitten.com", "jetable.com",
+  "jetable.fr.nf", "jetable.net", "jetable.org", "kasmail.com", "klzlk.com", "koszmail.pl", "kurzepost.de",
+  "lroid.com", "mail-temp.com", "mail.tm", "mail7.io", "mailcatch.com", "maildrop.cc", "mailexpire.com",
+  "mailforspam.com", "mailinator.com", "mailinator.net", "mailinator.org", "mailinator2.com", "mailnesia.com",
+  "mailnull.com", "mailsac.com", "mailtemp.info", "mailtothis.com", "meltmail.com", "mintemail.com",
+  "moakt.com", "mohmal.com", "mt2015.com", "mytemp.email", "mytrashmail.com", "nada.email", "nepwk.com",
+  "no-spam.ws", "nomail.xl.cx", "nospam.ze.tc", "nospamfor.us", "notmailinator.com", "nowmymail.com",
+  "objectmail.com", "one-time.email", "onewaymail.com", "pookmail.com", "proxymail.eu", "rcpt.at",
+  "receiveee.com", "rmqkr.net", "sharklasers.com", "shieldemail.com", "smellfear.com", "sogetthis.com",
+  "spam4.me", "spamavert.com", "spambob.com", "spambog.com", "spambox.us", "spamex.com", "spamfree24.org",
+  "spamgourmet.com", "spamhole.com", "spaml.de", "spammotel.com", "spamspot.com", "spamthis.co.uk",
+  "spamtrail.com", "superrito.com", "suremail.info", "teleworm.us", "temp-mail.io", "temp-mail.org",
+  "temp-mail.ru", "tempail.com", "tempemail.net", "tempinbox.com", "tempmail.com", "tempmail.de",
+  "tempmail.net", "tempmail.plus", "tempmailaddress.com", "tempmailo.com", "tempr.email", "tempsky.com",
+  "thankyou2010.com", "throwam.com", "throwawayemailaddress.com", "throwawaymail.com", "tmail.ws",
+  "tmailinator.com", "tmpmail.net", "tmpmail.org", "trash-mail.com", "trash-mail.de", "trash2009.com",
+  "trashmail.at", "trashmail.com", "trashmail.de", "trashmail.io", "trashmail.me", "trashmail.net",
+  "trashmail.ws", "trashmailer.com", "trashymail.com", "trbvm.com", "veryrealemail.com", "wegwerfadresse.de",
+  "wegwerfemail.de", "wegwerfmail.de", "wegwerfmail.net", "wegwerfmail.org", "yopmail.com", "yopmail.fr",
+  "yopmail.net", "zetmail.com", "zippymail.info", "zoemail.org",
+];

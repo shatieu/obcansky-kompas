@@ -1,0 +1,31 @@
+id: q7-opt5
+text: |
+  Nikdo nemá výjimku a platí všichni podle stejných pravidel. Dnes v Česku výjimky existují, třeba pro lidi s velmi nízkým příjmem. I v Německu, Finsku a Švédsku některé skupiny neplatí.
+pro: "Pravidlo je pro všechny stejné a nic se neprokazuje."
+proti: "Platit musí i lidé, kteří na to skoro nemají peníze."
+claims:
+  - id: q7-opt5-c1
+    claim: "V Česku neplatí poplatky člověk žijící sám, jehož čistý příjem za uplynulé kalendářní čtvrtletí je nižší než 2,15násobek životního minima; u vícečlenné domácnosti se sčítají čisté příjmy všech jejích členů."
+    source_url: "https://www.zakonyprolidi.cz/cs/2005-348"
+    source_title: "Zákon č. 348/2005 Sb., o rozhlasových a televizních poplatcích (znění k 1. 1. 2026)"
+    locator: "§ 4 odst. 2 písm. a) a b)"
+    quote: "čistý příjem za uplynulé kalendářní čtvrtletí je nižší než 2,15násobek životního minima"
+  - id: q7-opt5-c2
+    claim: "V Německu mohou být od poplatku osvobozeni lidé, kteří dostávají některé sociální dávky, například základní zajištění ve stáří."
+    source_url: "https://www.rundfunkbeitrag.de/ausnahmen-von-der-rundfunkbeitragspflicht"
+    source_title: "Beitragsservice – Ausnahmen von der Rundfunkbeitragspflicht"
+    locator: "sekce Befreiung: Soziale Gründe"
+  - id: q7-opt5-c3
+    claim: "Ve Finsku se Yle daň platí ve výši 2,5 % z příjmů nad 15 150 eur ročně."
+    source_url: "https://yle.fi/aihe/about-yle/finances"
+    source_title: "Yle – Content from Yle's finances"
+    locator: "sekce Yle tax for individuals"
+    quote: "Those who earn less than EUR 15,150 are exempt from paying the tax."
+  - id: q7-opt5-c4
+    claim: "Ve Švédsku neplatí poplatek studenti, kteří mají jen studijní podporu od CSN."
+    source_url: "https://skatteverket.se/privat/skatter/arbeteochinkomst/skattetabeller/publicserviceavgift.4.22501d9e166a8cb399f31dd.html"
+    source_title: "Skatteverket – Public service-avgift"
+    locator: "sekce Vem ska inte betala avgiften?"
+    quote: "studenter som bara har studiemedel från CSN"
+status: draft
+human_reviewed: false

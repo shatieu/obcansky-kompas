@@ -1,0 +1,244 @@
+# Otázky kompasu (SPEC §5.1), pravidla větvení jako data (SPEC §5.2), demografie (SPEC §5.3).
+# ID voleb: q{n}-opt{k}, k = pořadí volby ve SPEC §5.1 (od 1). „Nevím“ má id q{n}-nevim a nemá vysvětlivku.
+# Hodnoty kotev Q1 se berou z content/facts.yaml (nikdy konstanty v kódu).
+version: 1
+
+# Pásma Q1 od nejnižšího. Hranice: kotva „Návrh vlády“ a kotva „Dnes“ (shoda = rozdíl pod 0,05 mld).
+q1_bands:
+  - id: below-gov
+    label: Pod návrhem vlády
+  - id: gov
+    label: Návrh vlády
+  - id: between
+    label: Mezi návrhem a dneškem
+  - id: today
+    label: Jako dnes
+  - id: above-today
+    label: Víc než dnes
+
+questions:
+  - id: q1
+    type: slider
+    text: Kolik peněz ročně má ČT a ČRo dostat?
+    short: Kolik peněz
+    topic: výše peněz
+    slider:
+      min: 5.0
+      max: 12.0
+      step: 0.1
+      # Výchozí poloha = střed rozsahu, aby posuvník nezvýhodňoval žádnou kotvu.
+      default: 8.5
+    anchors:
+      - id: gov
+        label: Návrh vlády
+        fact: gov-proposal-total-bn
+      - id: today
+        label: Dnes
+        fact: today-total-bn
+      - id: today-plus-10
+        label: Dnes +10 %
+        fact: today-total-bn
+        multiplier: 1.1
+    options:
+      - id: q1-nevim
+        label: Nevím
+        nevim: true
+
+  - id: q2
+    type: single
+    text: Odkud mají peníze jít?
+    short: Odkud peníze
+    topic: zdroje peněz
+    options:
+      - id: q2-opt1
+        label: Poplatek jako dnes
+      - id: q2-opt2
+        label: Zvláštní poplatek přes daně
+      - id: q2-opt3
+        label: Státní rozpočet s pojistkami
+      - id: q2-opt4
+        label: Návrh vlády
+      - id: q2-opt5
+        label: Státní rozpočet bez pojistek
+      - id: q2-opt6
+        label: Jen dobrovolné příspěvky
+      - id: q2-nevim
+        label: Nevím
+        nevim: true
+
+  - id: q3
+    type: single
+    text: Kdo určí, kolik dostanou?
+    short: Kdo určí výši
+    topic: určení výše peněz
+    options:
+      - id: q3-opt1
+        label: Zákon, s růstem podle inflace
+      - id: q3-opt2
+        label: Vláda a poslanci každý rok
+      - id: q3-opt3
+        label: Nezávislá komise na několik let
+      - id: q3-nevim
+        label: Nevím
+        nevim: true
+
+  - id: q4
+    type: single
+    text: Kdo má platit?
+    short: Kdo platí
+    topic: plátců
+    options:
+      - id: q4-opt1
+        label: Každá domácnost
+      - id: q4-opt2
+        label: Každý dospělý
+      - id: q4-opt3
+        label: Nikdo zvlášť, ze všech daní
+      - id: q4-nevim
+        label: Nevím
+        nevim: true
+
+  - id: q5
+    type: single
+    text: Má záležet na příjmu?
+    short: Podle příjmu
+    topic: vlivu příjmu
+    options:
+      - id: q5-opt1
+        label: Ne, všichni stejně
+      - id: q5-opt2
+        label: Ano, s horní hranicí
+      - id: q5-opt3
+        label: Ano, bez horní hranice
+      - id: q5-opt4
+        label: Stejně, ale se slevami
+      - id: q5-nevim
+        label: Nevím
+        nevim: true
+
+  - id: q6
+    type: single
+    text: Mají platit důchodci?
+    short: Důchodci
+    topic: placení důchodců
+    options:
+      - id: q6-opt1
+        label: Ano, stejně
+      - id: q6-opt2
+        label: Ano, méně
+      - id: q6-opt3
+        label: Ne
+      - id: q6-nevim
+        label: Nevím
+        nevim: true
+
+  - id: q7
+    type: multi
+    text: Kdo nemá platit?
+    short: Kdo neplatí
+    topic: výjimek z placení
+    options:
+      - id: q7-opt1
+        label: Lidé s nízkým příjmem
+      - id: q7-opt2
+        label: Studenti
+      - id: q7-opt3
+        label: Lidé se zdravotním postižením
+      - id: q7-opt4
+        label: Lidé v hmotné nouzi
+      - id: q7-opt5
+        label: Platí všichni
+        exclusive: true
+      - id: q7-nevim
+        label: Nevím
+        nevim: true
+        exclusive: true
+
+  - id: q8
+    type: single
+    text: Mají platit firmy?
+    short: Firmy
+    topic: placení firem
+    options:
+      - id: q8-opt1
+        label: Ne
+      - id: q8-opt2
+        label: Podle počtu zaměstnanců
+      - id: q8-opt3
+        label: Podle zisku, s horní hranicí
+      - id: q8-opt4
+        label: Podle obratu, s horní hranicí
+      - id: q8-opt5
+        label: Jen velké firmy
+      - id: q8-nevim
+        label: Nevím
+        nevim: true
+
+# Větvení (SPEC §5.2). Efekty: skip = celá otázka zašedne; only = povolené jen tyto volby
+# (jediná povolená volba se předvyplní); disable = zašednou jen tyto volby.
+# Q2 = 1, 2, 7 (Nevím): žádná omezení.
+rules:
+  - id: q2-rozpocet-s-pojistkami
+    when: { question: q2, option: q2-opt3 }
+    effects:
+      q3: { disable: [q3-opt2] }
+      q4: { only: [q4-opt3] }
+      q5: { skip: true }
+      q6: { skip: true }
+      q7: { skip: true }
+      q8: { only: [q8-opt1] }
+  - id: q2-navrh-vlady
+    when: { question: q2, option: q2-opt4 }
+    effects:
+      q3: { only: [q3-opt1] }
+      q4: { only: [q4-opt3] }
+      q5: { skip: true }
+      q6: { skip: true }
+      q7: { skip: true }
+      q8: { only: [q8-opt1] }
+  - id: q2-rozpocet-bez-pojistek
+    when: { question: q2, option: q2-opt5 }
+    effects:
+      q3: { only: [q3-opt2] }
+      q4: { only: [q4-opt3] }
+      q5: { skip: true }
+      q6: { skip: true }
+      q7: { skip: true }
+      q8: { only: [q8-opt1] }
+  - id: q2-dobrovolne
+    when: { question: q2, option: q2-opt6 }
+    effects:
+      q3: { skip: true }
+      q4: { skip: true }
+      q5: { skip: true }
+      q6: { skip: true }
+      q7: { skip: true }
+      q8: { skip: true }
+
+demographics:
+  regions:
+    - { id: CZ010, label: Hlavní město Praha }
+    - { id: CZ020, label: Středočeský kraj }
+    - { id: CZ031, label: Jihočeský kraj }
+    - { id: CZ032, label: Plzeňský kraj }
+    - { id: CZ041, label: Karlovarský kraj }
+    - { id: CZ042, label: Ústecký kraj }
+    - { id: CZ051, label: Liberecký kraj }
+    - { id: CZ052, label: Královéhradecký kraj }
+    - { id: CZ053, label: Pardubický kraj }
+    - { id: CZ063, label: Kraj Vysočina }
+    - { id: CZ064, label: Jihomoravský kraj }
+    - { id: CZ071, label: Olomoucký kraj }
+    - { id: CZ072, label: Zlínský kraj }
+    - { id: CZ080, label: Moravskoslezský kraj }
+  age_groups:
+    - { id: "18-29", label: "18–29" }
+    - { id: "30-44", label: "30–44" }
+    - { id: "45-59", label: "45–59" }
+    - { id: "60+", label: "60+" }
+  municipality_sizes:
+    - { id: "do-2000", label: "do 2 000" }
+    - { id: "2000-20000", label: "2 000–20 000" }
+    - { id: "20000-100000", label: "20 000–100 000" }
+    - { id: "nad-100000", label: "nad 100 000" }
+  comment_max: 500

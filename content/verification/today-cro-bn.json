@@ -1,0 +1,12 @@
+{
+  "claim_id": "today-cro-bn",
+  "claim_hash": "1091eb9ccb97172f0d619a1f81a9aeeafd94468f879be102d5c853012ddfe213",
+  "verdict": "ano",
+  "correction": "",
+  "note": "RIA str. 22: předpokládaný výnos 2026 dle rozpočtu, 'zvýšit na 2,476 mld. Kč'.",
+  "url_checked": "https://www.psp.cz/sqw/text/orig2.sqw?idd=277417",
+  "checked_at": "2026-10-27T23:53:49Z",
+  "verifier": "verifier-a1",
+  "round": 1,
+  "human_reviewed": false
+}

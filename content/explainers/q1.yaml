@@ -1,0 +1,33 @@
+id: q1
+text: |
+  Podle rozpočtů na rok 2026 mají ČT a ČRo z poplatků dostat asi 9,2 miliardy korun.
+  Vládní návrh jim pro rok 2027 dává ze státního rozpočtu asi 7,8 miliardy.
+  To je tolik, kolik vybraly na poplatcích v roce 2024.
+  V Česku žije asi 8,9 milionu dospělých.
+pro: ''
+proti: ''
+claims:
+- id: q1-c1
+  claim: Podle rozpočtů na rok 2026 mají ČT a ČRo z poplatků dostat 6,730 a 2,476 miliardy Kč, dohromady asi 9,2 miliardy.
+  source_url: https://www.psp.cz/sqw/text/orig2.sqw?idd=277417
+  source_title: Závěrečná zpráva z hodnocení dopadů regulace (RIA) k vládnímu návrhu, sněmovní tisk 231
+  locator: 'kap. 3.2 Náklady / Přínosy, Varianta 1: Reformovaný poplatkový model, str. 29'
+  quote: 6,730 mld. Kč pro ČT a 2,476 mld. Kč pro ČRo dle rozpočtů 2026
+- id: q1-c2
+  claim: Vládní návrh stanoví příspěvek pro rok 2027 na 5 741 826 000 Kč pro ČT a 2 065 766 000 Kč pro ČRo.
+  source_url: https://www.psp.cz/sqw/text/orig2.sqw?idd=277415
+  source_title: Vládní návrh zákona, kterým se mění zákon o České televizi a zákon o Českém rozhlasu a zrušuje zákon o poplatcích (sněmovní tisk 231/0), včetně důvodové zprávy
+  locator: Čl. I a Čl. II, nové § 10a odst. 2, str. 1–2
+- id: q1-c3
+  claim: Výše příspěvku podle návrhu odpovídá příjmům ČT a ČRo z poplatků v roce 2024.
+  source_url: https://www.psp.cz/sqw/text/orig2.sqw?idd=277415
+  source_title: Vládní návrh zákona, kterým se mění zákon o České televizi a zákon o Českém rozhlasu a zrušuje zákon o poplatcích (sněmovní tisk 231/0), včetně důvodové zprávy
+  locator: Důvodová zpráva, Zvláštní část, K části první a druhé, str. 20
+  quote: výše příspěvku odpovídá příjmu Českého rozhlasu a České televize z koncesionářských poplatků v roce 2024
+- id: q1-c4
+  claim: K 31. 12. 2025 žilo v Česku 8 886 675 lidí ve věku 18 a více let.
+  source_url: https://data.csu.gov.cz/datastat/info/SADA/OBY02B
+  source_title: ČSÚ – Počet obyvatel podle pohlaví a jednotek věku (datová sada OBY02B)
+  locator: ukazatel Počet obyvatel k 31. 12., Česko, pohlaví Celkem, rok 2025; součet věků 18 až 100 a více
+status: draft
+human_reviewed: false

@@ -1,0 +1,20 @@
+id: q5-opt1
+text: |
+  Každý, kdo platí, dá stejnou částku bez ohledu na příjem. Dnes v Česku je to 150 Kč měsíčně za televizi. V Německu platí každá domácnost stejně, asi 18 eur měsíčně.
+pro: "Pravidlo je jednoduché a každý předem ví, kolik zaplatí."
+proti: "Lidé s nízkým příjmem zaplatí stejně jako lidé s vysokým."
+claims:
+  - id: q5-opt1-c1
+    claim: "Televizní poplatek v Česku je 150 Kč měsíčně a rozhlasový 55 Kč měsíčně."
+    source_url: "https://www.zakonyprolidi.cz/cs/2005-348"
+    source_title: "Zákon č. 348/2005 Sb., o rozhlasových a televizních poplatcích (znění k 1. 1. 2026)"
+    locator: "§ 6 odst. 1"
+    quote: "měsíční výše televizního poplatku činí 150 Kč"
+  - id: q5-opt1-c2
+    claim: "V Německu se za každý byt platí poplatek 18,36 eura měsíčně bez ohledu na počet lidí v bytě."
+    source_url: "https://www.rundfunkbeitrag.de/"
+    source_title: "ARD ZDF Deutschlandradio Beitragsservice – Rundfunkbeitrag (úvodní stránka)"
+    locator: "úvodní text stránky"
+    quote: "Für jede Wohnung wird monatlich ein Rundfunkbeitrag von 18,36 € erhoben"
+status: draft
+human_reviewed: false

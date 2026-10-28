@@ -1,0 +1,12 @@
+{
+  "claim_id": "q4-opt3-c3",
+  "claim_hash": "c312e7e14c0f19a0211de9f42e0c515c67b9a8b5fb3899fa45ea10e5a053e2c2",
+  "verdict": "ano",
+  "correction": "",
+  "note": "DZ bod 11, str. 17: 'přestanou být ČT a ČRo správcem uvedené evidence a nebudou již shromažďovat osobní údaje poplatníků'.",
+  "url_checked": "https://www.psp.cz/sqw/text/orig2.sqw?idd=277415",
+  "checked_at": "2026-10-27T23:53:49Z",
+  "verifier": "verifier-a1",
+  "round": 1,
+  "human_reviewed": false
+}

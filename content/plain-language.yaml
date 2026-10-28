@@ -1,0 +1,76 @@
+# Zakázané odborné výrazy → lidská náhrada (SPEC §11.2 bod 5, §11.4).
+# Agent srozumitelnosti hledá "term" (bez ohledu na velikost písmen a tvar slova) ve vysvětlivkách, otázkách a volbách.
+- term: mandatorní výdaj
+  replacement: výdaj, který stát musí zaplatit každý rok
+- term: valorizace
+  replacement: zvýšení podle růstu cen
+- term: valorizovat
+  replacement: zvýšit podle růstu cen
+- term: indexace
+  replacement: automatické zvyšování podle růstu cen
+- term: inflační doložka
+  replacement: pravidlo, že částka roste s cenami
+- term: kumulativní inflace
+  replacement: o kolik celkem vzrostly ceny
+- term: míra inflace
+  replacement: o kolik vzrostly ceny
+- term: progresivní
+  replacement: kdo víc vydělává, platí větší část příjmu
+- term: regresivní
+  replacement: lidé s nižším příjmem platí větší část svého příjmu
+- term: státní podpora
+  replacement: peníze od státu
+- term: veřejná podpora
+  replacement: peníze od státu
+- term: koncesionářský poplatek
+  replacement: poplatek za televizi a rozhlas
+- term: koncesionářské poplatky
+  replacement: poplatky za televizi a rozhlas
+- term: poplatník
+  replacement: ten, kdo platí
+- term: poplatková povinnost
+  replacement: povinnost platit poplatek
+- term: osvobození od poplatku
+  replacement: nemusí platit
+- term: médium veřejné služby
+  replacement: ČT a ČRo (veřejnoprávní televize a rozhlas)
+- term: média veřejné služby
+  replacement: ČT a ČRo
+- term: veřejnoprávní média
+  replacement: ČT a ČRo
+- term: provozovatel vysílání ze zákona
+  replacement: ČT a ČRo
+- term: příspěvek ze státního rozpočtu
+  replacement: peníze ze státního rozpočtu
+- term: rozpočtové určení daní
+  replacement: rozdělení daní mezi stát a obce
+- term: účelově vázaná daň
+  replacement: daň, která smí jít jen na jednu věc
+- term: mediální daň
+  replacement: zvláštní platba na ČT a ČRo přes daně
+- term: zdanitelný příjem
+  replacement: příjem, ze kterého se platí daň
+- term: životní minimum
+  replacement: nejnižší částka na živobytí podle zákona
+- term: hmotná nouze
+  replacement: lidé, kterým chybí peníze na základní potřeby
+- term: legislativní proces
+  replacement: schvalování zákona
+- term: sněmovní tisk
+  replacement: návrh zákona ve Sněmovně
+- term: důvodová zpráva
+  replacement: vysvětlení k návrhu zákona
+- term: RIA
+  replacement: hodnocení dopadů zákona
+- term: hodnocení dopadů regulace
+  replacement: hodnocení dopadů zákona
+- term: fiskální
+  replacement: týkající se státních peněz
+- term: diverzifikace
+  replacement: víc zdrojů peněz najednou
+- term: administrativní náročnost
+  replacement: hodně papírování a práce úřadů
+- term: víceletý rámec
+  replacement: částka určená na několik let dopředu
+- term: přijímač
+  replacement: televize, rádio, počítač nebo mobil

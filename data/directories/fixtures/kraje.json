@@ -1,0 +1,35 @@
+[
+  {
+    "code": "CZ010",
+    "vusc_kod": 19,
+    "name": "Hlavní město Praha",
+    "krajsky_urad": {
+      "name": "HLAVNÍ MĚSTO PRAHA",
+      "ico": "00064581",
+      "address": "Mariánské náměstí 2/2, Staré Město, 110 00 Praha 1",
+      "datova_schranka": "48ia97h"
+    }
+  },
+  {
+    "code": "CZ064",
+    "vusc_kod": 116,
+    "name": "Jihomoravský kraj",
+    "krajsky_urad": {
+      "name": "Jihomoravský kraj",
+      "ico": "70888337",
+      "address": "Žerotínovo náměstí 449/3, Veveří, 602 00 Brno",
+      "datova_schranka": "x2pbqzq"
+    }
+  },
+  {
+    "code": "CZ080",
+    "vusc_kod": 132,
+    "name": "Moravskoslezský kraj",
+    "krajsky_urad": {
+      "name": "Moravskoslezský kraj",
+      "ico": "70890692",
+      "address": "28. října 2771/117, Moravská Ostrava, 702 00 Ostrava",
+      "datova_schranka": "8x6bxsd"
+    }
+  }
+]

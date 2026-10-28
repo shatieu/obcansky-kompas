@@ -1,0 +1,25 @@
+id: q8-opt3
+text: |
+  Firma platí podle zisku, ale jen do určité částky. Tak to funguje ve Finsku. Firma tam platí 140 eur a 0,35 procenta ze zisku nad 50 tisíc eur. Nejvýš zaplatí 3 000 eur ročně a firmy se ziskem pod 50 tisíc eur neplatí.
+pro: "Firmy, které vydělávají víc, přispějí víc než ostatní."
+proti: "Výpočet je složitější a velké firmy platí jen maximum."
+claims:
+  - id: q8-opt3-c1
+    claim: "Finská firma platí Yle daň 140 eur plus 0,35 % ze zdanitelného příjmu nad 50 000 eur."
+    source_url: "https://www.vero.fi/tietoa-verohallinnosta/tietoa_verotuksest/ylevero/"
+    source_title: "Verohallinto – Yleisradiovero"
+    locator: "sekce Yhteisöasiakkaat"
+    quote: "yhteisö maksaa yleisradioveroa 140 euroa ja lisäksi 0,35 % 50 000 euron ylittävältä osalta"
+  - id: q8-opt3-c2
+    claim: "Finská firma zaplatí Yle daň nejvýš 3 000 eur ročně."
+    source_url: "https://www.vero.fi/tietoa-verohallinnosta/tietoa_verotuksest/ylevero/"
+    source_title: "Verohallinto – Yleisradiovero"
+    locator: "sekce Yhteisöasiakkaat"
+    quote: "Veron enimmäismäärä on kuitenkin 3 000 euroa vuodessa."
+  - id: q8-opt3-c3
+    claim: "Finská firma se zdanitelným příjmem pod 50 000 eur Yle daň neplatí."
+    source_url: "https://www.vero.fi/tietoa-verohallinnosta/tietoa_verotuksest/ylevero/"
+    source_title: "Verohallinto – Yleisradiovero"
+    locator: "sekce Yhteisöasiakkaat"
+status: draft
+human_reviewed: false

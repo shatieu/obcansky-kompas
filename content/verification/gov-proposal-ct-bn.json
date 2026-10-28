@@ -1,0 +1,12 @@
+{
+  "claim_id": "gov-proposal-ct-bn",
+  "claim_hash": "517e43554f91bc6a1638a48f4d81208dc0b9cd3c302c875bc2bec2d44ac08b3e",
+  "verdict": "ano",
+  "correction": "",
+  "note": "Čl. I, § 10a odst. 2: 5 741 826 000 Kč (v návrhu je to bod 2, ne bod 3).",
+  "url_checked": "https://www.psp.cz/sqw/text/orig2.sqw?idd=277415",
+  "checked_at": "2026-10-27T23:53:49Z",
+  "verifier": "verifier-a1",
+  "round": 1,
+  "human_reviewed": false
+}

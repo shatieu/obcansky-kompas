@@ -1,0 +1,34 @@
+id: q2-opt3
+text: |
+  Peníze jdou ze státního rozpočtu, ale zákon je chrání před náhlými změnami.
+  Pojistkou může být částka pevně na několik let nebo návrh nezávislé komise.
+  Evropský akt o svobodě médií doporučuje přidělovat peníze na několik let dopředu.
+  Norsko platí NRK ze státního rozpočtu od roku 2020.
+pro: Odpadne vybírání poplatků a pro lidi je systém jednodušší.
+proti: Peníze přímo od státu mohou zvýšit závislost médií na státu.
+claims:
+- id: q2-opt3-c1
+  claim: Preambule Evropského aktu o svobodě sdělovacích prostředků uvádí, že o financování veřejnoprávních médií by se mělo rozhodovat na víceletém základě.
+  source_url: https://www.psp.cz/sqw/text/orig2.sqw?idd=277415
+  source_title: Vládní návrh zákona, kterým se mění zákon o České televizi a zákon o Českém rozhlasu a zrušuje zákon o poplatcích (sněmovní tisk 231/0), včetně důvodové zprávy
+  locator: Důvodová zpráva, Obecná část, bod 2 (citace preambule nařízení), str. 6
+  quote: prostředky by měly být přidělovány na víceletém základě
+- id: q2-opt3-c2
+  claim: Norsko zrušilo poplatek za vysílání od 1. 1. 2020 a NRK od té doby financuje ze státního rozpočtu.
+  source_url: https://www.stortinget.no/no/Saker-og-publikasjoner/Publikasjoner/Innstillinger/Stortinget/2019-2020/inns-201920-004l/?all=true
+  source_title: Stortinget – Innst. 4 L (2019–2020)
+  locator: úvod / shrnutí návrhu (kringkastingsavgiften avvikles)
+  quote: kringkastingsavgiften skal avvikles fra 1. januar 2020
+- id: q2-opt3-c3
+  claim: Důvodová zpráva uvádí jako hlavní výhodu financování ze státního rozpočtu odstranění administrativy poplatků a jednodušší systém pro občana.
+  source_url: https://www.psp.cz/sqw/text/orig2.sqw?idd=277415
+  source_title: Vládní návrh zákona, kterým se mění zákon o České televizi a zákon o Českém rozhlasu a zrušuje zákon o poplatcích (sněmovní tisk 231/0), včetně důvodové zprávy
+  locator: Důvodová zpráva, Obecná část, bod 5 (přehled modelů financování v Evropě), str. 9
+- id: q2-opt3-c4
+  claim: Důvodová zpráva uvádí jako riziko financování ze státního rozpočtu možnost vyšší závislosti médií veřejné služby na státu.
+  source_url: https://www.psp.cz/sqw/text/orig2.sqw?idd=277415
+  source_title: Vládní návrh zákona, kterým se mění zákon o České televizi a zákon o Českém rozhlasu a zrušuje zákon o poplatcích (sněmovní tisk 231/0), včetně důvodové zprávy
+  locator: Důvodová zpráva, Obecná část, bod 5 (přehled modelů financování v Evropě), str. 9
+  quote: Rizikem je naopak možnost vyšší závislosti médií veřejné služby na státu.
+status: draft
+human_reviewed: false

@@ -1,0 +1,24 @@
+id: q7-opt3
+text: |
+  Lidé se zdravotním postižením neplatí. Dnes v Česku neplatí lidé, kteří úplně nebo téměř nevidí na obě oči nebo neslyší. V Německu mohou neplatit hluchoslepí lidé a někteří další lidé s postižením mohou platit méně.
+pro: "Lidé se zdravotním postižením mají o jednu platbu méně."
+proti: "Je nutné určit, které postižení stačí, a ostatní zaplatí víc."
+claims:
+  - id: q7-opt3-c1
+    claim: "V Česku neplatí poplatky lidé s úplnou nebo praktickou slepotou obou očí a lidé s oboustrannou úplnou nebo praktickou hluchotou, pokud žijí sami nebo společně jen s dalšími takovými osobami v jedné domácnosti."
+    source_url: "https://www.zakonyprolidi.cz/cs/2005-348"
+    source_title: "Zákon č. 348/2005 Sb., o rozhlasových a televizních poplatcích (znění k 1. 1. 2026)"
+    locator: "§ 4 odst. 1 písm. g)"
+    quote: "osoby s úplnou nebo praktickou slepotou obou očí"
+  - id: q7-opt3-c2
+    claim: "V Německu mohou být od poplatku osvobozeni hluchoslepí lidé."
+    source_url: "https://www.rundfunkbeitrag.de/ausnahmen-von-der-rundfunkbeitragspflicht"
+    source_title: "Beitragsservice – Ausnahmen von der Rundfunkbeitragspflicht"
+    locator: "sekce Befreiung: Gesundheitliche Gründe"
+  - id: q7-opt3-c3
+    claim: "V Německu mohou lidé se zdravotním postižením, kterým byl přiznán znak RF, požádat o snížení poplatku."
+    source_url: "https://www.rundfunkbeitrag.de/ausnahmen-von-der-rundfunkbeitragspflicht"
+    source_title: "Beitragsservice – Ausnahmen von der Rundfunkbeitragspflicht"
+    locator: "sekce Ermäßigung: Merkzeichen RF"
+status: draft
+human_reviewed: false

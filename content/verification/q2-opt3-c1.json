@@ -1,0 +1,12 @@
+{
+  "claim_id": "q2-opt3-c1",
+  "claim_hash": "4698701b89d3cc0f82ded204448c55912975065a0b2e3ffe861926d9fdf9f6b8",
+  "verdict": "ano",
+  "correction": "",
+  "note": "DZ str. 6, citace preambule: 'O takovém financování by se mělo rozhodovat a prostředky by měly být přidělovány na víceletém základě'.",
+  "url_checked": "https://www.psp.cz/sqw/text/orig2.sqw?idd=277415",
+  "checked_at": "2026-10-27T23:53:49Z",
+  "verifier": "verifier-a1",
+  "round": 1,
+  "human_reviewed": false
+}

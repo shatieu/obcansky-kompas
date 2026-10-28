@@ -1,0 +1,12 @@
+{
+  "claim_id": "q3-opt3-c3",
+  "claim_hash": "f74f46d904f956523a3d55a2b88dcce0f834ae33e54cb8dbd59c15e187a735b5",
+  "verdict": "ano",
+  "correction": "",
+  "note": "KEF bod 3: návrh je podkladem pro rozhodnutí zemských vlád a parlamentů; odchylka 'nur in engen Grenzen'.",
+  "url_checked": "https://kef-online.de/kommission/zur-arbeit-der-kommission",
+  "checked_at": "2026-10-27T23:53:49Z",
+  "verifier": "verifier-a1",
+  "round": 1,
+  "human_reviewed": false
+}

@@ -1,0 +1,29 @@
+id: q3-opt3
+text: |
+  Odborníci by spočítali, kolik ČT a ČRo potřebují, a navrhli částku na několik let.
+  V Německu to dělá komise 16 nezávislých odborníků.
+  Posuzuje potřebu peněz na čtyřletá období.
+  O poplatku pak rozhodují zemské vlády a parlamenty a od návrhu se smějí odchýlit jen výjimečně.
+pro: Částku počítají odborníci a platí na několik let dopředu.
+proti: Vznikne nový orgán a o částce nakonec rozhodují politici.
+claims:
+- id: q3-opt3-c1
+  claim: Německou komisi KEF tvoří 16 nezávislých odborníků, které jmenují předsedové zemských vlád na pět let.
+  source_url: https://kef-online.de/kommission/mitglieder
+  source_title: KEF – Mitglieder
+  locator: úvodní odstavec
+  quote: 16 unabhängigen Sachverständigen
+- id: q3-opt3-c2
+  claim: Komise KEF posuzuje potřebu peněz veřejnoprávních médií pro čtyřletá období poplatku.
+  source_url: https://kef-online.de/kommission/zur-arbeit-der-kommission
+  source_title: KEF – Zur Arbeit der Kommission
+  locator: Zur Arbeit der Kommission, odstavec o přihlášce potřeb
+  quote: zwei jeweils vierjährigen Beitragsperioden
+- id: q3-opt3-c3
+  claim: O poplatku rozhodují zemské vlády a parlamenty na základě návrhu KEF a odchýlit se od něj lze jen v úzkých mezích.
+  source_url: https://kef-online.de/kommission/zur-arbeit-der-kommission
+  source_title: KEF – Zur Arbeit der Kommission
+  locator: Zur Arbeit der Kommission, odstavec o rozhodnutí o poplatku
+  quote: nur in engen Grenzen und nur einvernehmlich durch alle Länder möglich
+status: draft
+human_reviewed: false

@@ -1,0 +1,20 @@
+id: q5-opt3
+text: |
+  Kdo vydělává víc, platí víc, a žádná horní hranice není. Částka tedy roste s příjmem bez omezení. Finsko i Švédsko, kde se platí podle příjmu, horní hranici mají.
+pro: "Lidé s vysokým příjmem přispějí víc než ostatní lidé."
+proti: "Lidé s vysokým příjmem zaplatí víc za stejnou službu."
+claims:
+  - id: q5-opt3-c1
+    claim: "Finská Yle daň pro jednotlivce je nejvýš 160 eur ročně."
+    source_url: "https://yle.fi/aihe/about-yle/finances"
+    source_title: "Yle – Content from Yle's finances"
+    locator: "sekce Yle tax for individuals"
+    quote: "The maximum tax per person is EUR 160 per year."
+  - id: q5-opt3-c2
+    claim: "Švédský poplatek je pro rok 2026 nejvýš 1 184 švédských korun na osobu a rok."
+    source_url: "https://www.skatteverket.se/publicserviceavgift"
+    source_title: "Skatteverket – Public service-avgift"
+    locator: "sekce Så mycket ska du betala för inkomståret 2026"
+    quote: "För inkomståret 2026 är public service-avgiften maximalt 1 184 kronor per person och år."
+status: draft
+human_reviewed: false

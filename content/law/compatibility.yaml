@@ -1,0 +1,71 @@
+# Matice kompatibility pro Můj zákon (SPEC §10), sladěná s větvením kompasu (SPEC §5.2).
+#
+# Pravidla se vyhodnocují v uvedeném pořadí nad odpověďmi (Q2 je kořen větvení).
+#   when       – podmínka (stejný formát jako `when` v modulech)
+#   allow      – povolené volby otázky (ostatní jsou v kompasu zašedlé). Odpověď mimo seznam se zruší;
+#                má-li seznam jedinou volbu, použije se ta (předvyplnění), jinak platí „Nevím“.
+#   grey       – otázky v kompasu celé zašedlé (odpověď se nepoužije).
+#   law_omit   – otázky, jejichž moduly se do zákona nevkládají (ani text „Nevím“).
+#   law_replace – slot, jehož obsah se nahradí poznámkou (rozpor mezi odpověďmi).
+# origin: spec-5.2 = převzato z tabulky větvení; law = doplněno jen pro text zákona.
+version: 1
+rules:
+  # Q2 = 1 Poplatek jako dnes, 2 Zvláštní poplatek přes daně, 7 Nevím: vše povoleno (žádné pravidlo).
+
+  - id: q2-3-rozpocet-pojistky
+    origin: spec-5.2
+    when: { q2: 3 }
+    allow:
+      q3: [1, 3, nevim]
+      q4: [3]
+      q8: [1]
+    grey: [q5, q6, q7]
+    law_omit: [q4, q5, q6, q7, q8]
+
+  - id: q2-4-navrh-vlady
+    origin: spec-5.2
+    when: { q2: 4 }
+    allow:
+      q3: [1]
+      q4: [3]
+      q8: [1]
+    grey: [q5, q6, q7]
+    law_omit: [q4, q5, q6, q7, q8]
+
+  - id: q2-5-rozpocet
+    origin: spec-5.2
+    when: { q2: 5 }
+    allow:
+      q3: [2]
+      q4: [3]
+      q8: [1]
+    grey: [q5, q6, q7]
+    law_omit: [q4, q5, q6, q7, q8]
+
+  - id: q2-6-dobrovolne
+    origin: spec-5.2
+    when: { q2: 6 }
+    grey: [q3, q4, q5, q6, q7, q8]
+    law_omit: [q3, q4, q5, q6, q7, q8]
+
+  - id: poplatek-bez-poplatnika
+    origin: law
+    when:
+      q2: [1, 2]
+      q4: 3
+    law_omit: [q5, q6, q7]
+    law_replace:
+      slot: payer
+      paragraph:
+        id: rozpor-poplatek-bez-poplatnika
+        title: Poplatník
+        text: >-
+          [Zvolený zdroj financování počítá s poplatkem, ale podle odpovědi na
+          otázku, kdo má platit, nemá nikdo platit zvlášť. Tento rozpor ponechávám
+          na zákonodárci.]
+
+  - id: bez-zvlastniho-poplatnika
+    origin: law
+    when:
+      q4: 3
+    law_omit: [q5, q6, q7]

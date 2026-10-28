@@ -1,0 +1,144 @@
+# Dopis ministru / ministryni kultury (SPEC §9.2). Struktura a stupně viz poslanec.yaml.
+type: ministr-kultury
+version: 1
+label: Ministr kultury
+positions:
+  osloveni:
+    - id: osl-1
+      forma: [1]
+      delka: [1, 2, 3]
+      text: Dobrý den,
+    - id: osl-2
+      forma: [1, 2]
+      delka: [1, 2]
+      text: Dobrý den, paní ministryně, pane ministře,
+    - id: osl-3
+      forma: [2, 3]
+      delka: [1, 2, 3]
+      text: Vážená paní ministryně, vážený pane ministře,
+    - id: osl-4
+      forma: [3]
+      delka: [1, 2, 3]
+      text: Ctěná paní ministryně, ctěný pane ministře,
+    - id: osl-5
+      forma: [1, 2]
+      delka: [3]
+      text: Paní ministryně, pane ministře,
+
+  uvod:
+    - id: uvod-1
+      forma: [1]
+      delka: [1, 2, 3]
+      text: Píšu Vám kvůli vládnímu návrhu na financování České televize a Českého rozhlasu.
+    - id: uvod-2
+      forma: [1, 2]
+      delka: [1, 2]
+      text: >-
+        Chci Vám krátce napsat, jak vidím financování České televize a Českého
+        rozhlasu.
+    - id: uvod-3
+      forma: [2, 3]
+      delka: [1, 2, 3]
+      text: >-
+        Obracím se na Vás ve věci financování České televize a Českého rozhlasu
+        a chci Vám sdělit svůj názor.
+    - id: uvod-4
+      forma: [3]
+      delka: [1, 2, 3]
+      text: >-
+        Dovoluji si Vás oslovit ve věci vládního návrhu na financování České
+        televize a Českého rozhlasu.
+    - id: uvod-5
+      forma: [1, 2, 3]
+      delka: [3]
+      text: >-
+        Píšu Vám, protože vládní návrh na financování České televize a Českého
+        rozhlasu považuji za zásadní věc, ke které nechci mlčet.
+
+  prechod:
+    - id: pre-1
+      forma: [1]
+      delka: [1, 2, 3]
+      text: Tak to vidím já.
+    - id: pre-2
+      forma: [1, 2]
+      delka: [1, 2]
+      text: Takto si financování médií veřejné služby představuji.
+    - id: pre-3
+      forma: [2, 3]
+      delka: [1, 2, 3]
+      text: Toto je můj názor na to, jak by financování mělo vypadat.
+    - id: pre-4
+      forma: [3]
+      delka: [1, 2, 3]
+      text: >-
+        Uvedené body shrnují můj postoj k tomu, jak by mělo být financování médií
+        veřejné služby upraveno.
+    - id: pre-5
+      forma: [1, 2, 3]
+      delka: [3]
+      text: >-
+        Na těchto bodech mi opravdu záleží a budu sledovat, jak s nimi naložíte.
+
+  zadost:
+    - id: zad-1
+      forma: [1]
+      delka: [1, 2, 3]
+      text: Prosím, zasaďte se o přepracování vládního návrhu.
+    - id: zad-2
+      forma: [1, 2]
+      delka: [1, 2]
+      text: >-
+        Prosím Vás, zasaďte se o úpravu vládního návrhu a o širší veřejnou debatu
+        o něm.
+    - id: zad-3
+      forma: [2, 3]
+      delka: [1, 2, 3]
+      text: >-
+        Žádám Vás o přepracování vládního návrhu tak, aby odpovídal uvedeným
+        bodům, a o otevřenou debatu s veřejností.
+    - id: zad-4
+      forma: [3]
+      delka: [1, 2, 3]
+      text: >-
+        Dovoluji si Vás požádat o přepracování vládního návrhu a o jeho projednání
+        v široké odborné i veřejné debatě.
+    - id: zad-5
+      forma: [1, 2, 3]
+      delka: [3]
+      text: >-
+        Důrazně Vás žádám: vládní návrh v této podobě neprosazujte. Přepracujte ho
+        tak, aby odpovídal uvedeným bodům, a dejte veřejnosti prostor se k němu
+        vyjádřit.
+
+  zaver:
+    - id: zav-1
+      forma: [1]
+      delka: [1, 2, 3]
+      text: |-
+        Děkuji.
+        S pozdravem
+    - id: zav-2
+      forma: [1, 2]
+      delka: [1, 2]
+      text: |-
+        Děkuji za Váš čas.
+        S pozdravem
+    - id: zav-3
+      forma: [2, 3]
+      delka: [1, 2, 3]
+      text: |-
+        Děkuji za pozornost, kterou mému dopisu věnujete.
+        S pozdravem
+    - id: zav-4
+      forma: [3]
+      delka: [1, 2, 3]
+      text: |-
+        Děkuji Vám za pozornost a uvítám Vaši odpověď.
+        S úctou
+    - id: zav-5
+      forma: [1, 2, 3]
+      delka: [3]
+      text: |-
+        Vaše další kroky budu pozorně sledovat. Uvítám Vaši odpověď.
+        S pozdravem

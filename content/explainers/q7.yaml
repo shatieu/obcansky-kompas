@@ -1,0 +1,28 @@
+id: q7
+text: |
+  Můžete vybrat víc skupin, které nemají platit. Dnes v Česku neplatí třeba lidé s velmi nízkým příjmem a lidé, kteří nevidí nebo neslyší. V Německu mohou neplatit i někteří studenti a lidé, kteří dostávají sociální dávky.
+claims:
+  - id: q7-c1
+    claim: "V Česku neplatí poplatky člověk žijící sám, jehož čistý příjem za uplynulé kalendářní čtvrtletí je nižší než 2,15násobek životního minima; u vícečlenné domácnosti se sčítají čisté příjmy všech jejích členů."
+    source_url: "https://www.zakonyprolidi.cz/cs/2005-348"
+    source_title: "Zákon č. 348/2005 Sb., o rozhlasových a televizních poplatcích (znění k 1. 1. 2026)"
+    locator: "§ 4 odst. 2 písm. a) a b)"
+    quote: "čistý příjem za uplynulé kalendářní čtvrtletí je nižší než 2,15násobek životního minima"
+  - id: q7-c2
+    claim: "V Česku neplatí poplatky lidé s úplnou nebo praktickou slepotou obou očí a lidé s oboustrannou úplnou nebo praktickou hluchotou, pokud žijí sami nebo společně jen s dalšími takovými osobami v jedné domácnosti."
+    source_url: "https://www.zakonyprolidi.cz/cs/2005-348"
+    source_title: "Zákon č. 348/2005 Sb., o rozhlasových a televizních poplatcích (znění k 1. 1. 2026)"
+    locator: "§ 4 odst. 1 písm. g)"
+    quote: "osoby s úplnou nebo praktickou slepotou obou očí"
+  - id: q7-c3
+    claim: "V Německu mohou být od poplatku osvobozeni studenti, kteří dostávají státní podporu BAföG a nebydlí u rodičů."
+    source_url: "https://www.rundfunkbeitrag.de/ausnahmen-von-der-rundfunkbeitragspflicht"
+    source_title: "Beitragsservice – Ausnahmen von der Rundfunkbeitragspflicht"
+    locator: "sekce Befreiung: Soziale Gründe / Studierende"
+  - id: q7-c4
+    claim: "V Německu mohou být od poplatku osvobozeni lidé, kteří dostávají některé sociální dávky, například základní zajištění ve stáří."
+    source_url: "https://www.rundfunkbeitrag.de/ausnahmen-von-der-rundfunkbeitragspflicht"
+    source_title: "Beitragsservice – Ausnahmen von der Rundfunkbeitragspflicht"
+    locator: "sekce Befreiung: Soziale Gründe"
+status: draft
+human_reviewed: false

@@ -1,0 +1,48 @@
+id: q2-opt4
+text: |
+  Podle návrhu se poplatky od roku 2027 zruší a ČT a ČRo dostanou peníze ze státního rozpočtu.
+  ČT má dostat asi 5,7 miliardy a ČRo asi 2,1 miliardy korun ročně.
+  Je to tolik, kolik vybraly na poplatcích v roce 2024.
+  Když ceny od posledního zvýšení vzrostou o víc než 10 %, částka stoupne o 10 %.
+pro: Lidé a firmy už nebudou muset platit žádný zvláštní poplatek.
+proti: ČT a ČRo dostanou asi o pětinu méně než podle rozpočtů 2026.
+claims:
+- id: q2-opt4-c1
+  claim: Vládní návrh ruší zákon o poplatcích s účinností od 1. 1. 2027 a ČT a ČRo dává příspěvek ze státního rozpočtu.
+  source_url: https://www.psp.cz/sqw/text/orig2.sqw?idd=277415
+  source_title: Vládní návrh zákona, kterým se mění zákon o České televizi a zákon o Českém rozhlasu a zrušuje zákon o poplatcích (sněmovní tisk 231/0), včetně důvodové zprávy
+  locator: Čl. I a II (nové § 10a odst. 1), Čl. IV a Čl. V, str. 1–3
+- id: q2-opt4-c2
+  claim: Vládní návrh stanoví příspěvek pro rok 2027 na 5 741 826 000 Kč pro ČT a 2 065 766 000 Kč pro ČRo.
+  source_url: https://www.psp.cz/sqw/text/orig2.sqw?idd=277415
+  source_title: Vládní návrh zákona, kterým se mění zákon o České televizi a zákon o Českém rozhlasu a zrušuje zákon o poplatcích (sněmovní tisk 231/0), včetně důvodové zprávy
+  locator: Čl. I a Čl. II, nové § 10a odst. 2, str. 1–2
+- id: q2-opt4-c3
+  claim: Podle návrhu je příspěvek pro rok 2028 a další roky stejný jako v předchozím roce, pokud se nezvýší kvůli inflaci.
+  source_url: https://www.psp.cz/sqw/text/orig2.sqw?idd=277415
+  source_title: Vládní návrh zákona, kterým se mění zákon o České televizi a zákon o Českém rozhlasu a zrušuje zákon o poplatcích (sněmovní tisk 231/0), včetně důvodové zprávy
+  locator: Čl. I a Čl. II, nové § 10a odst. 3, str. 1–2
+- id: q2-opt4-c4
+  claim: Výše příspěvku podle návrhu odpovídá příjmům ČT a ČRo z poplatků v roce 2024.
+  source_url: https://www.psp.cz/sqw/text/orig2.sqw?idd=277415
+  source_title: Vládní návrh zákona, kterým se mění zákon o České televizi a zákon o Českém rozhlasu a zrušuje zákon o poplatcích (sněmovní tisk 231/0), včetně důvodové zprávy
+  locator: Důvodová zpráva, Zvláštní část, K části první a druhé, str. 20
+  quote: výše příspěvku odpovídá příjmu Českého rozhlasu a České televize z koncesionářských poplatků v roce 2024
+- id: q2-opt4-c5
+  claim: Podle návrhu se příspěvek zvýší o 10 %, když kumulativní inflace od roku 2026 nebo od posledního zvýšení překročí 10 procentních bodů.
+  source_url: https://www.psp.cz/sqw/text/orig2.sqw?idd=277415
+  source_title: Vládní návrh zákona, kterým se mění zákon o České televizi a zákon o Českém rozhlasu a zrušuje zákon o poplatcích (sněmovní tisk 231/0), včetně důvodové zprávy
+  locator: Čl. I a Čl. II, nové § 10a odst. 3, str. 1–2
+- id: q2-opt4-c6
+  claim: Návrh ruší povinnost fyzických a právnických osob platit rozhlasový a televizní poplatek.
+  source_url: https://www.psp.cz/sqw/text/orig2.sqw?idd=277415
+  source_title: Vládní návrh zákona, kterým se mění zákon o České televizi a zákon o Českém rozhlasu a zrušuje zákon o poplatcích (sněmovní tisk 231/0), včetně důvodové zprávy
+  locator: Důvodová zpráva, Obecná část, bod 9, str. 16
+- id: q2-opt4-c7
+  claim: Hodnocení dopadů uvádí, že příspěvek je oproti rozpočtům na rok 2026 téměř o 20 % nižší.
+  source_url: https://www.psp.cz/sqw/text/orig2.sqw?idd=277417
+  source_title: Závěrečná zpráva z hodnocení dopadů regulace (RIA) k vládnímu návrhu, sněmovní tisk 231
+  locator: kap. 3.2 Náklady / Přínosy, str. 33
+  quote: jde o téměř 20% pokles
+status: draft
+human_reviewed: false

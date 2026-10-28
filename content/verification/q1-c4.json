@@ -1,0 +1,12 @@
+{
+  "claim_id": "q1-c4",
+  "claim_hash": "9c226729ca2d490609e4016a76c03a06f56e1a690a1c37bee625d88371f69b29",
+  "verdict": "ano",
+  "correction": "",
+  "note": "ČSÚ OBY02B CSV (streamováno a filtrováno): k 31. 12. 2025, Česko, Celkem, součet věků 18–100+ = 8 886 675.",
+  "url_checked": "https://data.csu.gov.cz/opendata/sady/OBY02B/distribuce/csv",
+  "checked_at": "2026-10-27T23:53:49Z",
+  "verifier": "verifier-a1",
+  "round": 1,
+  "human_reviewed": false
+}

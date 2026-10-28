@@ -1,0 +1,12 @@
+{
+  "claim_id": "q3-c4",
+  "claim_hash": "2d2f91626003c289174710646625a4215838146385e25649f212ff34be8754af",
+  "verdict": "ano",
+  "correction": "",
+  "note": "KEF Mitglieder, totéž.",
+  "url_checked": "https://kef-online.de/kommission/mitglieder",
+  "checked_at": "2026-10-27T23:53:49Z",
+  "verifier": "verifier-a1",
+  "round": 1,
+  "human_reviewed": false
+}

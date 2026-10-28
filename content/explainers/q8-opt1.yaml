@@ -1,0 +1,20 @@
+id: q8-opt1
+text: |
+  Firmy neplatí, platí jen lidé nebo stát. Tak je to ve Švédsku. Dnes v Česku neplatí firmy, které mají nejvýš 24 zaměstnanců.
+pro: "Firmy mají nižší náklady a méně papírování."
+proti: "Lidé zaplatí víc, protože firmy nepřispějí nic."
+claims:
+  - id: q8-opt1-c1
+    claim: "Švédský poplatek platí jen lidé, firmy ho neplatí."
+    source_url: "https://www.skatteverket.se/publicserviceavgift"
+    source_title: "Skatteverket – Public service-avgift"
+    locator: "sekce Vem ska inte betala avgiften?"
+    quote: "tas inte ut för juridiska personer, till exempel företag"
+  - id: q8-opt1-c2
+    claim: "V Česku neplatí poplatky firma nebo podnikatel, který zaměstnává nejvýše 24 osob."
+    source_url: "https://www.zakonyprolidi.cz/cs/2005-348"
+    source_title: "Zákon č. 348/2005 Sb., o rozhlasových a televizních poplatcích (znění k 1. 1. 2026)"
+    locator: "§ 5 odst. 4"
+    quote: "zaměstnává nejvýše 24 osob"
+status: draft
+human_reviewed: false

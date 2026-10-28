@@ -1,0 +1,143 @@
+# Dopis prezidentu republiky (SPEC §9.2). Struktura a stupně viz poslanec.yaml.
+type: prezident
+version: 1
+label: Prezident republiky
+positions:
+  osloveni:
+    - id: osl-1
+      forma: [1]
+      delka: [1, 2, 3]
+      text: Dobrý den,
+    - id: osl-2
+      forma: [1, 2]
+      delka: [1, 2]
+      text: Dobrý den, pane prezidente,
+    - id: osl-3
+      forma: [2, 3]
+      delka: [1, 2, 3]
+      text: Vážený pane prezidente,
+    - id: osl-4
+      forma: [3]
+      delka: [1, 2, 3]
+      text: Vážený pane prezidente republiky,
+    - id: osl-5
+      forma: [1, 2]
+      delka: [3]
+      text: Pane prezidente,
+
+  uvod:
+    - id: uvod-1
+      forma: [1]
+      delka: [1, 2, 3]
+      text: Píšu Vám kvůli vládnímu návrhu na financování České televize a Českého rozhlasu.
+    - id: uvod-2
+      forma: [1, 2]
+      delka: [1, 2]
+      text: >-
+        Chci Vám krátce napsat, jak vidím financování České televize a Českého
+        rozhlasu.
+    - id: uvod-3
+      forma: [2, 3]
+      delka: [1, 2, 3]
+      text: >-
+        Obracím se na Vás ve věci, která se týká nás všech: jak budou financovány
+        Česká televize a Český rozhlas.
+    - id: uvod-4
+      forma: [3]
+      delka: [1, 2, 3]
+      text: >-
+        Dovoluji si Vás oslovit ve věci vládního návrhu na financování České
+        televize a Českého rozhlasu.
+    - id: uvod-5
+      forma: [1, 2, 3]
+      delka: [3]
+      text: >-
+        Píšu Vám, protože vládní návrh na financování České televize a Českého
+        rozhlasu považuji za zásadní věc, ke které nechci mlčet.
+
+  prechod:
+    - id: pre-1
+      forma: [1]
+      delka: [1, 2, 3]
+      text: Tak to vidím já.
+    - id: pre-2
+      forma: [1, 2]
+      delka: [1, 2]
+      text: Takto si financování médií veřejné služby představuji.
+    - id: pre-3
+      forma: [2, 3]
+      delka: [1, 2, 3]
+      text: Toto je můj názor na to, jak by financování mělo vypadat.
+    - id: pre-4
+      forma: [3]
+      delka: [1, 2, 3]
+      text: >-
+        Uvedené body shrnují můj postoj k tomu, jak by mělo být financování médií
+        veřejné služby upraveno.
+    - id: pre-5
+      forma: [1, 2, 3]
+      delka: [3]
+      text: >-
+        Na těchto bodech mi opravdu záleží, a proto se obracím přímo na Vás.
+
+  zadost:
+    - id: zad-1
+      forma: [1]
+      delka: [1, 2, 3]
+      text: Prosím, pokud Vám bude zákon v této podobě předložen k podpisu, nepodepisujte ho.
+    - id: zad-2
+      forma: [1, 2]
+      delka: [1, 2]
+      text: >-
+        Prosím Vás: pokud se k Vám zákon dostane v této podobě, nepodepisujte ho.
+    - id: zad-3
+      forma: [2, 3]
+      delka: [1, 2, 3]
+      text: >-
+        Žádám Vás: pokud Vám bude zákon v této podobě předložen, nepodepisujte ho
+        a vraťte ho Poslanecké sněmovně.
+    - id: zad-4
+      forma: [3]
+      delka: [1, 2, 3]
+      text: >-
+        Dovoluji si Vás požádat, abyste zákon, bude-li Vám předložen v této
+        podobě, nepodepsal a vrátil jej Poslanecké sněmovně.
+    - id: zad-5
+      forma: [1, 2, 3]
+      delka: [3]
+      text: >-
+        Důrazně Vás žádám: pokud Vám bude zákon v této podobě předložen,
+        nepodepisujte ho a vraťte ho Poslanecké sněmovně, aby se o něm znovu
+        jednalo.
+
+  zaver:
+    - id: zav-1
+      forma: [1]
+      delka: [1, 2, 3]
+      text: |-
+        Děkuji.
+        S pozdravem
+    - id: zav-2
+      forma: [1, 2]
+      delka: [1, 2]
+      text: |-
+        Děkuji za Váš čas.
+        S pozdravem
+    - id: zav-3
+      forma: [2, 3]
+      delka: [1, 2, 3]
+      text: |-
+        Děkuji za pozornost, kterou mému dopisu věnujete.
+        S úctou
+    - id: zav-4
+      forma: [3]
+      delka: [1, 2, 3]
+      text: |-
+        Děkuji Vám za pozornost a uvítám Vaši odpověď.
+        S hlubokou úctou
+    - id: zav-5
+      forma: [1, 2, 3]
+      delka: [3]
+      text: |-
+        Vaše rozhodnutí budu pozorně sledovat. Děkuji, že můj dopis zvážíte.
+        S pozdravem

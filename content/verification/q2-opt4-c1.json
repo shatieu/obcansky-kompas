@@ -1,0 +1,12 @@
+{
+  "claim_id": "q2-opt4-c1",
+  "claim_hash": "7172f526e509be6174f1edd7f407bc01ba599c25474ad6fdeadc5832d3c9433d",
+  "verdict": "ano",
+  "correction": "",
+  "note": "Čl. I/II § 10a odst. 1 (příspěvek ze SR), Čl. IV bod 1 (zrušení z. 348/2005), Čl. V (účinnost 1. 1. 2027).",
+  "url_checked": "https://www.psp.cz/sqw/text/orig2.sqw?idd=277415",
+  "checked_at": "2026-10-27T23:53:49Z",
+  "verifier": "verifier-a1",
+  "round": 1,
+  "human_reviewed": false
+}

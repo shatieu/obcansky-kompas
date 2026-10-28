@@ -1,0 +1,16 @@
+id: q2-opt6
+text: |
+  ČT a ČRo by neměly povinný poplatek ani peníze ze státního rozpočtu.
+  Lidé by přispívali jen tehdy, když sami chtějí.
+  Dnes jsou poplatky hlavním zdrojem peněz ČT a ČRo.
+pro: Platí jen ti, kdo chtějí ČT a ČRo podporovat.
+proti: Předem nikdo neví, kolik peněz lidé dobrovolně pošlou.
+claims:
+- id: q2-opt6-c1
+  claim: Důvodová zpráva označuje poplatek za základní a stěžejní zdroj příjmu ČT a ČRo.
+  source_url: https://www.psp.cz/sqw/text/orig2.sqw?idd=277415
+  source_title: Vládní návrh zákona, kterým se mění zákon o České televizi a zákon o Českém rozhlasu a zrušuje zákon o poplatcích (sněmovní tisk 231/0), včetně důvodové zprávy
+  locator: Důvodová zpráva, Obecná část, bod 1, str. 4
+  quote: Základním a stěžejním zdrojem příjmu
+status: draft
+human_reviewed: false

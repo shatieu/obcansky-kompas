@@ -1,0 +1,57 @@
+[
+  {
+    "obvod_cislo": 22,
+    "obvod_nazev": "Praha 10",
+    "id": 361,
+    "jmeno": "Jan Pirk",
+    "jmeno_s_tituly": "prof. MUDr. Jan Pirk, Dr.Sc.",
+    "strana": "BEZPP",
+    "email": "pirkj@senat.cz",
+    "web": "https://janpirk.cz",
+    "profile_url": "https://www.senat.cz/senatori/index.php?lng=cz&par_3=361"
+  },
+  {
+    "obvod_cislo": 26,
+    "obvod_nazev": "Praha 2",
+    "id": 466,
+    "jmeno": "Miroslav Bárta",
+    "jmeno_s_tituly": "prof. Mgr. Dr. Miroslav Bárta",
+    "strana": "BEZPP",
+    "email": "bartam@senat.cz",
+    "web": "https://www.miroslavbarta.cz/",
+    "profile_url": "https://www.senat.cz/senatori/index.php?lng=cz&par_3=466"
+  },
+  {
+    "obvod_cislo": 27,
+    "obvod_nazev": "Praha 1",
+    "id": 488,
+    "jmeno": "Jiří Padevět",
+    "jmeno_s_tituly": "PhDr. Jiří Padevět",
+    "strana": "BEZPP",
+    "email": null,
+    "web": null,
+    "profile_url": "https://www.senat.cz/senatori/index.php?lng=cz&par_3=488"
+  },
+  {
+    "obvod_cislo": 59,
+    "obvod_nazev": "Brno-město",
+    "id": 478,
+    "jmeno": "Břetislav Rychlík",
+    "jmeno_s_tituly": "doc. Břetislav Rychlík",
+    "strana": "BEZPP",
+    "email": "rychlikb@senat.cz",
+    "web": "https://www.rychlikdosenatu.cz",
+    "profile_url": "https://www.senat.cz/senatori/index.php?lng=cz&par_3=478"
+  },
+  {
+    "obvod_cislo": 70,
+    "obvod_nazev": "Ostrava-město",
+    "id": 307,
+    "jmeno": "Zdeněk Nytra",
+    "jmeno_s_tituly": "Ing. Zdeněk Nytra",
+    "strana": "ODS",
+    "email": "nytraz@senat.cz",
+    "web": "https://senatornytra.cz",
+    "profile_url": "https://www.senat.cz/senatori/index.php?lng=cz&par_3=307"
+  }
+]

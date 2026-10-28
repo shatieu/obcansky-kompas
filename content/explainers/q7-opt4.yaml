@@ -1,0 +1,30 @@
+id: q7-opt4
+text: |
+  Neplatí lidé v hmotné nouzi, tedy ti, kterým chybí peníze na základní potřeby a dostávají dávky. Český zákon o poplatcích tento pojem nepoužívá, výjimku dává podle výše příjmu. V Německu neplatí lidé s některými sociálními dávkami, například se základním zajištěním ve stáří. Ve Švédsku neplatí lidé, kteří mají jen sociální podporu.
+pro: "Lidé v nejtěžší situaci nemusí platit vůbec nic."
+proti: "Kdo má příjem těsně nad hranicí, platí celou částku."
+claims:
+  - id: q7-opt4-c1
+    claim: "Český zákon o poplatcích nepoužívá pojem hmotná nouze a osvobození pro nízký příjem váže na výši čistého příjmu."
+    source_url: "https://www.zakonyprolidi.cz/cs/2005-348"
+    source_title: "Zákon č. 348/2005 Sb., o rozhlasových a televizních poplatcích (znění k 1. 1. 2026)"
+    locator: "§ 4 odst. 2 a 3"
+  - id: q7-opt4-c2
+    claim: "V Česku neplatí poplatky člověk žijící sám, jehož čistý příjem za uplynulé kalendářní čtvrtletí je nižší než 2,15násobek životního minima; u vícečlenné domácnosti se sčítají čisté příjmy všech jejích členů."
+    source_url: "https://www.zakonyprolidi.cz/cs/2005-348"
+    source_title: "Zákon č. 348/2005 Sb., o rozhlasových a televizních poplatcích (znění k 1. 1. 2026)"
+    locator: "§ 4 odst. 2 písm. a) a b)"
+    quote: "čistý příjem za uplynulé kalendářní čtvrtletí je nižší než 2,15násobek životního minima"
+  - id: q7-opt4-c3
+    claim: "V Německu mohou být od poplatku osvobozeni lidé, kteří dostávají některé sociální dávky, například základní zajištění ve stáří."
+    source_url: "https://www.rundfunkbeitrag.de/ausnahmen-von-der-rundfunkbeitragspflicht"
+    source_title: "Beitragsservice – Ausnahmen von der Rundfunkbeitragspflicht"
+    locator: "sekce Befreiung: Soziale Gründe"
+  - id: q7-opt4-c4
+    claim: "Ve Švédsku neplatí poplatek lidé, kteří mají jen sociální podporu (försörjningsstöd)."
+    source_url: "https://skatteverket.se/privat/skatter/arbeteochinkomst/skattetabeller/publicserviceavgift.4.22501d9e166a8cb399f31dd.html"
+    source_title: "Skatteverket – Public service-avgift"
+    locator: "sekce Vem ska inte betala avgiften?"
+    quote: "personer som bara har försörjningsstöd"
+status: draft
+human_reviewed: false

@@ -1,0 +1,153 @@
+/* Občanský kompas — tokens for Next.js + Tailwind CSS v4.
+   Drop into app/globals.css. Light is default; dark follows the OS unless
+   <html data-theme="light|dark"> forces one. */
+@import "tailwindcss";
+
+/* Self-hosted Mona Sans (copy fonts/*.woff2 to /public/fonts). Skip if you use next/font. */
+@font-face { font-family: "Mona Sans"; src: url("/fonts/MonaSans-Regular.woff2") format("woff2"); font-weight: 400; font-display: swap; }
+@font-face { font-family: "Mona Sans"; src: url("/fonts/MonaSans-Medium.woff2") format("woff2"); font-weight: 500; font-display: swap; }
+@font-face { font-family: "Mona Sans"; src: url("/fonts/MonaSans-SemiBold.woff2") format("woff2"); font-weight: 600; font-display: swap; }
+@font-face { font-family: "Mona Sans Expanded"; src: url("/fonts/MonaSansExpanded-Bold.woff2") format("woff2"); font-weight: 700; font-display: swap; }
+@font-face { font-family: "Mona Sans Expanded"; src: url("/fonts/MonaSansExpanded-ExtraBold.woff2") format("woff2"); font-weight: 800; font-display: swap; }
+
+/* ---------- 1. Raw tokens (CSS variables) ---------- */
+:root, [data-theme="light"] {
+  --surface: #FFFFFF;
+  --ink: #0B1B33;
+  --ink-secondary: #454E5D;
+  --blue: #11457E;
+  --blue-hover: #0C3260;
+  --on-blue: #FFFFFF;
+  --red: #D7141A;
+  --blue-tint: #E8EEF6;
+  --muted: #5C6675;
+  --rule-soft: #C5CDD8;
+  --hatch: var(--rule-soft);
+  --focus: var(--ink);
+  --scrim: #0B1B3399;
+  --night: #0B1B33;
+  --on-night: #FFFFFF;
+  --flag-edge: var(--ink);
+  --flag-blue: #11457E;
+  --flag-red: #D7141A;
+  --flag-white: #FFFFFF;
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --surface: #0B1B33; --ink: #FFFFFF; --ink-secondary: #B8C2CF; --blue: #82B6F0; --blue-hover: #A8CBF5;
+    --on-blue: #0B1B33; --red: #F79A9C; --blue-tint: #132540; --muted: #8A94A3; --rule-soft: #2B4166;
+    --scrim: #000000B3; color-scheme: dark;
+  }
+}
+[data-theme="dark"] {
+  --surface: #0B1B33; --ink: #FFFFFF; --ink-secondary: #B8C2CF; --blue: #82B6F0; --blue-hover: #A8CBF5;
+  --on-blue: #0B1B33; --red: #F79A9C; --blue-tint: #132540; --muted: #8A94A3; --rule-soft: #2B4166;
+  --scrim: #000000B3; color-scheme: dark;
+}
+
+@custom-variant dark (&:where([data-theme="dark"], [data-theme="dark"] *));
+
+/* ---------- 2. Tailwind v4 theme ----------
+   The `initial` resets REMOVE Tailwind's default palette, radii and shadows,
+   so `bg-gray-100`, `rounded-xl` and `shadow-lg` simply do not exist. */
+@theme inline {
+  --color-*: initial;
+  --color-surface: var(--surface);
+  --color-ink: var(--ink);
+  --color-ink-secondary: var(--ink-secondary);
+  --color-blue: var(--blue);
+  --color-blue-hover: var(--blue-hover);
+  --color-on-blue: var(--on-blue);
+  --color-red: var(--red);
+  --color-blue-tint: var(--blue-tint);
+  --color-muted: var(--muted);
+  --color-rule-soft: var(--rule-soft);
+  --color-hatch: var(--hatch);
+  --color-focus: var(--focus);
+  --color-scrim: var(--scrim);
+  --color-night: var(--night);
+  --color-on-night: var(--on-night);
+  --color-flag-edge: var(--flag-edge);
+  --color-flag-blue: var(--flag-blue);
+  --color-flag-red: var(--flag-red);
+  --color-flag-white: var(--flag-white);
+  --color-transparent: transparent;
+  --color-current: currentColor;
+
+  --radius-*: initial;
+  --radius-round: 50%;              /* rounded-round — profile photo + selection mark ONLY */
+  --shadow-*: initial;
+  --inset-shadow-*: initial;
+  --drop-shadow-*: initial;
+  --text-shadow-*: initial;
+  --blur-*: initial;
+
+  --font-sans: var(--font-mona, "Mona Sans"), "Helvetica Neue", Arial, sans-serif;
+  --font-wide: "Mona Sans Expanded", var(--font-mona, "Mona Sans"), "Arial Black", sans-serif; /* with next/font variable: add font-stretch:125% */
+
+  /* 8px grid: p-1 = 8px, p-2 = 16px, p-0.5 = 4px … */
+  --spacing: 8px;
+
+  /* Type scale (mobile first; *-desktop at lg:). Use font-wide with display/h1/h2/kicker/stat-*. */
+  --text-display: 38px;  --text-display--line-height: 40px;  --text-display--font-weight: 800; --text-display--letter-spacing: -0.02em;
+  --text-display-desktop: 72px; --text-display-desktop--line-height: 72px; --text-display-desktop--font-weight: 800; --text-display-desktop--letter-spacing: -0.03em;
+  --text-h1: 30px; --text-h1--line-height: 32px; --text-h1--font-weight: 800; --text-h1--letter-spacing: -0.02em;
+  --text-h1-desktop: 48px; --text-h1-desktop--line-height: 50px; --text-h1-desktop--font-weight: 800; --text-h1-desktop--letter-spacing: -0.025em;
+  --text-h2: 22px; --text-h2--line-height: 26px; --text-h2--font-weight: 700; --text-h2--letter-spacing: -0.01em;
+  --text-kicker: 13px; --text-kicker--line-height: 16px; --text-kicker--font-weight: 700; --text-kicker--letter-spacing: 0.08em;
+  --text-h3: 19px; --text-h3--line-height: 24px; --text-h3--font-weight: 600;
+  --text-body: 17px; --text-body--line-height: 26px;
+  --text-body-strong: 17px; --text-body-strong--line-height: 24px; --text-body-strong--font-weight: 500;
+  --text-small: 15px; --text-small--line-height: 22px;
+  --text-caption: 14px; --text-caption--line-height: 20px; --text-caption--font-weight: 500;
+  --text-stat-xl: 72px; --text-stat-xl--line-height: 72px; --text-stat-xl--font-weight: 800; --text-stat-xl--letter-spacing: -0.03em;
+  --text-stat-l: 44px; --text-stat-l--line-height: 44px; --text-stat-l--font-weight: 800; --text-stat-l--letter-spacing: -0.03em;
+  --text-stat-m: 22px; --text-stat-m--line-height: 26px; --text-stat-m--font-weight: 700;
+
+  /* Sizes */
+  --size-target: 48px;    /* min-h-target min-w-target */
+  --size-answer: 56px;
+  --size-button: 60px;
+  --size-mark: 28px;      /* selection mark circle */
+  --container-main: 688px;
+  --container-side: 448px;
+  --container-content: 1184px;
+
+  /* Motion */
+  --ease-out: cubic-bezier(0.2, 0, 0, 1);
+  --ease-in: cubic-bezier(0.4, 0, 1, 1);
+  --animate-wedge-in: wedge-in 500ms cubic-bezier(0.2, 0, 0, 1) both;
+  --animate-stripe-in: stripe-in 500ms cubic-bezier(0.2, 0, 0, 1) 60ms both;
+  --animate-wedge-unfold: stripe-in 300ms cubic-bezier(0.2, 0, 0, 1) both;   /* + transform-origin: 0 0 */
+  --animate-stripe-unfold: stripe-in 500ms cubic-bezier(0.2, 0, 0, 1) 150ms both;
+  --animate-unfold-msg: rise 200ms cubic-bezier(0.2, 0, 0, 1) 600ms both;
+  --animate-pop: pop 160ms cubic-bezier(0.2, 0, 0, 1) both;
+  --animate-sheet-in: sheet-in 240ms cubic-bezier(0.2, 0, 0, 1) both;
+  --animate-fade: fade 160ms linear both;
+
+  @keyframes wedge-in { from { transform: translateX(-100%); } to { transform: none; } }
+  @keyframes stripe-in { from { transform: scaleX(0); } to { transform: scaleX(1); } }
+  @keyframes rise { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+  @keyframes pop { from { transform: scale(.4); } to { transform: none; } }
+  @keyframes sheet-in { from { transform: translateY(100%); } to { transform: none; } }
+  @keyframes fade { from { opacity: 0; } to { opacity: 1; } }
+}
+
+/* ---------- 3. Base ---------- */
+@layer base {
+  *, *::before, *::after { border-radius: 0; }
+  html { background: var(--surface); color: var(--ink); }
+  body { font-family: var(--font-sans); font-size: 17px; line-height: 26px; }
+  :focus-visible { outline: 3px solid var(--focus); outline-offset: 3px; }
+  .tabular, [data-num] { font-variant-numeric: tabular-nums lining-nums; }
+  /* The flag: always 3:2, outlined, nothing on top. */
+  .flag { display: block; aspect-ratio: 3 / 2; height: auto; outline: 1px solid var(--flag-edge); overflow: hidden; }
+  .night { background: var(--night); color: var(--on-night); --flag-edge: var(--on-night); --focus: var(--on-night); }
+}
+@utility hatch {
+  background-image: repeating-linear-gradient(135deg, var(--hatch) 0 2px, transparent 2px 10px);
+}
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: 1ms !important; animation-delay: 0ms !important; transition-duration: 0ms !important; }
+}

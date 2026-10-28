@@ -1,0 +1,12 @@
+{
+  "claim_id": "q2-opt1-c3",
+  "claim_hash": "8d5a15482b6a45d4c69c63c0e7becff0dc4cae8f0466f2bd1d9d8cd11295bede",
+  "verdict": "ano",
+  "correction": "",
+  "note": "§ 5 odst. 3 (násobky od 25 zaměstnanců) a odst. 4 (do 24 zaměstnanců neplatí); odst. 5 zachovává povinnost podle odst. 1.",
+  "url_checked": "https://www.zakonyprolidi.cz/cs/2005-348",
+  "checked_at": "2026-10-27T23:53:49Z",
+  "verifier": "verifier-a1",
+  "round": 1,
+  "human_reviewed": false
+}

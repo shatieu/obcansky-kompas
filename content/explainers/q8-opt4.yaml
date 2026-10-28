@@ -1,0 +1,8 @@
+id: q8-opt4
+text: |
+  Firma platí podle toho, kolik utrží, ale jen do určité částky. Obrat jsou všechny tržby firmy, ne její zisk. Platila by tedy i firma, která je ve ztrátě.
+pro: "Obrat se snadno zjistí a těžko se dá schovat."
+proti: "Platí i firma ve ztrátě, která nic nevydělala."
+claims: []
+status: draft
+human_reviewed: false

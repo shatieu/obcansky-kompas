@@ -1,0 +1,12 @@
+{
+  "claim_id": "q7-opt3-c2",
+  "claim_hash": "67dec08d3dae619c777bc9ea8ab3badd6e12e786b2a31dbafe99524816bfa0e9",
+  "verdict": "ano",
+  "correction": "",
+  "note": "",
+  "url_checked": "https://www.rundfunkbeitrag.de/ausnahmen-von-der-rundfunkbeitragspflicht",
+  "checked_at": "2026-10-27T23:41:38Z",
+  "verifier": "verifier-b1",
+  "round": 1,
+  "human_reviewed": false
+}

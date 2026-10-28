@@ -1,0 +1,145 @@
+# Všechny texty UI (SPEC §3). Nic natvrdo v komponentách.
+# Konvence klíčů kontrolovaná `pnpm lint:content` (SPEC §4.1):
+#   title, *_title  = nadpis obrazovky, max. 8 slov
+#   lead, *_lead    = text pod nadpisem, max. 1 věta a 120 znaků
+#   *_button        = tlačítko, max. 3 slova
+# Zástupné symboly ve složených závorkách doplní kód.
+
+site:
+  name: Občanský kompas
+  lead: Jak financovat ČT a ČRo.
+  skip_link: Přeskočit na obsah
+  home_aria: Občanský kompas, úvod
+
+nav:
+  compass: Kompas
+  stats: Statistiky
+  method: Metodika
+  about: O projektu
+
+footer:
+  lead: Občanský kompas – jak financovat ČT a ČRo.
+  privacy: Soukromí
+  method: Metodika
+  about: O projektu
+  source: Zdrojový kód
+  source_url: https://github.com/shatieu/obcansky-kompas
+  license: Licence AGPL-3.0
+
+home:
+  meta_title: Občanský kompas – financování ČT a ČRo
+  meta_description: Odpovězte na 8 otázek o financování České televize a Českého rozhlasu a porovnejte se s ostatními.
+  title: Jak by se měla platit veřejnoprávní média?
+  lead: Odpovězte na 8 otázek a podívejte se, jak to vidí ostatní.
+  start_button: Spustit kompas
+  count_label: vyplněných a ověřených kompasů
+  stats_button: Všechny statistiky
+  method_line: Odkud bereme fakta a jak je ověřujeme.
+  method_button: Metodika
+
+compass:
+  meta_title: Kompas – Občanský kompas
+  progress_label: Otázka {n} z {total}
+  next_button: Další
+  back_button: Zpět
+  skip_button: Přeskočit
+  finish_button: Hotovo
+  sign_button: Podepsat text
+  restart_button: Začít znovu
+  multi_lead: Můžete vybrat více možností.
+  skipped_title: Tato otázka odpadá
+  skipped_lead: Nejde dohromady s vaší volbou „{option}“.
+  invalidated_note: Původní odpověď už neplatí kvůli změně dřívější volby. Vyberte znovu.
+  forced_note: Předvyplněno podle volby „{option}“.
+  disabled_label: "Nejde s: {option}"
+  disabled_explain: Tato možnost nejde dohromady s volbou „{option}“ v otázce „{question}“. Změňte nejdřív tu.
+  disabled_go_button: Změnit volbu
+  summary_title: Váš text je hotový
+  summary_lead: Text se mění jen podle vašich voleb, ručně se nepřepisuje.
+  edit_answers_button: Upravit odpovědi
+  answers_title: Vaše odpovědi
+  not_answered: Bez odpovědi
+  skipped_short: Odpadá
+
+explainer:
+  open: Co to znamená?
+  close: Zavřít
+  pending: Vysvětlivka se připravuje.
+  pro: Pro
+  proti: Proti
+  sources: Zdroje
+  loading: Načítám…
+
+slider:
+  unit_decimal: miliardy Kč
+  unit_whole: miliard Kč
+  per_year: ročně
+  per_adult: ≈ {amount} Kč měsíčně na dospělého
+  slider_aria: Částka v miliardách Kč ročně
+  decrease_aria: Snížit o 0,1 miliardy
+  increase_aria: Zvýšit o 0,1 miliardy
+  untouched: Posuňte posuvník nebo vyberte Nevím.
+
+demographics:
+  title: Pár otázek o vás
+  lead: Vše je nepovinné a slouží jen pro statistiky.
+  region_label: Kraj
+  region_placeholder: Nevyplněno
+  age_label: Věk
+  size_label: Velikost obce (počet obyvatel)
+  comment_label: Osobní komentář
+  comment_hint: Zobrazí se jen na vaší osobní stránce.
+  chars_left: Zbývá {n} znaků
+
+preview:
+  title: Můj text
+  show_button: Zobrazit text
+  hide_button: Skrýt text
+  empty: Text se složí z vašich odpovědí.
+  hide_nevim: Vynechat věty k otázkám, kde jsem zvolil/a Nevím
+
+stance:
+  region_aria: Postoj spolku, oddělený od kompasu
+
+stats:
+  meta_title: Statistiky – Občanský kompas
+  title: Jak lidé odpovídají
+  lead: Odpovědi lidí, kteří kompas vyplnili a ověřili svůj podpis.
+  disclaimer: Vzorek lidí, kteří kompas vyplnili. Není to reprezentativní průzkum.
+  verified_label: ověřených podpisů
+  pending_label: čeká na ověření
+  filters_title: Filtry
+  filter_region: Kraj
+  filter_age: Věk
+  filter_size: Velikost obce
+  filter_all: Všechny
+  reset_button: Zrušit filtry
+  combos_title: Nejčastější kombinace odpovědí
+  combos_lead: Kombinace odpovědí na otázky 2, 3 a 4, nejvýš 10.
+  respondents: "Odpovědí: {n}"
+  no_data: Zatím tu nejsou žádné odpovědi.
+  unavailable: Statistiky jsou teď nedostupné. Zkuste to za chvíli.
+  open_data_title: Otevřená data
+  open_data_lead: Souhrnná čísla ke stažení, skupiny pod 10 lidí jsou sloučené.
+  open_data_button: Stáhnout CSV
+  merged_label: Ostatní (méně než 10)
+  hidden_count: méně než 10
+  nevim_label: Nevím
+  loading: Načítám…
+
+compare:
+  same_answer: "{percent} % lidí odpovědělo stejně"
+  agreement: "Shoda {percent} %"
+  not_answered_org: Neodpověděl/a
+
+# Podpis (milník 7 – formulář dodá jiná část; text souhlasu je tady kvůli SPEC §14.4).
+sign:
+  # TODO(owner): právní znění souhlasu nechat zkontrolovat (správce, účel, odvolání souhlasu).
+  consent_label: Výslovně souhlasím se zpracováním svého politického názoru pro účely tohoto kompasu.
+
+demo:
+  bar: Ukázková data – čísla nejsou skutečná.
+
+common:
+  loading_aria: Načítání
+  error_prefix: Chyba

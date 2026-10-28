@@ -1,0 +1,109 @@
+# Modul Q4 + Q5 – poplatník a výpočet poplatku (SPEC §10).
+# Q4: 1 Každá domácnost · 2 Každý dospělý · 3 Nikdo zvlášť, ze všech daní · 4 Nevím
+# Q5: 1 Ne, všichni stejně · 2 Ano, s horní hranicí · 3 Ano, bez horní hranice · 4 Stejně, ale se slevami · 5 Nevím
+# Částky, sazby a hranice zákon nestanoví číslem; stanoví je vláda nařízením tak, aby výnos odpovídal Q1.
+id: q4-q5-poplatnik
+version: 1
+legal_review: pending
+slot: payer
+questions: [q4, q5]
+paragraphs:
+  # ---- Q4: kdo platí ----
+  - id: q4-1-domacnost
+    title: Poplatník
+    when:
+      q4: 1
+    subsections:
+      - text: >-
+          Poplatníkem je domácnost. Domácností se pro účely tohoto zákona rozumí
+          fyzické osoby, které spolu trvale žijí v jednom bytě nebo rodinném domě
+          a společně uhrazují náklady na své potřeby.
+      - text: >-
+          Poplatek za domácnost platí jedna její zletilá osoba, kterou domácnost
+          určí. Ostatní zletilí členové domácnosti ručí za zaplacení poplatku
+          společně a nerozdílně.
+      - when:
+          q5: [2, 3, 4]
+        text: >-
+          Příjmem domácnosti se pro účely tohoto zákona rozumí souhrn příjmů jejích
+          členů za předchozí kalendářní rok.
+
+  - id: q4-2-dospely
+    title: Poplatník
+    when:
+      q4: 2
+    text: >-
+      Poplatníkem je každá fyzická osoba starší 18 let, která má na území České
+      republiky trvalý pobyt nebo je zde účastna veřejného zdravotního pojištění.
+
+  - id: q4-3-nikdo
+    title: Poplatník
+    when:
+      q4: 3
+    text: >-
+      Zvláštní poplatník se nestanoví. Prostředky podle {{ref:amount}} se hradí
+      ze státního rozpočtu.
+
+  - id: q4-nevim
+    title: Poplatník
+    when:
+      q4: nevim
+    text: "{{nevim}}"
+
+  # ---- Q5: jak se počítá výše poplatku ----
+  - id: q5-vyse-poplatku
+    title: Výše poplatku
+    when:
+      q5: answered
+    subsections:
+      - when:
+          q5: 1
+        text: >-
+          Poplatek je pro všechny poplatníky stejný.
+      - when:
+          q5: 2
+        text: >-
+          Poplatek se stanoví procentní sazbou z příjmu poplatníka za předchozí
+          kalendářní rok, nejvýše však v částce horní hranice.
+      - when:
+          q5: 3
+        text: >-
+          Poplatek se stanoví procentní sazbou z příjmu poplatníka za předchozí
+          kalendářní rok. Horní hranice poplatku se nestanoví.
+      - when:
+          q5: 4
+        text: >-
+          Poplatek je pro všechny poplatníky stejný. Poplatníkovi, jehož příjem za
+          předchozí kalendářní rok nepřesáhl hranici stanovenou nařízením vlády,
+          náleží sleva na poplatku.
+      - when:
+          q5: [2, 3, 4]
+        text: >-
+          Příjmem se rozumí základ daně z příjmů fyzických osob podle zákona
+          upravujícího daně z příjmů.
+      - when:
+          q5: 1
+        text: >-
+          Měsíční výši poplatku stanoví vláda nařízením tak, aby celkový výnos
+          poplatku odpovídal výši prostředků podle {{ref:amount}}.
+      - when:
+          q5: 2
+        text: >-
+          Sazbu a horní hranici poplatku stanoví vláda nařízením tak, aby celkový
+          výnos poplatku odpovídal výši prostředků podle {{ref:amount}}.
+      - when:
+          q5: 3
+        text: >-
+          Sazbu poplatku stanoví vláda nařízením tak, aby celkový výnos poplatku
+          odpovídal výši prostředků podle {{ref:amount}}.
+      - when:
+          q5: 4
+        text: >-
+          Výši poplatku a výši slevy stanoví vláda nařízením tak, aby celkový výnos
+          poplatku odpovídal výši prostředků podle {{ref:amount}}.
+
+  - id: q5-nevim
+    title: Výše poplatku
+    when:
+      q5: nevim
+    text: "{{nevim}}"

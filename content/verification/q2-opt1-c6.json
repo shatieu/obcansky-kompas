@@ -1,0 +1,12 @@
+{
+  "claim_id": "q2-opt1-c6",
+  "claim_hash": "77d6e71768cf87512e71e46730575d2acfff80eb8ecdf6f3499587fea7549de6",
+  "verdict": "ano",
+  "correction": "",
+  "note": "DZ str. 9: 'Systém se vyznačuje institucionální nezávislostí na státu a státním rozpočtu'.",
+  "url_checked": "https://www.psp.cz/sqw/text/orig2.sqw?idd=277415",
+  "checked_at": "2026-10-27T23:53:49Z",
+  "verifier": "verifier-a1",
+  "round": 1,
+  "human_reviewed": false
+}

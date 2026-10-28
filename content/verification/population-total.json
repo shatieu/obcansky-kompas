@@ -1,0 +1,12 @@
+{
+  "claim_id": "population-total",
+  "claim_hash": "0b7be42966c179ec27439eea41dc5f55cc8b01c26f9629be87ce96ebbf20b97e",
+  "verdict": "ano",
+  "correction": "",
+  "note": "ČSÚ OBY02B CSV: k 31. 12. 2025, Česko, věk Celkem = 10 915 839.",
+  "url_checked": "https://data.csu.gov.cz/opendata/sady/OBY02B/distribuce/csv",
+  "checked_at": "2026-10-27T23:53:49Z",
+  "verifier": "verifier-a1",
+  "round": 1,
+  "human_reviewed": false
+}

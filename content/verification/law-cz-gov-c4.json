@@ -1,0 +1,12 @@
+{
+  "claim_id": "law-cz-gov-c4",
+  "claim_hash": "43e805e1053a0f1b4e1e22b88da7f5f743aa38beda631e5baba1c437c7f6dd8a",
+  "verdict": "ano",
+  "correction": "",
+  "note": "Článek: 'valorizační vzorec, pokud kumulovaná inflace dosáhne deseti procent'.",
+  "url_checked": "https://www.mediaguru.cz/vlada-schvalila-zruseni-poplatku-pro-ct-a-cro-z-rozpoctu-jim-da-o-1-4-mld-mene",
+  "checked_at": "2026-10-27T23:41:38Z",
+  "verifier": "verifier-b1",
+  "round": 1,
+  "human_reviewed": false
+}

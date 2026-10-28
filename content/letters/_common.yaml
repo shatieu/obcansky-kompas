@@ -1,0 +1,55 @@
+# Společné části dopisů (SPEC §9.2). Varianty podle adresáta jsou v <typ>.yaml.
+#
+# forma: 1 stručná zpráva · 2 běžný dopis · 3 formální dopis
+# delka: 1 krátký a zdvořilý · 2 střední · 3 delší a důrazný
+# Každá varianta uvádí, pro které stupně se hodí. Varianty mění formulace, nikdy fakta.
+version: 1
+
+forma_levels:
+  - level: 1
+    label: Stručná zpráva
+  - level: 2
+    label: Běžný dopis
+  - level: 3
+    label: Formální dopis
+
+delka_levels:
+  - level: 1
+    label: Krátký a zdvořilý
+  - level: 2
+    label: Střední
+  - level: 3
+    label: Delší a důrazný
+
+# Volitelný blok „Nesouhlasím se způsobem projednávání“.
+process_block:
+  title: Nesouhlasím se způsobem projednávání
+  variants:
+    - id: proc-1
+      forma: [1]
+      delka: [1, 2]
+      text: >-
+        Nesouhlasím ani se způsobem, jakým se o návrhu rozhoduje. Tak důležitá
+        věc si zaslouží víc času a debaty.
+    - id: proc-2
+      forma: [1, 2, 3]
+      delka: [1, 2]
+      text: >-
+        Mám výhrady i ke způsobu projednávání. O změně, která se týká všech, by
+        se mělo rozhodovat otevřeně a bez spěchu.
+    - id: proc-3
+      forma: [2, 3]
+      delka: [2, 3]
+      text: >-
+        Nesouhlasím ani se způsobem, jakým je návrh projednáván. Změna financování
+        médií veřejné služby se týká každého z nás a zaslouží si otevřenou veřejnou
+        debatu i dostatek času na připomínky.
+    - id: proc-4
+      forma: [1, 2, 3]
+      delka: [3]
+      text: >-
+        Důrazně nesouhlasím i se způsobem projednávání. O tak zásadní změně se nemá
+        rozhodovat ve spěchu a bez široké veřejné debaty.
+
+# Patička (výchozí zapnuto, lze vypnout).
+footer: Připraveno pomocí Občanský kompas

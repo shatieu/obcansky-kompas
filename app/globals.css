@@ -1,0 +1,170 @@
+@import "tailwindcss";
+
+/* Design tokeny (SPEC §4.2). Tmavý režim podle systému; kontrast textu min. 7:1. */
+:root {
+  --surface: #ffffff;
+  --ink: #0b1b33;
+  --blue: #11457e;
+  --red: #d7141a;
+  --blue-tint: #e8eef6;
+  --muted: #5c6675;
+  /* Text na plné modré (vybraná volba, blok postoje). */
+  --on-blue: #ffffff;
+  color-scheme: light;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --surface: #0b1b33;
+    --ink: #ffffff;
+    --blue: #8fb4e8; /* 8,1:1 vůči #0B1B33 */
+    --red: #ff8a8e; /* 7,6:1 vůči #0B1B33 */
+    --blue-tint: #15284a;
+    --muted: #a9b4c4;
+    --on-blue: #0b1b33;
+    color-scheme: dark;
+  }
+}
+
+@theme inline {
+  --color-surface: var(--surface);
+  --color-ink: var(--ink);
+  --color-blue: var(--blue);
+  --color-red: var(--red);
+  --color-blue-tint: var(--blue-tint);
+  --color-muted: var(--muted);
+  --color-on-blue: var(--on-blue);
+  --font-sans: var(--font-inter-tight), system-ui, sans-serif;
+  /* Žádná zaoblení (SPEC §4.3). Výjimka: kruhový náhled fotky (rounded-full). */
+  --radius-xs: 0;
+  --radius-sm: 0;
+  --radius-md: 0;
+  --radius-lg: 0;
+  --radius-xl: 0;
+  --radius-2xl: 0;
+  --radius-3xl: 0;
+  --radius: 0;
+  --shadow-sm: none;
+  --shadow: none;
+  --shadow-md: none;
+  --shadow-lg: none;
+}
+
+@layer base {
+  html {
+    background: var(--surface);
+    color: var(--ink);
+    -webkit-text-size-adjust: 100%;
+  }
+  body {
+    font-family: var(--font-sans);
+    font-size: 17px;
+    line-height: 1.5;
+    min-height: 100dvh;
+  }
+  :focus-visible {
+    outline: 3px solid var(--blue);
+    outline-offset: 2px;
+  }
+  a {
+    color: var(--blue);
+    text-decoration-thickness: 1px;
+    text-underline-offset: 3px;
+  }
+  button,
+  select,
+  textarea,
+  input {
+    font: inherit;
+    color: inherit;
+  }
+}
+
+.tabular {
+  font-variant-numeric: tabular-nums;
+}
+
+/* Zašedlá volba: šrafa (SPEC §4.4) – vzor s ostrými hranami, ne přechod. */
+.hatch {
+  background-image: repeating-linear-gradient(
+    135deg,
+    transparent 0 7px,
+    color-mix(in srgb, var(--muted) 35%, transparent) 7px 9px
+  );
+}
+
+/* Pohyb do 150 ms (SPEC §4.3). */
+.transition-fast {
+  transition-duration: 150ms;
+  transition-timing-function: ease-out;
+}
+
+/* ---------- Vlajka (SPEC §4.5) ---------- */
+@keyframes flag-wedge-in {
+  from {
+    transform: translateX(-100%);
+  }
+  to {
+    transform: translateX(0);
+  }
+}
+@keyframes flag-stripe-in {
+  from {
+    transform: scaleX(0);
+  }
+  to {
+    transform: scaleX(1);
+  }
+}
+.flag-animate .flag-stripe {
+  transform-origin: left center;
+  transform-box: fill-box;
+  animation: flag-stripe-in 450ms cubic-bezier(0.2, 0.7, 0.2, 1) 80ms both;
+}
+.flag-animate .flag-wedge {
+  transform-box: fill-box;
+  animation: flag-wedge-in 500ms cubic-bezier(0.2, 0.7, 0.2, 1) both;
+}
+
+/* Potvrzení podpisu: rozvinutí přes obrazovku, max. 800 ms. */
+@keyframes flag-unfurl {
+  from {
+    transform: scaleX(0);
+  }
+  to {
+    transform: scaleX(1);
+  }
+}
+.flag-unfurl {
+  transform-origin: left center;
+  animation: flag-unfurl 750ms cubic-bezier(0.2, 0.7, 0.2, 1) both;
+}
+
+/* Průběh kompasu: plnění segmentu po každé otázce. */
+.progress-fill {
+  transform-origin: left center;
+  transition: transform 300ms ease-out;
+}
+
+/* Čekání nad 300 ms: tenký pruh v trikolóře, objeví se až po 300 ms. */
+@keyframes appear {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+.wait-bar {
+  animation: appear 1ms linear 300ms both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 1ms !important;
+    animation-delay: 0ms !important;
+    transition-duration: 1ms !important;
+  }
+}

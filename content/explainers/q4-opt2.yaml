@@ -1,0 +1,32 @@
+id: q4-opt2
+text: |
+  Platil by každý dospělý zvlášť, třeba spolu s daní z příjmu.
+  Ve Švédsku platí každý dospělý s příjmem, nejvýš asi 1 200 švédských korun ročně.
+  Ve Finsku platí dospělí 2,5 % z příjmu nad hranicí, nejvýš 160 eur ročně.
+pro: Platba se rozloží na víc lidí, takže na jednoho vychází méně.
+proti: Domácnost s více dospělými zaplatí víc než domácnost s jedním.
+claims:
+- id: q4-opt2-c1
+  claim: Ve Švédsku platí poplatek všichni starší 18 let, kteří v zemi bydlí a platí daně, kromě lidí bez zdanitelného příjmu.
+  source_url: https://skatteverket.se/privat/skatter/arbeteochinkomst/skattetabeller/publicserviceavgift.4.22501d9e166a8cb399f31dd.html
+  source_title: Skatteverket – Public service-avgift
+  locator: oddíl Vem betalar?
+  quote: Alla som är över 18 år och som bor och betalar skatt i Sverige
+- id: q4-opt2-c2
+  claim: Ve Švédsku platí člověk s nižším příjmem 1 % zdanitelného příjmu a nejvýš 1 184 korun ročně (rok 2026).
+  source_url: https://skatteverket.se/privat/skatter/arbeteochinkomst/skattetabeller/publicserviceavgift.4.22501d9e166a8cb399f31dd.html
+  source_title: Skatteverket – Public service-avgift
+  locator: oddíl o výši poplatku (inkomstgränser och belopp 2026)
+- id: q4-opt2-c3
+  claim: Ve Švédsku se poplatek nevybírá zvláštní složenkou, ale strhává se spolu s daní.
+  source_url: https://skatteverket.se/privat/skatter/arbeteochinkomst/skattetabeller/publicserviceavgift.4.22501d9e166a8cb399f31dd.html
+  source_title: Skatteverket – Public service-avgift
+  locator: oddíl o placení (hur avgiften betalas)
+- id: q4-opt2-c4
+  claim: Ve Finsku platí lidé od 18 let daň Yle ve výši 2,5 % čistého příjmu nad 15 150 eur, nejvýš 160 eur ročně.
+  source_url: https://www.vero.fi/fi-FI/Henkiloasiakkaat/Maksaminen/Ylevero
+  source_title: Verohallinto (vero.fi) – Yleisradiovero
+  locator: Henkilöasiakkaat – Yleisradiovero (stránka aktualizována 19. 12. 2025)
+  quote: Veron määrä on enintään 160 euroa.
+status: draft
+human_reviewed: false

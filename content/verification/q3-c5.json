@@ -1,0 +1,12 @@
+{
+  "claim_id": "q3-c5",
+  "claim_hash": "9552dcf23a24ad40f9893758774e7cc8fd4ef031321f4f9ebf26d4f3a104b258",
+  "verdict": "ano",
+  "correction": "",
+  "note": "KEF bod 3: 'Der Beitragsvorschlag der Kommission ist Grundlage für die Entscheidung der Landesregierungen und Landesparlamente'.",
+  "url_checked": "https://kef-online.de/kommission/zur-arbeit-der-kommission",
+  "checked_at": "2026-10-27T23:53:49Z",
+  "verifier": "verifier-a1",
+  "round": 1,
+  "human_reviewed": false
+}

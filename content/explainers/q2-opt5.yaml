@@ -1,0 +1,20 @@
+id: q2-opt5
+text: |
+  O penězích pro ČT a ČRo by každý rok rozhodovali vláda a poslanci.
+  Částka by nebyla pevně v zákoně a sama by nerostla s cenami.
+  Návrh státního rozpočtu podává vláda a schvaluje ho Poslanecká sněmovna.
+pro: Stát může výši peněz každý rok přizpůsobit svým možnostem.
+proti: Každoroční schvalování rozpočtu může oslabit nezávislost ČT a ČRo.
+claims:
+- id: q2-opt5-c1
+  claim: Návrh zákona o státním rozpočtu podává vláda a usnáší se o něm jen Poslanecká sněmovna.
+  source_url: https://www.zakonyprolidi.cz/cs/1993-1
+  source_title: Ústava České republiky (ústavní zákon č. 1/1993 Sb.)
+  locator: čl. 42 odst. 1 a 2
+- id: q2-opt5-c2
+  claim: Hodnocení dopadů uvádí jako riziko rozpočtového financování možné oslabení nezávislosti kvůli každoročnímu schvalování rozpočtu.
+  source_url: https://www.psp.cz/sqw/text/orig2.sqw?idd=277417
+  source_title: Závěrečná zpráva z hodnocení dopadů regulace (RIA) k vládnímu návrhu, sněmovní tisk 231
+  locator: kap. 2.1 Zahraniční zkušenost, str. 14
+status: draft
+human_reviewed: false

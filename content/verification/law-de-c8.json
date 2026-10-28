@@ -1,0 +1,12 @@
+{
+  "claim_id": "law-de-c8",
+  "claim_hash": "97579e04f1bb6d01bf25a79c8b55a615ac44e9512dcaa823024946c36bc81828",
+  "verdict": "ano",
+  "correction": "",
+  "note": "",
+  "url_checked": "https://www.rundfunkbeitrag.de/",
+  "checked_at": "2026-10-27T23:41:38Z",
+  "verifier": "verifier-b1",
+  "round": 1,
+  "human_reviewed": false
+}

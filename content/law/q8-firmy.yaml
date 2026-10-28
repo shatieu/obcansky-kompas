@@ -1,0 +1,67 @@
+# Modul Q8 – platby podnikatelů (SPEC §10), 5 variant + „Nevím“.
+# Q8: 1 Ne · 2 Podle počtu zaměstnanců · 3 Podle zisku, s horní hranicí · 4 Podle obratu, s horní hranicí ·
+#     5 Jen velké firmy · 6 Nevím
+# Firmy platí „odvod“ (ne poplatek), aby modul fungoval nezávisle na tom, kdo platí poplatek (Q4).
+id: q8-firmy
+version: 1
+legal_review: pending
+slot: firms
+questions: [q8]
+paragraphs:
+  - id: q8-1-ne
+    title: Podnikatelé
+    when:
+      q8: 1
+    text: >-
+      Podnikatelé nejsou z důvodu své podnikatelské činnosti povinni platit
+      poplatek ani jinou platbu podle tohoto zákona.
+
+  - id: q8-odvod
+    title: Odvod podnikatelů
+    when:
+      q8: [2, 3, 4, 5]
+    subsections:
+      - when:
+          q8: 2
+        text: >-
+          Zaměstnavatel, který je podnikatelem, platí odvod na financování médií
+          veřejné služby (dále jen „odvod“). Odvod se vypočte jako součin
+          průměrného přepočteného počtu jeho zaměstnanců v předchozím kalendářním
+          roce a sazby odvodu na jednoho zaměstnance.
+      - when:
+          q8: 3
+        text: >-
+          Podnikatel platí odvod na financování médií veřejné služby (dále jen
+          „odvod“). Odvod se stanoví procentní sazbou ze základu daně z příjmů
+          za předchozí zdaňovací období, nejvýše však v částce horní hranice.
+      - when:
+          q8: 4
+        text: >-
+          Podnikatel platí odvod na financování médií veřejné služby (dále jen
+          „odvod“). Odvod se stanoví procentní sazbou z čistého obratu za
+          předchozí účetní období, nejvýše však v částce horní hranice.
+      - when:
+          q8: 5
+        text: >-
+          Odvod na financování médií veřejné služby (dále jen „odvod“) platí jen
+          podnikatel, který je velkým podnikem. Velkým podnikem se rozumí podnik,
+          který není malým ani středním podnikem podle přímo použitelného předpisu
+          Evropské unie, který vymezuje kategorie podniků.
+      - when:
+          q8: 2
+        text: Sazbu odvodu na jednoho zaměstnance stanoví vláda nařízením.
+      - when:
+          q8: [3, 4]
+        text: Sazbu a horní hranici odvodu stanoví vláda nařízením.
+      - when:
+          q8: 5
+        text: Výši odvodu a způsob jeho výpočtu stanoví vláda nařízením.
+      - text: >-
+          Odvod spravuje správce daně z příjmů. Výnos odvodu je příjmem médií
+          veřejné služby a započítává se do výše prostředků podle {{ref:amount}}.
+
+  - id: q8-nevim
+    title: Podnikatelé
+    when:
+      q8: nevim
+    text: "{{nevim}}"

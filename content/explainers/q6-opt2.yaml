@@ -1,0 +1,14 @@
+id: q6-opt2
+text: |
+  Důchodci platí, ale nižší částku než ostatní. Sleva by platila pro všechny důchodce, i pro ty s vysokým důchodem. Ve Finsku se platí i z důchodu, ale jen z části nad asi 15 tisíc eur ročně.
+pro: "Důchodci zaplatí méně a zbude jim víc peněz."
+proti: "Slevu dostanou i důchodci, kteří mají vysoký příjem."
+claims:
+  - id: q6-opt2-c1
+    claim: "Ve Finsku se Yle daň platí také z důchodu, a to z části důchodových příjmů nad 15 150 eur."
+    source_url: "https://vero.fi/syventavat-vero-ohjeet/ohje-hakusivu/48391/yleisradiovero5/"
+    source_title: "Verohallinto – Yleisradiovero, syventävä vero-ohje (VH/6321/00.01.00/2024)"
+    locator: "kap. 2.2 Henkilön yleisradioveron määrä"
+    quote: "15 150 euroa ylittävistä eläketuloista ja päivärahatuloista"
+status: draft
+human_reviewed: false

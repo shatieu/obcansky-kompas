@@ -1,0 +1,1512 @@
+[
+  {
+    "kod": 554782,
+    "nazev": "Praha",
+    "kraj_code": "CZ010",
+    "okres": "Hlavní město Praha",
+    "senatni_obvod": [
+      17,
+      19,
+      20,
+      21,
+      22,
+      23,
+      24,
+      25,
+      26,
+      27
+    ],
+    "urad": {
+      "address": "Mariánské náměstí 2/2, Staré Město, 110 00 Praha 1",
+      "datova_schranka": "48ia97h",
+      "nazev": "HLAVNÍ MĚSTO PRAHA"
+    },
+    "casti": [
+      {
+        "kod": 500054,
+        "nazev": "Praha 1",
+        "senatni_obvod": [
+          27
+        ],
+        "urad": {
+          "address": "Vodičkova 681/18, Nové Město, 110 00 Praha 1",
+          "datova_schranka": "b4eb2my",
+          "nazev": "Městská část Praha 1"
+        }
+      },
+      {
+        "kod": 500224,
+        "nazev": "Praha 10",
+        "senatni_obvod": [
+          22,
+          26
+        ],
+        "urad": {
+          "address": "Vinohradská 3218/169, Strašnice, 100 00 Praha 10",
+          "datova_schranka": "irnb7wg",
+          "nazev": "Městská část Praha 10"
+        }
+      },
+      {
+        "kod": 547034,
+        "nazev": "Praha 11",
+        "senatni_obvod": [
+          19
+        ],
+        "urad": {
+          "address": "Ocelíkova 672/1, Háje, 149 00 Praha 4",
+          "datova_schranka": "nr5bpci",
+          "nazev": "Městská část Praha 11"
+        }
+      },
+      {
+        "kod": 547107,
+        "nazev": "Praha 12",
+        "senatni_obvod": [
+          17
+        ],
+        "urad": {
+          "address": "Generála Šišky 2375/6, Modřany, 143 00 Praha 4",
+          "datova_schranka": "ktcbbxd",
+          "nazev": "Městská část Praha 12"
+        }
+      },
+      {
+        "kod": 539694,
+        "nazev": "Praha 13",
+        "senatni_obvod": [
+          21
+        ],
+        "urad": {
+          "address": "Sluneční náměstí 2580/13, Stodůlky, 158 00 Praha 5",
+          "datova_schranka": "zv6bsur",
+          "nazev": "Městská část Praha 13"
+        }
+      },
+      {
+        "kod": 547361,
+        "nazev": "Praha 14",
+        "senatni_obvod": [
+          24
+        ],
+        "urad": {
+          "address": "Bratří Venclíků 1073/8, Černý Most, 198 00 Praha 9",
+          "datova_schranka": "pmabtfa",
+          "nazev": "Městská část Praha 14"
+        }
+      },
+      {
+        "kod": 547387,
+        "nazev": "Praha 15",
+        "senatni_obvod": [
+          19
+        ],
+        "urad": {
+          "address": "Boloňská 478/1, Horní Měcholupy, 109 00 Praha 10",
+          "datova_schranka": "nkybvp5",
+          "nazev": "Městská část Praha 15"
+        }
+      },
+      {
+        "kod": 539601,
+        "nazev": "Praha 16",
+        "senatni_obvod": [
+          17
+        ],
+        "urad": {
+          "address": "Václava Balého 23/3, Radotín, 153 00 Praha 5",
+          "datova_schranka": "ntsbt5z",
+          "nazev": "Městská část Praha 16"
+        }
+      },
+      {
+        "kod": 547174,
+        "nazev": "Praha 17",
+        "senatni_obvod": [
+          25
+        ],
+        "urad": {
+          "address": "Žalanského 291/12b, Řepy, 163 00 Praha 6",
+          "datova_schranka": "4mnbvza",
+          "nazev": "Městská část Praha 17"
+        }
+      },
+      {
+        "kod": 547417,
+        "nazev": "Praha 18",
+        "senatni_obvod": [
+          23
+        ],
+        "urad": {
+          "address": "Bechyňská 639, Letňany, 199 00 Praha 9",
+          "datova_schranka": "87ubtf2",
+          "nazev": "Městská část Praha 18"
+        }
+      },
+      {
+        "kod": 547344,
+        "nazev": "Praha 19",
+        "senatni_obvod": [
+          24
+        ],
+        "urad": {
+          "address": "Semilská 43/1, Kbely, 197 00 Praha 9",
+          "datova_schranka": "ji9buvp",
+          "nazev": "Městská část Praha 19"
+        }
+      },
+      {
+        "kod": 500089,
+        "nazev": "Praha 2",
+        "senatni_obvod": [
+          26,
+          27
+        ],
+        "urad": {
+          "address": "náměstí Míru 600/20, Vinohrady, 120 00 Praha 2",
+          "datova_schranka": "y7yb44i",
+          "nazev": "Městská část Praha 2"
+        }
+      },
+      {
+        "kod": 538213,
+        "nazev": "Praha 20",
+        "senatni_obvod": [
+          24
+        ],
+        "urad": {
+          "address": "Jívanská 647/10, Horní Počernice, 193 00 Praha 9",
+          "datova_schranka": "seibq29",
+          "nazev": "Městská část Praha 20"
+        }
+      },
+      {
+        "kod": 538949,
+        "nazev": "Praha 21",
+        "senatni_obvod": [
+          22
+        ],
+        "urad": {
+          "address": "Staroklánovická 260, Újezd nad Lesy, 190 16 Praha 9",
+          "datova_schranka": "bz3bbxj",
+          "nazev": "Městská část Praha 21"
+        }
+      },
+      {
+        "kod": 538931,
+        "nazev": "Praha 22",
+        "senatni_obvod": [
+          19
+        ],
+        "urad": {
+          "address": "Nové náměstí 1250/10, Uhříněves, 104 00 Praha 10",
+          "datova_schranka": "42ebvne",
+          "nazev": "Městská část Praha 22"
+        }
+      },
+      {
+        "kod": 500097,
+        "nazev": "Praha 3",
+        "senatni_obvod": [
+          26
+        ],
+        "urad": {
+          "address": "Havlíčkovo náměstí 700/9, Žižkov, 130 00 Praha 3",
+          "datova_schranka": "eqkbt8g",
+          "nazev": "Městská část Praha 3"
+        }
+      },
+      {
+        "kod": 500119,
+        "nazev": "Praha 4",
+        "senatni_obvod": [
+          17,
+          20
+        ],
+        "urad": {
+          "address": "Antala Staška 2059/80b, Krč, 140 00 Praha 4",
+          "datova_schranka": "ergbrf7",
+          "nazev": "Městská část Praha 4"
+        }
+      },
+      {
+        "kod": 500143,
+        "nazev": "Praha 5",
+        "senatni_obvod": [
+          21
+        ],
+        "urad": {
+          "address": "náměstí 14. října 1381/4, Smíchov, 150 00 Praha 5",
+          "datova_schranka": "yctbyzq",
+          "nazev": "Městská část Praha 5"
+        }
+      },
+      {
+        "kod": 500178,
+        "nazev": "Praha 6",
+        "senatni_obvod": [
+          25,
+          27
+        ],
+        "urad": {
+          "address": "Čs. armády 601/23, Bubeneč, 160 00 Praha 6",
+          "datova_schranka": "bmzbv7c",
+          "nazev": "Městská část Praha 6"
+        }
+      },
+      {
+        "kod": 500186,
+        "nazev": "Praha 7",
+        "senatni_obvod": [
+          27
+        ],
+        "urad": {
+          "address": "U průhonu 1338/38, Holešovice, 170 00 Praha 7",
+          "datova_schranka": "r44b2x7",
+          "nazev": "Městská část Praha 7"
+        }
+      },
+      {
+        "kod": 500208,
+        "nazev": "Praha 8",
+        "senatni_obvod": [
+          23
+        ],
+        "urad": {
+          "address": "Zenklova 1/35, Libeň, 180 00 Praha 8",
+          "datova_schranka": "g5ybpd2",
+          "nazev": "Městská část Praha 8"
+        }
+      },
+      {
+        "kod": 500216,
+        "nazev": "Praha 9",
+        "senatni_obvod": [
+          24,
+          26
+        ],
+        "urad": {
+          "address": "Sokolovská 14/324, Vysočany, 190 00 Praha 9",
+          "datova_schranka": "nddbppc",
+          "nazev": "Městská část Praha 9"
+        }
+      },
+      {
+        "kod": 538060,
+        "nazev": "Praha-Běchovice",
+        "senatni_obvod": [
+          22
+        ],
+        "urad": {
+          "address": "Českobrodská 3, Běchovice, 190 11 Praha 9",
+          "datova_schranka": "erdb3s9",
+          "nazev": "Městská část Praha-Běchovice"
+        }
+      },
+      {
+        "kod": 538078,
+        "nazev": "Praha-Benice",
+        "senatni_obvod": [
+          19
+        ],
+        "urad": {
+          "address": "Květnového povstání 21, Benice, 103 00 Praha 10",
+          "datova_schranka": "ftfbtyv",
+          "nazev": "Městská část Praha-Benice"
+        }
+      },
+      {
+        "kod": 538124,
+        "nazev": "Praha-Březiněves",
+        "senatni_obvod": [
+          23
+        ],
+        "urad": {
+          "address": "U parku 140/3, Březiněves, 182 00 Praha 8",
+          "datova_schranka": "atzaqa2",
+          "nazev": "Městská část Praha-Březiněves"
+        }
+      },
+      {
+        "kod": 547310,
+        "nazev": "Praha-Čakovice",
+        "senatni_obvod": [
+          23
+        ],
+        "urad": {
+          "address": "náměstí 25. března 121/1, Čakovice, 196 00 Praha 9",
+          "datova_schranka": "3pybpw9",
+          "nazev": "Městská část Praha-Čakovice"
+        }
+      },
+      {
+        "kod": 547298,
+        "nazev": "Praha-Ďáblice",
+        "senatni_obvod": [
+          23
+        ],
+        "urad": {
+          "address": "Osinalická 1104/13, Ďáblice, 182 00 Praha 8",
+          "datova_schranka": "dkvbw9b",
+          "nazev": "Městská část Praha-Ďáblice"
+        }
+      },
+      {
+        "kod": 547301,
+        "nazev": "Praha-Dolní Chabry",
+        "senatni_obvod": [
+          23
+        ],
+        "urad": {
+          "address": "Hrušovanské náměstí 253/5, Dolní Chabry, 184 00 Praha 8",
+          "datova_schranka": "ztib27j",
+          "nazev": "Městská část Praha-Dolní Chabry"
+        }
+      },
+      {
+        "kod": 547379,
+        "nazev": "Praha-Dolní Měcholupy",
+        "senatni_obvod": [
+          19
+        ],
+        "urad": {
+          "address": "Dolnoměcholupská 168/37, Dolní Měcholupy, 111 01 Praha 10",
+          "datova_schranka": "i82bw8s",
+          "nazev": "Městská část Praha-Dolní Měcholupy"
+        }
+      },
+      {
+        "kod": 538175,
+        "nazev": "Praha-Dolní Počernice",
+        "senatni_obvod": [
+          24
+        ],
+        "urad": {
+          "address": "Stará obec 10, Dolní Počernice, 190 12 Praha 9",
+          "datova_schranka": "ehpb75m",
+          "nazev": "Městská část Praha-Dolní Počernice"
+        }
+      },
+      {
+        "kod": 538205,
+        "nazev": "Praha-Dubeč",
+        "senatni_obvod": [
+          22
+        ],
+        "urad": {
+          "address": "Starodubečská 401/36, Dubeč, 107 00 Praha 10",
+          "datova_schranka": "bm4bju9",
+          "nazev": "Městská část Praha-Dubeč"
+        }
+      },
+      {
+        "kod": 538302,
+        "nazev": "Praha-Klánovice",
+        "senatni_obvod": [
+          24
+        ],
+        "urad": {
+          "address": "U Besedy 300/8, Klánovice, 190 14 Praha 9",
+          "datova_schranka": "2u4aks8",
+          "nazev": "Městská část Praha-Klánovice"
+        }
+      },
+      {
+        "kod": 538353,
+        "nazev": "Praha-Koloděje",
+        "senatni_obvod": [
+          22
+        ],
+        "urad": {
+          "address": "K jízdárně 9/20, Koloděje, 190 16 Praha 9",
+          "datova_schranka": "haiaksg",
+          "nazev": "Městská část Praha-Koloděje"
+        }
+      },
+      {
+        "kod": 538361,
+        "nazev": "Praha-Kolovraty",
+        "senatni_obvod": [
+          19
+        ],
+        "urad": {
+          "address": "Mírová 364/34, Kolovraty, 103 00 Praha 10",
+          "datova_schranka": "xa2a9sv",
+          "nazev": "Městská část Praha-Kolovraty"
+        }
+      },
+      {
+        "kod": 538388,
+        "nazev": "Praha-Královice",
+        "senatni_obvod": [
+          19
+        ],
+        "urad": {
+          "address": "K Nedvězí 66, Královice, 104 00 Praha 10",
+          "datova_schranka": "z92bva7",
+          "nazev": "Městská část Praha-Královice"
+        }
+      },
+      {
+        "kod": 538400,
+        "nazev": "Praha-Křeslice",
+        "senatni_obvod": [
+          19
+        ],
+        "urad": {
+          "address": "Štychova 2/34, Křeslice, 104 00 Praha 10",
+          "datova_schranka": "5z8aktm",
+          "nazev": "Městská část Praha-Křeslice"
+        }
+      },
+      {
+        "kod": 547042,
+        "nazev": "Praha-Kunratice",
+        "senatni_obvod": [
+          17
+        ],
+        "urad": {
+          "address": "K Libuši 7/10, Kunratice, 148 00 Praha 4",
+          "datova_schranka": "cxnbudp",
+          "nazev": "Městská část Praha-Kunratice"
+        }
+      },
+      {
+        "kod": 547051,
+        "nazev": "Praha-Libuš",
+        "senatni_obvod": [
+          17
+        ],
+        "urad": {
+          "address": "Libušská 35/200, Libuš, 142 00 Praha 4",
+          "datova_schranka": "u8xaktr",
+          "nazev": "Městská část Praha-Libuš"
+        }
+      },
+      {
+        "kod": 539449,
+        "nazev": "Praha-Lipence",
+        "senatni_obvod": [
+          17
+        ],
+        "urad": {
+          "address": "K obci 47, Lipence, 155 31 Praha 5",
+          "datova_schranka": "a4da5ui",
+          "nazev": "Městská část Praha-Lipence"
+        }
+      },
+      {
+        "kod": 539465,
+        "nazev": "Praha-Lochkov",
+        "senatni_obvod": [
+          17
+        ],
+        "urad": {
+          "address": "Za ovčínem 1, Lochkov, 154 00 Praha 5",
+          "datova_schranka": "sufanvv",
+          "nazev": "Městská část Praha-Lochkov"
+        }
+      },
+      {
+        "kod": 547140,
+        "nazev": "Praha-Lysolaje",
+        "senatni_obvod": [
+          25
+        ],
+        "urad": {
+          "address": "Kovárenská 8/5, Lysolaje, 165 00 Praha 6",
+          "datova_schranka": "einbsz9",
+          "nazev": "Městská část Praha-Lysolaje"
+        }
+      },
+      {
+        "kod": 547158,
+        "nazev": "Praha-Nebušice",
+        "senatni_obvod": [
+          25
+        ],
+        "urad": {
+          "address": "Nebušická 128, Nebušice, 164 00 Praha 6",
+          "datova_schranka": "27qb3d8",
+          "nazev": "Městská část Praha-Nebušice"
+        }
+      },
+      {
+        "kod": 538531,
+        "nazev": "Praha-Nedvězí",
+        "senatni_obvod": [
+          19
+        ],
+        "urad": {
+          "address": "Únorová 15/3, Nedvězí u Říčan, 103 00 Praha 10",
+          "datova_schranka": "kfnaktv",
+          "nazev": "Městská část Praha-Nedvězí"
+        }
+      },
+      {
+        "kod": 547395,
+        "nazev": "Praha-Petrovice",
+        "senatni_obvod": [
+          17,
+          19
+        ],
+        "urad": {
+          "address": "Edisonova 429/28, Petrovice, 109 00 Praha 10",
+          "datova_schranka": "wmmbtke",
+          "nazev": "Městská část Praha-Petrovice"
+        }
+      },
+      {
+        "kod": 539589,
+        "nazev": "Praha-Přední Kopanina",
+        "senatni_obvod": [
+          25
+        ],
+        "urad": {
+          "address": "Hokešovo náměstí 193, Přední Kopanina, 164 00 Praha 6",
+          "datova_schranka": "bndaktz",
+          "nazev": "Městská část Praha-Přední Kopanina"
+        }
+      },
+      {
+        "kod": 539635,
+        "nazev": "Praha-Řeporyje",
+        "senatni_obvod": [
+          17
+        ],
+        "urad": {
+          "address": "Nad náměstím 84, Řeporyje, 155 00 Praha 5",
+          "datova_schranka": "zb9bzi9",
+          "nazev": "Městská část Praha-Řeporyje"
+        }
+      },
+      {
+        "kod": 538736,
+        "nazev": "Praha-Satalice",
+        "senatni_obvod": [
+          24
+        ],
+        "urad": {
+          "address": "K Radonicům 81/3, Satalice, 190 15 Praha 9",
+          "datova_schranka": "r3taksc",
+          "nazev": "Městská část Praha-Satalice"
+        }
+      },
+      {
+        "kod": 539678,
+        "nazev": "Praha-Slivenec",
+        "senatni_obvod": [
+          17
+        ],
+        "urad": {
+          "address": "K Lochkovu 6/2, Slivenec, 154 00 Praha 5",
+          "datova_schranka": "7p9bt2g",
+          "nazev": "Městská část Praha-Slivenec"
+        }
+      },
+      {
+        "kod": 547271,
+        "nazev": "Praha-Suchdol",
+        "senatni_obvod": [
+          25
+        ],
+        "urad": {
+          "address": "Suchdolské náměstí 734/3, Suchdol, 165 00 Praha 6",
+          "datova_schranka": "95ibzi3",
+          "nazev": "Městská část Praha-Suchdol"
+        }
+      },
+      {
+        "kod": 539724,
+        "nazev": "Praha-Šeberov",
+        "senatni_obvod": [
+          17
+        ],
+        "urad": {
+          "address": "K Hrnčířům 160, Šeberov, 149 00 Praha 4",
+          "datova_schranka": "r3ibjti",
+          "nazev": "Městská část Praha-Šeberov"
+        }
+      },
+      {
+        "kod": 547409,
+        "nazev": "Praha-Štěrboholy",
+        "senatni_obvod": [
+          22
+        ],
+        "urad": {
+          "address": "Ústřední 527/14, Štěrboholy, 102 00 Praha 10",
+          "datova_schranka": "ethakud",
+          "nazev": "Městská část Praha-Štěrboholy"
+        }
+      },
+      {
+        "kod": 547328,
+        "nazev": "Praha-Troja",
+        "senatni_obvod": [
+          27
+        ],
+        "urad": {
+          "address": "Trojská 230/96, Troja, 171 00 Praha 7",
+          "datova_schranka": "9qsbzvx",
+          "nazev": "Městská část Praha-Troja"
+        }
+      },
+      {
+        "kod": 539791,
+        "nazev": "Praha-Újezd",
+        "senatni_obvod": [
+          17
+        ],
+        "urad": {
+          "address": "Kateřinské náměstí 465/1, Újezd u Průhonic, 149 00 Praha 4",
+          "datova_schranka": "2w9bx6s",
+          "nazev": "Městská část Praha-Újezd"
+        }
+      },
+      {
+        "kod": 547115,
+        "nazev": "Praha-Velká Chuchle",
+        "senatni_obvod": [
+          17
+        ],
+        "urad": {
+          "address": "U skály 262/2, Velká Chuchle, 159 00 Praha 5",
+          "datova_schranka": "nqdbuw2",
+          "nazev": "Městská část Praha-Velká Chuchle"
+        }
+      },
+      {
+        "kod": 539007,
+        "nazev": "Praha-Vinoř",
+        "senatni_obvod": [
+          24
+        ],
+        "urad": {
+          "address": "Bohdanečská 97, Vinoř, 190 17 Praha 9",
+          "datova_schranka": "m5pbt2p",
+          "nazev": "Městská část Praha-Vinoř"
+        }
+      },
+      {
+        "kod": 539864,
+        "nazev": "Praha-Zbraslav",
+        "senatni_obvod": [
+          17
+        ],
+        "urad": {
+          "address": "Zbraslavské náměstí 464, Zbraslav, 156 00 Praha 5",
+          "datova_schranka": "zcmap6w",
+          "nazev": "Městská část Praha-Zbraslav"
+        }
+      },
+      {
+        "kod": 539899,
+        "nazev": "Praha-Zličín",
+        "senatni_obvod": [
+          25
+        ],
+        "urad": {
+          "address": "Tylovická 207/2, Zličín, 155 21 Praha 5",
+          "datova_schranka": "cnbbtxh",
+          "nazev": "Městská část Praha-Zličín"
+        }
+      }
+    ]
+  },
+  {
+    "kod": 582786,
+    "nazev": "Brno",
+    "kraj_code": "CZ064",
+    "okres": "Brno-město",
+    "senatni_obvod": [
+      55,
+      58,
+      59,
+      60
+    ],
+    "urad": {
+      "address": "Dominikánské náměstí 196/1, Brno-město, 602 00 Brno",
+      "datova_schranka": "a7kbrrn",
+      "nazev": "Statutární město Brno"
+    },
+    "casti": [
+      {
+        "kod": 551082,
+        "nazev": "Brno-Bohunice",
+        "senatni_obvod": [
+          58
+        ],
+        "urad": {
+          "address": "Dlouhá 577/3, Bohunice, 625 00 Brno",
+          "datova_schranka": "hm2byk9",
+          "nazev": "Městská část Brno-Bohunice"
+        }
+      },
+      {
+        "kod": 551325,
+        "nazev": "Brno-Bosonohy",
+        "senatni_obvod": [
+          59
+        ],
+        "urad": {
+          "address": "Bosonožské náměstí 74/1, Bosonohy, 642 00 Brno",
+          "datova_schranka": "kk8bxef",
+          "nazev": "Městská část Brno-Bosonohy"
+        }
+      },
+      {
+        "kod": 551198,
+        "nazev": "Brno-Bystrc",
+        "senatni_obvod": [
+          55
+        ],
+        "urad": {
+          "address": "náměstí 28. dubna 145/60, Bystrc, 635 00 Brno",
+          "datova_schranka": "6kibw39",
+          "nazev": "Městská část Brno-Bystrc"
+        }
+      },
+      {
+        "kod": 551066,
+        "nazev": "Brno-Černovice",
+        "senatni_obvod": [
+          58
+        ],
+        "urad": {
+          "address": "Bolzanova 763/1, Černovice, 618 00 Brno",
+          "datova_schranka": "bs3bz7t",
+          "nazev": "Městská část Brno-Černovice"
+        }
+      },
+      {
+        "kod": 551317,
+        "nazev": "Brno-Chrlice",
+        "senatni_obvod": [
+          58
+        ],
+        "urad": {
+          "address": "Chrlické náměstí 1/4, Chrlice, 643 00 Brno",
+          "datova_schranka": "sfbbyk3",
+          "nazev": "Městská část Brno-Chrlice"
+        }
+      },
+      {
+        "kod": 551376,
+        "nazev": "Brno-Ivanovice",
+        "senatni_obvod": [
+          60
+        ],
+        "urad": {
+          "address": "Mácova 37/3, Ivanovice, 621 00 Brno",
+          "datova_schranka": "e4gbwnv",
+          "nazev": "Městská část Brno-Ivanovice"
+        }
+      },
+      {
+        "kod": 551406,
+        "nazev": "Brno-Jehnice",
+        "senatni_obvod": [
+          60
+        ],
+        "urad": {
+          "address": "náměstí 3. května 221/5, Jehnice, 621 00 Brno",
+          "datova_schranka": "76nbyg4",
+          "nazev": "Městská část Brno-Jehnice"
+        }
+      },
+      {
+        "kod": 551074,
+        "nazev": "Brno-jih",
+        "senatni_obvod": [
+          58
+        ],
+        "urad": {
+          "address": "Mariánské náměstí 152/13, Komárov, 617 00 Brno",
+          "datova_schranka": "xphb8g8",
+          "nazev": "Městská část Brno-jih"
+        }
+      },
+      {
+        "kod": 551171,
+        "nazev": "Brno-Jundrov",
+        "senatni_obvod": [
+          60
+        ],
+        "urad": {
+          "address": "Veslařská 97/56, Jundrov, 637 00 Brno",
+          "datova_schranka": "8gsb8g4",
+          "nazev": "Městská část Brno-Jundrov"
+        }
+      },
+      {
+        "kod": 551210,
+        "nazev": "Brno-Kníničky",
+        "senatni_obvod": [
+          55
+        ],
+        "urad": {
+          "address": "Nová 92/11, Kníničky, 635 00 Brno",
+          "datova_schranka": "uwcbyi5",
+          "nazev": "Městská část Brno-Kníničky"
+        }
+      },
+      {
+        "kod": 551147,
+        "nazev": "Brno-Kohoutovice",
+        "senatni_obvod": [
+          59
+        ],
+        "urad": {
+          "address": "Bašného 71/36, Kohoutovice, 623 00 Brno",
+          "datova_schranka": "x3gbyji",
+          "nazev": "Městská část Brno-Kohoutovice"
+        }
+      },
+      {
+        "kod": 551228,
+        "nazev": "Brno-Komín",
+        "senatni_obvod": [
+          60
+        ],
+        "urad": {
+          "address": "Vavřinecká 733/15, Komín, 624 00 Brno",
+          "datova_schranka": "bikbwyc",
+          "nazev": "Městská část Brno-Komín"
+        }
+      },
+      {
+        "kod": 551007,
+        "nazev": "Brno-Královo Pole",
+        "senatni_obvod": [
+          60
+        ],
+        "urad": {
+          "address": "Palackého třída 1365/59, Královo Pole, 612 00 Brno",
+          "datova_schranka": "xyxbwjb",
+          "nazev": "Městská část Brno-Královo Pole"
+        }
+      },
+      {
+        "kod": 551287,
+        "nazev": "Brno-Líšeň",
+        "senatni_obvod": [
+          58
+        ],
+        "urad": {
+          "address": "Jírova 2609/2, Líšeň, 628 00 Brno",
+          "datova_schranka": "u8jbv72",
+          "nazev": "Městská část Brno-Líšeň"
+        }
+      },
+      {
+        "kod": 551252,
+        "nazev": "Brno-Maloměřice a Obřany",
+        "senatni_obvod": [
+          58
+        ],
+        "urad": {
+          "address": "Selská 32/66, Maloměřice, 614 00 Brno",
+          "datova_schranka": "3xjbvwx",
+          "nazev": "Městská část Brno-Maloměřice a Obřany"
+        }
+      },
+      {
+        "kod": 551236,
+        "nazev": "Brno-Medlánky",
+        "senatni_obvod": [
+          60
+        ],
+        "urad": {
+          "address": "Hudcova 239/7, Medlánky, 621 00 Brno",
+          "datova_schranka": "xddbyg8",
+          "nazev": "Městská část Brno-Medlánky"
+        }
+      },
+      {
+        "kod": 551112,
+        "nazev": "Brno-Nový Lískovec",
+        "senatni_obvod": [
+          59
+        ],
+        "urad": {
+          "address": "Oblá 518/75a, Nový Lískovec, 634 00 Brno",
+          "datova_schranka": "ixpbwsj",
+          "nazev": "Městská část Brno-Nový Lískovec"
+        }
+      },
+      {
+        "kod": 551422,
+        "nazev": "Brno-Ořešín",
+        "senatni_obvod": [
+          60
+        ],
+        "urad": {
+          "address": "U zvoničky 12/4, Ořešín, 621 00 Brno",
+          "datova_schranka": "b8pbw3n",
+          "nazev": "Městská část Brno-Ořešín"
+        }
+      },
+      {
+        "kod": 551244,
+        "nazev": "Brno-Řečkovice a Mokrá Hora",
+        "senatni_obvod": [
+          60
+        ],
+        "urad": {
+          "address": "Palackého náměstí 78/11, Řečkovice, 621 00 Brno",
+          "datova_schranka": "py6bvvq",
+          "nazev": "Městská část Brno Řečkovice a Mokrá Hora"
+        }
+      },
+      {
+        "kod": 551031,
+        "nazev": "Brno-sever",
+        "senatni_obvod": [
+          60
+        ],
+        "urad": {
+          "address": "Bratislavská 251/70, Zábrdovice, 602 00 Brno",
+          "datova_schranka": "cqubvxs",
+          "nazev": "Městská část Brno-sever"
+        }
+      },
+      {
+        "kod": 551295,
+        "nazev": "Brno-Slatina",
+        "senatni_obvod": [
+          58
+        ],
+        "urad": {
+          "address": "Tilhonova 450/59, Slatina, 627 00 Brno",
+          "datova_schranka": "bj9b3rx",
+          "nazev": "Městská část Brno-Slatina"
+        }
+      },
+      {
+        "kod": 551091,
+        "nazev": "Brno-Starý Lískovec",
+        "senatni_obvod": [
+          59
+        ],
+        "urad": {
+          "address": "Oderská 260/4, Starý Lískovec, 625 00 Brno",
+          "datova_schranka": "2rbbwxi",
+          "nazev": "Městská část Brno-Starý Lískovec"
+        }
+      },
+      {
+        "kod": 550973,
+        "nazev": "Brno-střed",
+        "senatni_obvod": [
+          59
+        ],
+        "urad": {
+          "address": "Dominikánská 264/2, Brno-město, 602 00 Brno",
+          "datova_schranka": "qykbwe7",
+          "nazev": "Městská část Brno-střed"
+        }
+      },
+      {
+        "kod": 551309,
+        "nazev": "Brno-Tuřany",
+        "senatni_obvod": [
+          58
+        ],
+        "urad": {
+          "address": "Tuřanské náměstí 84/1, Tuřany, 620 00 Brno",
+          "datova_schranka": "f9ubyek",
+          "nazev": "Městská část Brno-Tuřany"
+        }
+      },
+      {
+        "kod": 551431,
+        "nazev": "Brno-Útěchov",
+        "senatni_obvod": [
+          60
+        ],
+        "urad": {
+          "address": "Adamovská 15/6, Útěchov, 644 00 Brno",
+          "datova_schranka": "8urbyje",
+          "nazev": "Městská část Brno-Útěchov"
+        }
+      },
+      {
+        "kod": 551279,
+        "nazev": "Brno-Vinohrady",
+        "senatni_obvod": [
+          58
+        ],
+        "urad": {
+          "address": "Velkopavlovická 4310/25, Židenice, 628 00 Brno",
+          "datova_schranka": "gxxbyhw",
+          "nazev": "Městská část Brno-Vinohrady"
+        }
+      },
+      {
+        "kod": 550990,
+        "nazev": "Brno-Žabovřesky",
+        "senatni_obvod": [
+          60
+        ],
+        "urad": {
+          "address": "Horova 1623/28, Žabovřesky, 616 00 Brno",
+          "datova_schranka": "n97byjq",
+          "nazev": "Městská část Brno-Žabovřesky"
+        }
+      },
+      {
+        "kod": 551368,
+        "nazev": "Brno-Žebětín",
+        "senatni_obvod": [
+          55
+        ],
+        "urad": {
+          "address": "Křivánkovo náměstí 43/35, Žebětín, 641 00 Brno",
+          "datova_schranka": "82pbzsk",
+          "nazev": "Městská část Brno-Žebětín"
+        }
+      },
+      {
+        "kod": 551058,
+        "nazev": "Brno-Židenice",
+        "senatni_obvod": [
+          58
+        ],
+        "urad": {
+          "address": "Gajdošova 4392/7, Židenice, 615 00 Brno",
+          "datova_schranka": "rnpbwhi",
+          "nazev": "Městská část Brno-Židenice"
+        }
+      }
+    ]
+  },
+  {
+    "kod": 500801,
+    "nazev": "Blatec",
+    "kraj_code": "CZ071",
+    "okres": "Olomouc",
+    "senatni_obvod": [
+      61
+    ],
+    "urad": {
+      "address": "Blatec 81, 783 75 Blatec",
+      "datova_schranka": "nd9bkw4",
+      "nazev": "Obec Blatec"
+    }
+  },
+  {
+    "kod": 505927,
+    "nazev": "Opava",
+    "kraj_code": "CZ080",
+    "okres": "Opava",
+    "senatni_obvod": [
+      68
+    ],
+    "urad": {
+      "address": "Horní náměstí 382/69, Město, 746 01 Opava",
+      "datova_schranka": "5eabx4t",
+      "nazev": "Statutární město Opava"
+    },
+    "casti": [
+      {
+        "kod": 555355,
+        "nazev": "Komárov",
+        "senatni_obvod": [
+          68
+        ],
+        "urad": {
+          "address": "Podvihovská 156/16, Komárov, 747 70 Opava",
+          "datova_schranka": "khbarke",
+          "nazev": "Městská část Komárov"
+        }
+      },
+      {
+        "kod": 555339,
+        "nazev": "Malé Hoštice",
+        "senatni_obvod": [
+          68
+        ],
+        "urad": {
+          "address": "Slezská 4/11, Malé Hoštice, 747 05 Opava",
+          "datova_schranka": "vakarka",
+          "nazev": "Městská část Malé Hoštice"
+        }
+      },
+      {
+        "kod": 555436,
+        "nazev": "Milostovice",
+        "senatni_obvod": [
+          68
+        ],
+        "urad": {
+          "address": "Lihovarská 32/17, Milostovice, 746 01 Opava",
+          "datova_schranka": "53vark6",
+          "nazev": "Městská část Milostovice"
+        }
+      },
+      {
+        "kod": 555321,
+        "nazev": "Opava (nečleněná část města)",
+        "senatni_obvod": [
+          68
+        ],
+        "urad": null
+      },
+      {
+        "kod": 555401,
+        "nazev": "Podvihov",
+        "senatni_obvod": [
+          68
+        ],
+        "urad": {
+          "address": "Polomská 178/13, Podvihov, 747 06 Opava",
+          "datova_schranka": "eu6army",
+          "nazev": "Městská část Podvihov"
+        }
+      },
+      {
+        "kod": 555371,
+        "nazev": "Suché Lazce",
+        "senatni_obvod": [
+          68
+        ],
+        "urad": {
+          "address": "Přerovecká 9/21, Suché Lazce, 747 95 Opava",
+          "datova_schranka": "pnfarmt",
+          "nazev": "Městská část Suché Lazce"
+        }
+      },
+      {
+        "kod": 556700,
+        "nazev": "Vávrovice",
+        "senatni_obvod": [
+          68
+        ],
+        "urad": {
+          "address": "Jantarová 288/18, Vávrovice, 747 73 Opava",
+          "datova_schranka": "yfqarmp",
+          "nazev": "Městská část Vávrovice"
+        }
+      },
+      {
+        "kod": 555461,
+        "nazev": "Vlaštovičky",
+        "senatni_obvod": [
+          68
+        ],
+        "urad": {
+          "address": "Okružní 21/3, Vlaštovičky, 746 01 Opava",
+          "datova_schranka": "88zarmj",
+          "nazev": "Městská část Vlaštovičky"
+        }
+      },
+      {
+        "kod": 555410,
+        "nazev": "Zlatníky",
+        "senatni_obvod": [
+          68
+        ],
+        "urad": {
+          "address": "6. května 52/22, Zlatníky, 746 01 Opava",
+          "datova_schranka": "h2aarnb",
+          "nazev": "Městská část Zlatníky"
+        }
+      }
+    ]
+  },
+  {
+    "kod": 554821,
+    "nazev": "Ostrava",
+    "kraj_code": "CZ080",
+    "okres": "Ostrava-město",
+    "senatni_obvod": [
+      70,
+      71,
+      72
+    ],
+    "urad": {
+      "address": "Prokešovo náměstí 1803/8, Moravská Ostrava, 702 00 Ostrava",
+      "datova_schranka": "5zubv7w",
+      "nazev": "Statutární město Ostrava"
+    },
+    "casti": [
+      {
+        "kod": 554332,
+        "nazev": "Hošťálkovice",
+        "senatni_obvod": [
+          70
+        ],
+        "urad": {
+          "address": "Rynky 277, Hošťálkovice, 725 28 Ostrava",
+          "datova_schranka": "g47bft8",
+          "nazev": "Městský obvod Hošťálkovice"
+        }
+      },
+      {
+        "kod": 554669,
+        "nazev": "Hrabová",
+        "senatni_obvod": [
+          70
+        ],
+        "urad": {
+          "address": "Bažanova 174/4, Hrabová, 720 00 Ostrava",
+          "datova_schranka": "8bwbfse",
+          "nazev": "Městský obvod Hrabová"
+        }
+      },
+      {
+        "kod": 554561,
+        "nazev": "Krásné Pole",
+        "senatni_obvod": [
+          72
+        ],
+        "urad": {
+          "address": "Družební 576, Krásné Pole, 725 26 Ostrava",
+          "datova_schranka": "xhnbuww",
+          "nazev": "Městský obvod Krásné Pole"
+        }
+      },
+      {
+        "kod": 554324,
+        "nazev": "Lhotka",
+        "senatni_obvod": [
+          70
+        ],
+        "urad": {
+          "address": "U Splavu 76/14a, Lhotka, 725 28 Ostrava",
+          "datova_schranka": "2r7bt6b",
+          "nazev": "Městský obvod Lhotka"
+        }
+      },
+      {
+        "kod": 554286,
+        "nazev": "Mariánské Hory a Hulváky",
+        "senatni_obvod": [
+          70
+        ],
+        "urad": {
+          "address": "Přemyslovců 224/63, Mariánské Hory, 709 00 Ostrava",
+          "datova_schranka": "nrcbfsn",
+          "nazev": "Městský obvod Mariánské Hory a Hulváky"
+        }
+      },
+      {
+        "kod": 554570,
+        "nazev": "Martinov",
+        "senatni_obvod": [
+          72
+        ],
+        "urad": {
+          "address": "Martinovská 3154/23, Martinov, 723 00 Ostrava",
+          "datova_schranka": "xchb29h",
+          "nazev": "Městský obvod Martinov"
+        }
+      },
+      {
+        "kod": 554430,
+        "nazev": "Michálkovice",
+        "senatni_obvod": [
+          70
+        ],
+        "urad": {
+          "address": "Československé armády 325/106, Michálkovice, 715 00 Ostrava",
+          "datova_schranka": "frpbzih",
+          "nazev": "Městský obvod Michálkovice"
+        }
+      },
+      {
+        "kod": 545911,
+        "nazev": "Moravská Ostrava a Přívoz",
+        "senatni_obvod": [
+          70
+        ],
+        "urad": {
+          "address": "náměstí Dr. E. Beneše 555/6, Moravská Ostrava, 702 00 Ostrava",
+          "datova_schranka": "c9ybfpi",
+          "nazev": "Městský obvod Moravská Ostrava a Přívoz"
+        }
+      },
+      {
+        "kod": 554219,
+        "nazev": "Nová Bělá",
+        "senatni_obvod": [
+          70
+        ],
+        "urad": {
+          "address": "Mitrovická 100/342, Nová Bělá, 724 00 Ostrava",
+          "datova_schranka": "dx3bfst",
+          "nazev": "Městský obvod Nová Bělá"
+        }
+      },
+      {
+        "kod": 554367,
+        "nazev": "Nová Ves",
+        "senatni_obvod": [
+          70
+        ],
+        "urad": {
+          "address": "Rolnická 139/32, Nová Ves, 709 00 Ostrava",
+          "datova_schranka": "qzgbtmw",
+          "nazev": "Městský obvod Nová Ves"
+        }
+      },
+      {
+        "kod": 546135,
+        "nazev": "Ostrava-Jih",
+        "senatni_obvod": [
+          71
+        ],
+        "urad": {
+          "address": "Horní 791/3, Hrabůvka, 700 30 Ostrava",
+          "datova_schranka": "2s3brdz",
+          "nazev": "Městský obvod Ostrava-Jih"
+        }
+      },
+      {
+        "kod": 554308,
+        "nazev": "Petřkovice",
+        "senatni_obvod": [
+          70
+        ],
+        "urad": {
+          "address": "Hlučínská 135, Petřkovice, 725 29 Ostrava",
+          "datova_schranka": "46sbfr2",
+          "nazev": "Městský obvod Petřkovice"
+        }
+      },
+      {
+        "kod": 554723,
+        "nazev": "Plesná",
+        "senatni_obvod": [
+          72
+        ],
+        "urad": {
+          "address": "Dobroslavická 83/8, Plesná, 725 27 Ostrava",
+          "datova_schranka": "ejibp8y",
+          "nazev": "Městský obvod Plesná"
+        }
+      },
+      {
+        "kod": 554588,
+        "nazev": "Polanka nad Odrou",
+        "senatni_obvod": [
+          71
+        ],
+        "urad": {
+          "address": "1. května 330/160, Polanka nad Odrou, 725 25 Ostrava",
+          "datova_schranka": "udhbfr6",
+          "nazev": "Městský obvod Polanka nad Odrou"
+        }
+      },
+      {
+        "kod": 546224,
+        "nazev": "Poruba",
+        "senatni_obvod": [
+          72
+        ],
+        "urad": {
+          "address": "Klimkovická 55/28, Poruba, 708 00 Ostrava",
+          "datova_schranka": "xpkbv55",
+          "nazev": "Městský obvod Poruba"
+        }
+      },
+      {
+        "kod": 554375,
+        "nazev": "Proskovice",
+        "senatni_obvod": [
+          71
+        ],
+        "urad": {
+          "address": "Světlovská 82/2, Proskovice, 724 00 Ostrava",
+          "datova_schranka": "cknbn6z",
+          "nazev": "Městský obvod Proskovice"
+        }
+      },
+      {
+        "kod": 554243,
+        "nazev": "Pustkovec",
+        "senatni_obvod": [
+          72
+        ],
+        "urad": {
+          "address": "Pustkovecká 64/47, Pustkovec, 708 00 Ostrava",
+          "datova_schranka": "h4ibsps",
+          "nazev": "Městský obvod Pustkovec"
+        }
+      },
+      {
+        "kod": 554537,
+        "nazev": "Radvanice a Bartovice",
+        "senatni_obvod": [
+          70
+        ],
+        "urad": {
+          "address": "Těšínská 87/281, Radvanice, 716 00 Ostrava",
+          "datova_schranka": "iygb6cd",
+          "nazev": "Městský obvod Radvanice a Bartovice"
+        }
+      },
+      {
+        "kod": 546046,
+        "nazev": "Slezská Ostrava",
+        "senatni_obvod": [
+          70
+        ],
+        "urad": {
+          "address": "Těšínská 138/35, Slezská Ostrava, 710 00 Ostrava",
+          "datova_schranka": "56zbpub",
+          "nazev": "Městský obvod Slezská Ostrava"
+        }
+      },
+      {
+        "kod": 554235,
+        "nazev": "Stará Bělá",
+        "senatni_obvod": [
+          70
+        ],
+        "urad": {
+          "address": "Junácká 343/127, Stará Bělá, 724 00 Ostrava",
+          "datova_schranka": "jj8bfrc",
+          "nazev": "Městský obvod Stará Bělá"
+        }
+      },
+      {
+        "kod": 554685,
+        "nazev": "Svinov",
+        "senatni_obvod": [
+          72
+        ],
+        "urad": {
+          "address": "Bílovecká 69/48, Svinov, 721 00 Ostrava",
+          "datova_schranka": "zzgb4es",
+          "nazev": "Městský obvod Svinov"
+        }
+      },
+      {
+        "kod": 554715,
+        "nazev": "Třebovice",
+        "senatni_obvod": [
+          72
+        ],
+        "urad": {
+          "address": "5. května 5027/1, Třebovice, 722 00 Ostrava",
+          "datova_schranka": "wu8bzk6",
+          "nazev": "Městský obvod Třebovice"
+        }
+      },
+      {
+        "kod": 554227,
+        "nazev": "Vítkovice",
+        "senatni_obvod": [
+          70
+        ],
+        "urad": {
+          "address": "Mírové náměstí 516/1, Vítkovice, 703 00 Ostrava",
+          "datova_schranka": "7mqbr27",
+          "nazev": "Městský obvod Vítkovice"
+        }
+      }
+    ]
+  }
+]

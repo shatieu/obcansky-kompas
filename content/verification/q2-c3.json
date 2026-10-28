@@ -1,0 +1,12 @@
+{
+  "claim_id": "q2-c3",
+  "claim_hash": "60df53382a6fbfe96b3d25a9dc757d27bb27b2dcf274af0e7892713b96666f0e",
+  "verdict": "ano",
+  "correction": "",
+  "note": "DZ str. 6: z. 119/2025 Sb. 'změnil definici rozhlasového a televizního přijímače tak, aby zahrnul i počítače a všechna mobilní zařízení'.",
+  "url_checked": "https://www.psp.cz/sqw/text/orig2.sqw?idd=277415",
+  "checked_at": "2026-10-27T23:53:49Z",
+  "verifier": "verifier-a1",
+  "round": 1,
+  "human_reviewed": false
+}

@@ -1,0 +1,12 @@
+{
+  "claim_id": "q1-c1",
+  "claim_hash": "c18bf2190aaf87e1decb84d9238bfc93c1a36a48a4902f6f29219aa6844b728c",
+  "verdict": "ano",
+  "correction": "",
+  "note": "RIA str. 29: '6,730 mld. Kč pro ČT a 2,476 mld. Kč pro ČRo dle rozpočtů 2026'; 6,730 + 2,476 = 9,206.",
+  "url_checked": "https://www.psp.cz/sqw/text/orig2.sqw?idd=277417",
+  "checked_at": "2026-10-27T23:53:49Z",
+  "verifier": "verifier-a1",
+  "round": 1,
+  "human_reviewed": false
+}

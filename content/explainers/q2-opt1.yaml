@@ -1,0 +1,53 @@
+id: q2-opt1
+text: |
+  Domácnost platí 150 Kč měsíčně za televizi a 55 Kč za rozhlas.
+  Firmy s víc než 24 zaměstnanci platí několik poplatků podle počtu lidí.
+  Když ceny od posledního zvýšení vzrostou o víc než 6 %, poplatek stoupne o 6 %.
+  Lidé s velmi nízkým příjmem a někteří lidé se zdravotním postižením platit nemusí.
+pro: Peníze jdou přímo od lidí a nezávisí na státním rozpočtu.
+proti: Výběr poplatků je složitý a ročně stojí až 250 milionů.
+claims:
+- id: q2-opt1-c1
+  claim: Televizní poplatek činí 150 Kč a rozhlasový poplatek 55 Kč měsíčně.
+  source_url: https://www.zakonyprolidi.cz/cs/2005-348
+  source_title: Zákon č. 348/2005 Sb., o rozhlasových a televizních poplatcích (znění od 1. 1. 2026)
+  locator: § 6 odst. 1
+  quote: Měsíční výše rozhlasového poplatku činí 55 Kč
+- id: q2-opt1-c2
+  claim: Fyzická osoba platí jeden poplatek i při více přijímačích a člověk ve společné domácnosti s plátcem poplatek neplatí.
+  source_url: https://www.zakonyprolidi.cz/cs/2005-348
+  source_title: Zákon č. 348/2005 Sb., o rozhlasových a televizních poplatcích (znění od 1. 1. 2026)
+  locator: § 5 odst. 1 a 2
+- id: q2-opt1-c3
+  claim: Podnikatelé s více než 24 zaměstnanci platí násobek poplatku podle počtu zaměstnanců, menší podnikatelé jako firmy neplatí.
+  source_url: https://www.zakonyprolidi.cz/cs/2005-348
+  source_title: Zákon č. 348/2005 Sb., o rozhlasových a televizních poplatcích (znění od 1. 1. 2026)
+  locator: § 5 odst. 3 a 4
+- id: q2-opt1-c4
+  claim: Poplatky se zvýší o 6 %, když součet inflace od posledního zvýšení překročí 6 %.
+  source_url: https://www.zakonyprolidi.cz/cs/2005-348
+  source_title: Zákon č. 348/2005 Sb., o rozhlasových a televizních poplatcích (znění od 1. 1. 2026)
+  locator: § 6 odst. 2
+- id: q2-opt1-c5
+  claim: Od poplatku jsou osvobozeni mimo jiné lidé s příjmem pod 2,15násobkem životního minima a někteří nevidomí nebo neslyšící.
+  source_url: https://www.zakonyprolidi.cz/cs/2005-348
+  source_title: Zákon č. 348/2005 Sb., o rozhlasových a televizních poplatcích (znění od 1. 1. 2026)
+  locator: § 4 odst. 1 a 2
+- id: q2-opt1-c6
+  claim: Důvodová zpráva uvádí, že poplatkový model se vyznačuje nezávislostí na státu a státním rozpočtu.
+  source_url: https://www.psp.cz/sqw/text/orig2.sqw?idd=277415
+  source_title: Vládní návrh zákona, kterým se mění zákon o České televizi a zákon o Českém rozhlasu a zrušuje zákon o poplatcích (sněmovní tisk 231/0), včetně důvodové zprávy
+  locator: Důvodová zpráva, Obecná část, bod 5 (přehled modelů financování v Evropě), str. 9
+  quote: institucionální nezávislostí na státu a státním rozpočtu
+- id: q2-opt1-c7
+  claim: Důvodová zpráva uvádí jako nevýhodu poplatků značnou administrativní náročnost výběru a vymahatelnosti.
+  source_url: https://www.psp.cz/sqw/text/orig2.sqw?idd=277415
+  source_title: Vládní návrh zákona, kterým se mění zákon o České televizi a zákon o Českém rozhlasu a zrušuje zákon o poplatcích (sněmovní tisk 231/0), včetně důvodové zprávy
+  locator: Důvodová zpráva, Obecná část, bod 5 (přehled modelů financování v Evropě), str. 9
+- id: q2-opt1-c8
+  claim: Náklady ČT a ČRo na správu evidence poplatků a související agendu dosahují až 250 milionů Kč ročně.
+  source_url: https://www.psp.cz/sqw/text/orig2.sqw?idd=277415
+  source_title: Vládní návrh zákona, kterým se mění zákon o České televizi a zákon o Českém rozhlasu a zrušuje zákon o poplatcích (sněmovní tisk 231/0), včetně důvodové zprávy
+  locator: Důvodová zpráva, Zvláštní část, K části první a druhé, str. 21
+status: draft
+human_reviewed: false

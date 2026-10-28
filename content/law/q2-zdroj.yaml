@@ -1,0 +1,98 @@
+# Modul Q2 – zdroj financování (SPEC §10), 6 variant + „Nevím“.
+# Volby Q2: 1 Poplatek jako dnes · 2 Zvláštní poplatek přes daně · 3 Státní rozpočet s pojistkami ·
+#           4 Návrh vlády · 5 Státní rozpočet bez pojistek · 6 Jen dobrovolné příspěvky · 7 Nevím
+# Varianta 4 je pracovní přiblížení vládního návrhu. Před schválením (legal_review: approved) je nutné ji
+# porovnat se sněmovním tiskem; fakta o návrhu se uvádějí jen přes tvrzení z content/explainers/law-models.yaml
+# (claim_refs), ne v textu zákona.
+id: q2-zdroj
+version: 1
+legal_review: pending
+slot: source
+questions: [q2]
+paragraphs:
+  - id: q2-1-poplatek
+    title: Poplatek za média veřejné služby
+    when:
+      q2: 1
+    subsections:
+      - text: >-
+          Média veřejné služby se financují z poplatku za média veřejné služby
+          (dále jen „poplatek“).
+      - text: >-
+          Poplatek vybírají a spravují Česká televize a Český rozhlas. Výnos
+          poplatku je jejich příjmem a není příjmem státního rozpočtu.
+
+  - id: q2-2-poplatek-dane
+    title: Poplatek vybíraný správcem daně
+    when:
+      q2: 2
+    subsections:
+      - text: >-
+          Média veřejné služby se financují ze zvláštního poplatku za média
+          veřejné služby (dále jen „poplatek“).
+      - text: >-
+          Poplatek vybírá správce daně z příjmů fyzických osob spolu s touto daní.
+          Pro správu poplatku se použije daňový řád.
+      - text: >-
+          Výnos poplatku se převádí na zvláštní účet médií veřejné služby; není
+          příjmem státního rozpočtu a nelze jej použít k jinému účelu.
+
+  - id: q2-3-rozpocet-pojistky
+    title: Financování ze státního rozpočtu
+    when:
+      q2: 3
+    subsections:
+      - text: >-
+          Média veřejné služby se financují ze státního rozpočtu ve výši podle
+          {{ref:amount}}.
+      - text: >-
+          Prostředky podle odstavce 1 se v zákoně o státním rozpočtu uvádějí jako
+          samostatný závazný ukazatel. V průběhu rozpočtového roku je nelze snížit
+          ani vázat.
+      - text: >-
+          Ministerstvo financí převádí prostředky médiím veřejné služby čtvrtletně
+          předem, vždy nejpozději desátý den prvního měsíce kalendářního čtvrtletí.
+      - text: >-
+          Poskytnutí prostředků nesmí být podmíněno požadavky na obsah vysílání
+          ani na personální obsazení orgánů médií veřejné služby.
+
+  - id: q2-4-navrh-vlady
+    title: Financování ze státního rozpočtu
+    when:
+      q2: 4
+    claim_refs: []   # TODO(research): doplnit id tvrzení o vládním návrhu z content/explainers/law-models.yaml
+    subsections:
+      - text: >-
+          Média veřejné služby se financují ze státního rozpočtu ve výši stanovené
+          tímto zákonem podle {{ref:amount}}.
+      - text: >-
+          Ministerstvo financí převádí prostředky médiím veřejné služby v pravidelných
+          splátkách podle zákona o rozpočtových pravidlech.
+
+  - id: q2-5-rozpocet
+    title: Financování ze státního rozpočtu
+    when:
+      q2: 5
+    text: >-
+      Média veřejné služby se financují ze státního rozpočtu v rámci kapitoly
+      Ministerstva kultury, a to ve výši, kterou na příslušný rok stanoví zákon
+      o státním rozpočtu.
+
+  - id: q2-6-dobrovolne
+    title: Dobrovolné příspěvky
+    when:
+      q2: 6
+    subsections:
+      - text: >-
+          Média veřejné služby se financují z dobrovolných příspěvků fyzických
+          a právnických osob a z vlastní činnosti. Z veřejných rozpočtů se
+          nefinancují.
+      - text: >-
+          Média veřejné služby zveřejňují každoročně celkovou výši přijatých
+          příspěvků a počet přispěvatelů.
+
+  - id: q2-nevim
+    title: Zdroj financování
+    when:
+      q2: nevim
+    text: "{{nevim}}"

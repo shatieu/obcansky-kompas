@@ -1,0 +1,12 @@
+{
+  "claim_id": "q2-opt1-c1",
+  "claim_hash": "406955ff08c5db02b516a55b87a08537da680913736a2cce0150929ec2e60283",
+  "verdict": "ano",
+  "correction": "",
+  "note": "§ 6 odst. 1 (verze 14): rozhlasový 55 Kč, televizní 150 Kč měsíčně.",
+  "url_checked": "https://www.zakonyprolidi.cz/cs/2005-348",
+  "checked_at": "2026-10-27T23:53:49Z",
+  "verifier": "verifier-a1",
+  "round": 1,
+  "human_reviewed": false
+}

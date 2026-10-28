@@ -1,0 +1,20 @@
+id: q7-opt1
+text: |
+  Lidé s příjmem pod určitou hranicí neplatí. Dnes v Česku neplatí ten, kdo má čistý příjem pod zhruba dvojnásobkem nejnižší částky na živobytí podle zákona. Ve Finsku neplatí lidé s ročním příjmem pod asi 15 tisíc eur.
+pro: "Lidé, kteří vydělávají málo, nemusí platit nic."
+proti: "Výjimku je potřeba prokazovat a ostatní zaplatí víc."
+claims:
+  - id: q7-opt1-c1
+    claim: "V Česku neplatí poplatky člověk žijící sám, jehož čistý příjem za uplynulé kalendářní čtvrtletí je nižší než 2,15násobek životního minima; u vícečlenné domácnosti se sčítají čisté příjmy všech jejích členů."
+    source_url: "https://www.zakonyprolidi.cz/cs/2005-348"
+    source_title: "Zákon č. 348/2005 Sb., o rozhlasových a televizních poplatcích (znění k 1. 1. 2026)"
+    locator: "§ 4 odst. 2 písm. a) a b)"
+    quote: "čistý příjem za uplynulé kalendářní čtvrtletí je nižší než 2,15násobek životního minima"
+  - id: q7-opt1-c2
+    claim: "Ve Finsku se Yle daň platí ve výši 2,5 % z příjmů nad 15 150 eur ročně."
+    source_url: "https://yle.fi/aihe/about-yle/finances"
+    source_title: "Yle – Content from Yle's finances"
+    locator: "sekce Yle tax for individuals"
+    quote: "Those who earn less than EUR 15,150 are exempt from paying the tax."
+status: draft
+human_reviewed: false

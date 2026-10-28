@@ -1,0 +1,12 @@
+{
+  "claim_id": "q6-c3",
+  "claim_hash": "bbc4b5a8c9b8305eba76523f49219f860383a9344db985cfe5adf3cf2a514f50",
+  "verdict": "ano",
+  "correction": "",
+  "note": "",
+  "url_checked": "https://vero.fi/syventavat-vero-ohjeet/ohje-hakusivu/48391/yleisradiovero5/",
+  "checked_at": "2026-10-27T23:41:38Z",
+  "verifier": "verifier-b1",
+  "round": 1,
+  "human_reviewed": false
+}

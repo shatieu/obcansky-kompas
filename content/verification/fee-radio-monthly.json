@@ -1,0 +1,12 @@
+{
+  "claim_id": "fee-radio-monthly",
+  "claim_hash": "bcab7d53349c5c1cfbf0e2ccdcf59949c765d0d971aa95062306879e531e2041",
+  "verdict": "ano",
+  "correction": "",
+  "note": "§ 6 odst. 1: rozhlasový poplatek 55 Kč.",
+  "url_checked": "https://www.zakonyprolidi.cz/cs/2005-348",
+  "checked_at": "2026-10-27T23:53:49Z",
+  "verifier": "verifier-a1",
+  "round": 1,
+  "human_reviewed": false
+}

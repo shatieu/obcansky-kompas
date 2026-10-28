@@ -1,0 +1,12 @@
+{
+  "claim_id": "q6-c2",
+  "claim_hash": "c396b2d06002b4bc8152a126d1cd809e362f3d233d346936eca53f2986fa1ac5",
+  "verdict": "ano",
+  "correction": "",
+  "note": "",
+  "url_checked": "https://skatteverket.se/privat/skatter/arbeteochinkomst/skattetabeller/publicserviceavgift.4.22501d9e166a8cb399f31dd.html",
+  "checked_at": "2026-10-27T23:41:38Z",
+  "verifier": "verifier-b1",
+  "round": 1,
+  "human_reviewed": false
+}

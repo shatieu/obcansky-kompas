@@ -1,0 +1,32 @@
+id: q4-opt3
+text: |
+  Žádná zvláštní platba by nebyla, peníze by šly ze státního rozpočtu.
+  Tak to navrhuje vláda pro ČT a ČRo od roku 2027.
+  Norsko takto platí NRK od roku 2020.
+pro: Odpadne zvláštní platba i evidence lidí, kteří ji platí.
+proti: Peníze přímo od státu mohou zvýšit závislost médií na státu.
+claims:
+- id: q4-opt3-c1
+  claim: Vládní návrh ruší zákon o poplatcích s účinností od 1. 1. 2027 a ČT a ČRo dává příspěvek ze státního rozpočtu.
+  source_url: https://www.psp.cz/sqw/text/orig2.sqw?idd=277415
+  source_title: Vládní návrh zákona, kterým se mění zákon o České televizi a zákon o Českém rozhlasu a zrušuje zákon o poplatcích (sněmovní tisk 231/0), včetně důvodové zprávy
+  locator: Čl. I a II (nové § 10a odst. 1), Čl. IV a Čl. V, str. 1–3
+- id: q4-opt3-c2
+  claim: Norsko zrušilo poplatek za vysílání od 1. 1. 2020 a NRK od té doby financuje ze státního rozpočtu.
+  source_url: https://www.stortinget.no/no/Saker-og-publikasjoner/Publikasjoner/Innstillinger/Stortinget/2019-2020/inns-201920-004l/?all=true
+  source_title: Stortinget – Innst. 4 L (2019–2020)
+  locator: úvod / shrnutí návrhu (kringkastingsavgiften avvikles)
+  quote: kringkastingsavgiften skal avvikles fra 1. januar 2020
+- id: q4-opt3-c3
+  claim: Po zrušení zákona o poplatcích přestanou ČT a ČRo vést evidenci poplatníků a shromažďovat jejich osobní údaje.
+  source_url: https://www.psp.cz/sqw/text/orig2.sqw?idd=277415
+  source_title: Vládní návrh zákona, kterým se mění zákon o České televizi a zákon o Českém rozhlasu a zrušuje zákon o poplatcích (sněmovní tisk 231/0), včetně důvodové zprávy
+  locator: Důvodová zpráva, Obecná část, bod 11, str. 17
+- id: q4-opt3-c4
+  claim: Důvodová zpráva uvádí jako riziko financování ze státního rozpočtu možnost vyšší závislosti médií veřejné služby na státu.
+  source_url: https://www.psp.cz/sqw/text/orig2.sqw?idd=277415
+  source_title: Vládní návrh zákona, kterým se mění zákon o České televizi a zákon o Českém rozhlasu a zrušuje zákon o poplatcích (sněmovní tisk 231/0), včetně důvodové zprávy
+  locator: Důvodová zpráva, Obecná část, bod 5 (přehled modelů financování v Evropě), str. 9
+  quote: Rizikem je naopak možnost vyšší závislosti médií veřejné služby na státu.
+status: draft
+human_reviewed: false

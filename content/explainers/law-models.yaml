@@ -1,0 +1,155 @@
+# Fakta o zahraničních a vládním modelu pro moduly Můj zákon (SPEC §10).
+id: law-models
+status: draft
+human_reviewed: false
+claims:
+  - id: law-se-c1
+    claim: "Ve Švédsku se poplatek strhává přímo spolu s daní z příjmu a nikdo nedostává zvláštní složenku."
+    source_url: "https://www.skatteverket.se/publicserviceavgift"
+    source_title: "Skatteverket – Public service-avgift"
+    locator: "sekce Avgiften dras med skatten"
+    quote: "avgiften dras direkt med skatten"
+  - id: law-se-c2
+    claim: "Švédský finanční úřad každý měsíc převádí vybraný poplatek na zvláštní účet pro veřejnou službu u státní pokladny (Riksgäldskontoret)."
+    source_url: "https://www.skatteverket.se/publicserviceavgift"
+    source_title: "Skatteverket – Public service-avgift"
+    locator: "sekce Hur används avgiften?"
+    quote: "till ett särskilt public service-konto i Riksgäldskontoret"
+  - id: law-se-c3
+    claim: "Švédský účet pro veřejnou službu spravuje Kammarkollegiet v uzavřeném systému odděleném od ostatního státního rozpočtu."
+    source_url: "https://www.skatteverket.se/publicserviceavgift"
+    source_title: "Skatteverket – Public service-avgift"
+    locator: "sekce Hur används avgiften?"
+    quote: "i ett slutet system separerat från den övriga statsbudgeten"
+  - id: law-se-c4
+    claim: "Švédský poplatek platí jen fyzické osoby, firmy ho neplatí."
+    source_url: "https://www.skatteverket.se/publicserviceavgift"
+    source_title: "Skatteverket – Public service-avgift"
+    locator: "sekce Vem ska inte betala avgiften?"
+    quote: "tas inte ut för juridiska personer, till exempel företag"
+  - id: law-fi-c1
+    claim: "O výši finské Yle daně a o tom, kdo ji platí, rozhoduje parlament zákonem."
+    source_url: "https://yle.fi/aihe/about-yle/finances"
+    source_title: "Yle – Content from Yle's finances"
+    locator: "sekce o rozhodování o financování"
+    quote: "The Finnish Parliament decides on the Act on Yle Tax"
+  - id: law-fi-c2
+    claim: "Finské ministerstvo financí převádí peníze schválené parlamentem do Státního televizního a rozhlasového fondu, ze kterého je dostává Yle."
+    source_url: "https://yle.fi/aihe/about-yle/finances"
+    source_title: "Yle – Content from Yle's finances"
+    locator: "sekce o rozhodování o financování"
+    quote: "to the State Television and Radio Fund"
+  - id: law-fi-c3
+    claim: "Financování Yle se každý rok upravuje podle zákonem stanoveného indexu, který zohledňuje růst cen a mezd."
+    source_url: "https://yle.fi/aihe/about-yle/finances"
+    source_title: "Yle – Content from Yle's finances"
+    locator: "sekce o rozhodování o financování"
+    quote: "The basis for the review is a legally established index increase"
+  - id: law-fi-c4
+    claim: "Yle sama o dani ani o její výši nerozhoduje."
+    source_url: "https://yle.fi/aihe/about-yle/finances"
+    source_title: "Yle – Content from Yle's finances"
+    locator: "sekce o výběru Yle daně"
+    quote: "Yle does not decide on the tax or its amount."
+  - id: law-fi-c5
+    claim: "Finský stát vybírá Yle daň v rámci běžného zdanění."
+    source_url: "https://yle.fi/aihe/about-yle/finances"
+    source_title: "Yle – Content from Yle's finances"
+    locator: "sekce o výběru Yle daně"
+    quote: "The State collects Yle tax as part of the taxation"
+  - id: law-no-c1
+    claim: "Norsko od 1. ledna 2020 zrušilo poplatek a NRK financuje ze státního rozpočtu."
+    source_url: "https://www.skatteetaten.no/rettskilder/type/handboker/merverdiavgiftshandboken/2020/M-5/M-5-7/M-5-7.2/"
+    source_title: "Skatteetaten – Merverdiavgiftshåndboken 2020, 5-7.2 Generelt om § 5-7"
+    locator: "5-7.2 Generelt om § 5-7"
+    quote: "Med virkning fra 1. januar 2020 er kringkastingsavgiften avviklet"
+  - id: law-no-c2
+    claim: "Peníze pro NRK v Norsku pocházejí ze snížení základního odpočtu u daně z příjmu (personfradrag)."
+    source_url: "https://www.skatteetaten.no/rettskilder/type/handboker/merverdiavgiftshandboken/2020/M-5/M-5-7/M-5-7.2/"
+    source_title: "Skatteetaten – Merverdiavgiftshåndboken 2020, 5-7.2 Generelt om § 5-7"
+    locator: "5-7.2 Generelt om § 5-7"
+    quote: "gjennom en reduksjon av personfradraget"
+  - id: law-no-c3
+    claim: "Podle norského modelu předloží ministerstvo kultury rok po parlamentních volbách návrh čtyřletých směrových signálů pro financování NRK."
+    source_url: "https://stortinget.no/no/Saker-og-publikasjoner/Publikasjoner/Innstillinger/Stortinget/2018-2019/inns-201819-365s/?m=9"
+    source_title: "Stortinget – Innst. 365 S (2018–2019)"
+    locator: "10.1 Sammendrag"
+    quote: "forslag til fireårige styringssignal"
+  - id: law-no-c4
+    claim: "Pokud norský parlament takové rozhodnutí přijme, zavazuje se i za hranici jednoho rozpočtového roku."
+    source_url: "https://stortinget.no/no/Saker-og-publikasjoner/Publikasjoner/Innstillinger/Stortinget/2018-2019/inns-201819-365s/?m=9"
+    source_title: "Stortinget – Innst. 365 S (2018–2019)"
+    locator: "10.1 Sammendrag"
+    quote: "Stortinget forpliktar seg ut over det enkelte budsjettår."
+  - id: law-de-c1
+    claim: "Německé veřejnoprávní vysílatele na začátku postupu hlásí svou finanční potřebu komisi KEF."
+    source_url: "https://kef-online.de/kommission/zur-arbeit-der-kommission"
+    source_title: "KEF – Zur Arbeit der Kommission"
+    locator: "Dreistufiges Verfahren, 1. Anmeldung des Finanzbedarfs"
+    quote: "melden die öffentlich-rechtlichen Rundfunkanstalten ihren Finanzbedarf bei der Kommission an"
+  - id: law-de-c2
+    claim: "KEF přihlášenou finanční potřebu vysílatelů přezkoumá."
+    source_url: "https://kef-online.de/kommission/zur-arbeit-der-kommission"
+    source_title: "KEF – Zur Arbeit der Kommission"
+    locator: "Dreistufiges Verfahren, 2. Überprüfung und Ermittlung des Finanzbedarfs"
+    quote: "überprüft die Kommission die Finanzbedarfsanmeldungen"
+  - id: law-de-c3
+    claim: "KEF podává vládám spolkových zemí zprávu o financích vysílatelů každé dva roky."
+    source_url: "https://kef-online.de/kommission/zur-arbeit-der-kommission"
+    source_title: "KEF – Zur Arbeit der Kommission"
+    locator: "sekce Aufgabe, 4. odstavec"
+    quote: "Die Kommission berichtet den Landesregierungen alle zwei Jahre"
+  - id: law-de-c4
+    claim: "Zpráva KEF o poplatku obsahuje doporučení jeho výše."
+    source_url: "https://kef-online.de/kommission/zur-arbeit-der-kommission"
+    source_title: "KEF – Zur Arbeit der Kommission"
+    locator: "sekce Aufgabe, 4. odstavec"
+    quote: "Der Beitragsbericht enthält eine Empfehlung zur Beitragshöhe."
+  - id: law-de-c5
+    claim: "Konečnou výši německého poplatku stanoví smlouva, kterou podepisuje všech 16 vlád spolkových zemí."
+    source_url: "https://kef-online.de/kommission/zur-arbeit-der-kommission"
+    source_title: "KEF – Zur Arbeit der Kommission"
+    locator: "Dreistufiges Verfahren, 3. Entscheidung, 2. odstavec"
+    quote: "durch einen von den 16 Landesregierungen zu unterzeichnenden Staatsvertrag"
+  - id: law-de-c6
+    claim: "Od doporučení KEF se lze odchýlit jen v úzkých mezích a jen se souhlasem všech spolkových zemí."
+    source_url: "https://kef-online.de/kommission/zur-arbeit-der-kommission"
+    source_title: "KEF – Zur Arbeit der Kommission"
+    locator: "Dreistufiges Verfahren, 3. Entscheidung, 3. odstavec"
+    quote: "ist nur in engen Grenzen und nur einvernehmlich durch alle Länder möglich"
+  - id: law-de-c7
+    claim: "KEF ve své 25. zprávě doporučila zvýšit poplatek od roku 2027."
+    source_url: "https://kef-online.de/de/"
+    source_title: "KEF – úvodní stránka (25. zpráva)"
+    locator: "úvodní zpráva o 25. zprávě KEF"
+    quote: "empfiehlt die Kommission zur Ermittlung des Finanzbedarfs der Rundfunkanstalten (KEF) ab 2027 eine Anhebung"
+  - id: law-de-c8
+    claim: "V Německu se za každý byt platí poplatek 18,36 eura měsíčně bez ohledu na počet lidí v bytě."
+    source_url: "https://www.rundfunkbeitrag.de/"
+    source_title: "ARD ZDF Deutschlandradio Beitragsservice – Rundfunkbeitrag (úvodní stránka)"
+    locator: "úvodní text stránky"
+    quote: "Für jede Wohnung wird monatlich ein Rundfunkbeitrag von 18,36 € erhoben"
+  - id: law-cz-gov-c1
+    claim: "Vláda 15. června 2026 schválila návrh zákona, který nahrazuje poplatky pro ČT a ČRo příspěvkem ze státního rozpočtu."
+    source_url: "https://www.mediaguru.cz/vlada-schvalila-zruseni-poplatku-pro-ct-a-cro-z-rozpoctu-jim-da-o-1-4-mld-mene"
+    source_title: "MediaGuru – Vláda schválila zrušení poplatků pro ČT a ČRo (15. 6. 2026)"
+    locator: "perex a 1. odstavec"
+    quote: "nahrazuje financování veřejnoprávních médií z poplatků příspěvkem ze státního rozpočtu"
+  - id: law-cz-gov-c2
+    claim: "Podle vládního návrhu má Česká televize v příštím roce dostat ze státního rozpočtu 5,74 miliardy Kč."
+    source_url: "https://www.mediaguru.cz/vlada-schvalila-zruseni-poplatku-pro-ct-a-cro-z-rozpoctu-jim-da-o-1-4-mld-mene"
+    source_title: "MediaGuru – Vláda schválila zrušení poplatků pro ČT a ČRo (15. 6. 2026)"
+    locator: "text článku"
+    quote: "Česká televize má v příštím roce získat z rozpočtu 5,74 miliardy korun"
+  - id: law-cz-gov-c3
+    claim: "Podle vládního návrhu má Český rozhlas v příštím roce dostat ze státního rozpočtu 2,065 miliardy Kč."
+    source_url: "https://www.mediaguru.cz/vlada-schvalila-zruseni-poplatku-pro-ct-a-cro-z-rozpoctu-jim-da-o-1-4-mld-mene"
+    source_title: "MediaGuru – Vláda schválila zrušení poplatků pro ČT a ČRo (15. 6. 2026)"
+    locator: "text článku"
+    quote: "Český rozhlas má mít z rozpočtu příjem 2,065 miliardy Kč"
+  - id: law-cz-gov-c4
+    claim: "Vládní návrh obsahuje vzorec pro zvýšení částky, pokud souhrnná inflace dosáhne 10 %."
+    source_url: "https://www.mediaguru.cz/vlada-schvalila-zruseni-poplatku-pro-ct-a-cro-z-rozpoctu-jim-da-o-1-4-mld-mene"
+    source_title: "MediaGuru – Vláda schválila zrušení poplatků pro ČT a ČRo (15. 6. 2026)"
+    locator: "text článku"
+    quote: "valorizační vzorec, pokud kumulovaná inflace dosáhne deseti procent"

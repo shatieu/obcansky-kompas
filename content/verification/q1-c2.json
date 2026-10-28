@@ -1,0 +1,12 @@
+{
+  "claim_id": "q1-c2",
+  "claim_hash": "1f0ac7e0e47e60a07801449b808c2671191593d587f5e088ff320da8ad577903",
+  "verdict": "ano",
+  "correction": "",
+  "note": "§ 10a odst. 2 v Čl. I (5 741 826 000 Kč) a Čl. II (2 065 766 000 Kč).",
+  "url_checked": "https://www.psp.cz/sqw/text/orig2.sqw?idd=277415",
+  "checked_at": "2026-10-27T23:53:49Z",
+  "verifier": "verifier-a1",
+  "round": 1,
+  "human_reviewed": false
+}

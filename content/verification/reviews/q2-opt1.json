@@ -1,0 +1,11 @@
+{
+  "explainer_id": "q2-opt1",
+  "impartiality": "ano",
+  "impartiality_notes": "proti: „stojí hodně peněz“ (hodnoticí) nahrazeno konkrétní částkou z tvrzení c8: „Výběr poplatků je složitý a ročně stojí až 250 milionů.“",
+  "impartiality_checked_at": "2026-10-27T23:47:22+00:00",
+  "impartiality_reviewer": "impartiality-1",
+  "clarity": "ano",
+  "clarity_notes": "Beze změn. Limity §4.1 splněny, bez zakázaných výrazů, čísla zaokrouhlená, citace do 15 slov, bez paragrafů.",
+  "clarity_checked_at": "2026-10-27T23:50:02+00:00",
+  "clarity_reviewer": "clarity-1"
+}

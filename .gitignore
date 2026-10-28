@@ -10,3 +10,10 @@ playwright-report/
 test-results/
 *.tsbuildinfo
 .pglite/
+
+.vercel
+.env*
+
+# generováno scripts/content-build.ts (stats-snapshot.json se commituje)
+content/generated/*.json
+!content/generated/stats-snapshot.json

@@ -1,0 +1,34 @@
+{
+  "ministr_kultury": {
+    "adresat": "Ministr kultury",
+    "urad": "Ministerstvo kultury",
+    "ico": "00023671",
+    "address": "Maltézské náměstí 471/1, Malá Strana, 118 00 Praha 1",
+    "address_source": "https://www.mojedatovaschranka.cz/sds/datafile?format=xml&service=seznam_ds_ovm",
+    "datova_schranka": "8spaaur",
+    "datova_schranka_source": "https://rpp-opendata.egon.gov.cz/odrpp/datovasada/ovm.json",
+    "email": "epodatelna@mk.gov.cz",
+    "email_source": "https://www.mk.gov.cz/podatelna-ministerstva-kultury-cs-2816",
+    "web_form": null,
+    "web": "https://www.mk.gov.cz/",
+    "notes": [],
+    "address_podatelna": "Maltézské náměstí 1, 118 00 Praha 1",
+    "address_podatelna_source": "https://www.mk.gov.cz/podatelna-ministerstva-kultury-cs-2816"
+  },
+  "prezident": {
+    "adresat": "Prezident republiky",
+    "urad": "Kancelář prezidenta republiky",
+    "ico": "48136000",
+    "address": "Hrad I. nádvoří 1, Hradčany, 119 00 Praha 1",
+    "address_source": "https://www.mojedatovaschranka.cz/sds/datafile?format=xml&service=seznam_ds_ovm",
+    "datova_schranka": "9hjaihw",
+    "datova_schranka_source": "https://rpp-opendata.egon.gov.cz/odrpp/datovasada/ovm.json",
+    "email": null,
+    "email_source": null,
+    "web_form": null,
+    "web": null,
+    "notes": [
+      "hrad.cz kontakty nelze automaticky stáhnout (HTTP 403 for https://www.hrad.cz/cs/kancelar-prezidenta-republiky/kontakty); e-mail / webový formulář doplnit ručně z https://www.hrad.cz/cs/kancelar-prezidenta-republiky/kontakty"
+    ]
+  }
+}

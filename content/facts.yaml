@@ -1,0 +1,104 @@
+# Klíčová čísla pro kompas (Q1 kotvy, přepočet na dospělého, poplatky).
+# Každé číslo je tvrzení se zdrojem podle SPEC §11. status: draft = bez zdroje, researched = zdroj otevřen rešeršním agentem.
+# Ověřovací záznamy (content/verification/) dělají nezávislí ověřovatelé, ne autor.
+
+- id: gov-proposal-total-bn
+  value: 7.808
+  unit: mld Kč / rok
+  claim: "Vládní návrh dává ČT a ČRo pro rok 2027 dohromady asi 7,8 miliardy Kč (5 741 826 000 Kč + 2 065 766 000 Kč)."
+  source_url: "https://www.psp.cz/sqw/text/orig2.sqw?idd=277415"
+  source_title: "Vládní návrh zákona, kterým se mění zákon o České televizi a zákon o Českém rozhlasu a zrušuje zákon o poplatcích (sněmovní tisk 231/0)"
+  locator: "Čl. I bod 2 (§ 10a odst. 2 zákona o ČT), str. 1; Čl. II bod 3 (§ 10a odst. 2 zákona o ČRo), str. 2; součet"
+  status: researched
+- id: gov-proposal-ct-bn
+  value: 5.742
+  unit: mld Kč / rok
+  claim: "Vládní návrh stanoví příspěvek ČT pro rok 2027 na 5 741 826 000 Kč."
+  source_url: "https://www.psp.cz/sqw/text/orig2.sqw?idd=277415"
+  source_title: "Vládní návrh zákona, kterým se mění zákon o České televizi a zákon o Českém rozhlasu a zrušuje zákon o poplatcích (sněmovní tisk 231/0)"
+  locator: "Čl. I bod 2, nový § 10a odst. 2 zákona č. 483/1991 Sb., str. 1"
+  status: researched
+- id: gov-proposal-cro-bn
+  value: 2.066
+  unit: mld Kč / rok
+  claim: "Vládní návrh stanoví příspěvek ČRo pro rok 2027 na 2 065 766 000 Kč."
+  source_url: "https://www.psp.cz/sqw/text/orig2.sqw?idd=277415"
+  source_title: "Vládní návrh zákona, kterým se mění zákon o České televizi a zákon o Českém rozhlasu a zrušuje zákon o poplatcích (sněmovní tisk 231/0)"
+  locator: "Čl. II bod 3, nový § 10a odst. 2 zákona č. 484/1991 Sb., str. 2"
+  status: researched
+- id: today-total-bn
+  value: 9.206
+  unit: mld Kč / rok
+  claim: "Podle rozpočtů na rok 2026 mají ČT a ČRo z poplatků dostat asi 9,2 miliardy Kč (ČT 6,730 mld., ČRo 2,476 mld.)."
+  source_url: "https://www.psp.cz/sqw/text/orig2.sqw?idd=277417"
+  source_title: "Závěrečná zpráva z hodnocení dopadů regulace (RIA) k vládnímu návrhu, sněmovní tisk 231"
+  locator: "kap. 3.2 Náklady / Přínosy, Varianta 1: Reformovaný poplatkový model, str. 29; součet"
+  quote: "6,730 mld. Kč pro ČT a 2,476 mld. Kč pro ČRo dle rozpočtů 2026"
+  status: researched
+- id: today-ct-bn
+  value: 6.73
+  unit: mld Kč / rok
+  claim: "Rozpočet ČT na rok 2026 počítá s výnosem z televizních poplatků 6,73 miliardy Kč."
+  source_url: "https://www.psp.cz/sqw/text/orig2.sqw?idd=277417"
+  source_title: "Závěrečná zpráva z hodnocení dopadů regulace (RIA) k vládnímu návrhu, sněmovní tisk 231"
+  locator: "kap. 3.2, Výchozí hodnoty použité pro výpočet – Česká televize, str. 24"
+  status: researched
+- id: today-cro-bn
+  value: 2.476
+  unit: mld Kč / rok
+  claim: "Rozpočet ČRo na rok 2026 počítá s výnosem z rozhlasových poplatků 2,476 miliardy Kč."
+  source_url: "https://www.psp.cz/sqw/text/orig2.sqw?idd=277417"
+  source_title: "Závěrečná zpráva z hodnocení dopadů regulace (RIA) k vládnímu návrhu, sněmovní tisk 231"
+  locator: "kap. 3.2, Výchozí hodnoty použité pro výpočet – Český rozhlas, str. 22"
+  status: researched
+- id: fees-2024-total-bn
+  value: 7.806
+  unit: mld Kč / rok
+  claim: "ČT a ČRo vybraly na poplatcích v roce 2024 dohromady asi 7,8 miliardy Kč (ČT 5,74 mld., ČRo 2,066 mld.)."
+  source_url: "https://www.psp.cz/sqw/text/orig2.sqw?idd=277415"
+  source_title: "Vládní návrh zákona, kterým se mění zákon o České televizi a zákon o Českém rozhlasu a zrušuje zákon o poplatcích (sněmovní tisk 231/0)"
+  locator: "Důvodová zpráva, Zvláštní část, K části první a druhé, str. 20"
+  status: researched
+- id: adults-count
+  value: 8886675
+  unit: osob
+  claim: "K 31. 12. 2025 žilo v Česku 8 886 675 lidí ve věku 18 a více let."
+  source_url: "https://data.csu.gov.cz/datastat/info/SADA/OBY02B"
+  source_title: "ČSÚ – Počet obyvatel podle pohlaví a jednotek věku (datová sada OBY02B)"
+  locator: "ukazatel Počet obyvatel k 31. 12. (koncový stav), Česko, pohlaví Celkem, rok 2025; součet věků 18 až 100 a více (CSV: https://data.csu.gov.cz/opendata/sady/OBY02B/distribuce/csv)"
+  status: researched
+- id: population-total
+  value: 10915839
+  unit: osob
+  claim: "K 31. 12. 2025 žilo v Česku 10 915 839 obyvatel."
+  source_url: "https://data.csu.gov.cz/datastat/info/SADA/OBY02B"
+  source_title: "ČSÚ – Počet obyvatel podle pohlaví a jednotek věku (datová sada OBY02B)"
+  locator: "ukazatel Počet obyvatel k 31. 12. (koncový stav), Česko, pohlaví Celkem, věk Celkem, rok 2025"
+  status: researched
+- id: fee-tv-monthly
+  value: 150
+  unit: Kč / měsíc
+  claim: "Televizní poplatek činí 150 Kč měsíčně."
+  source_url: "https://www.zakonyprolidi.cz/cs/2005-348"
+  source_title: "Zákon č. 348/2005 Sb., o rozhlasových a televizních poplatcích"
+  locator: "§ 6 odst. 1 (znění účinné od 1. 1. 2026)"
+  quote: "měsíční výše televizního poplatku činí 150 Kč"
+  status: researched
+- id: fee-radio-monthly
+  value: 55
+  unit: Kč / měsíc
+  claim: "Rozhlasový poplatek činí 55 Kč měsíčně."
+  source_url: "https://www.zakonyprolidi.cz/cs/2005-348"
+  source_title: "Zákon č. 348/2005 Sb., o rozhlasových a televizních poplatcích"
+  locator: "§ 6 odst. 1 (znění účinné od 1. 1. 2026)"
+  quote: "Měsíční výše rozhlasového poplatku činí 55 Kč"
+  status: researched
+- id: fee-household-yearly
+  value: 2460
+  unit: Kč / rok
+  claim: "Domácnost, která platí oba poplatky, zaplatí 2 460 Kč ročně."
+  source_url: "https://www.psp.cz/sqw/text/orig2.sqw?idd=277415"
+  source_title: "Vládní návrh zákona, kterým se mění zákon o České televizi a zákon o Českém rozhlasu a zrušuje zákon o poplatcích (sněmovní tisk 231/0)"
+  locator: "Důvodová zpráva, Zvláštní část, K části první a druhé, str. 21"
+  quote: "u domácností by došlo k úspoře 2 460 Kč ročně"
+  status: researched

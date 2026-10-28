@@ -1,0 +1,11 @@
+{
+  "explainer_id": "q8",
+  "impartiality": "ano",
+  "impartiality_notes": "Otázková vysvětlivka (bez pro/proti). Beze změn; fakta kryta tvrzeními, bez zabarvených výrazů, vládní návrh popsán věcně.",
+  "impartiality_checked_at": "2026-10-27T23:47:22+00:00",
+  "impartiality_reviewer": "impartiality-1",
+  "clarity": "ano",
+  "clarity_notes": "Upraveno: 'podle zdanitelného zisku' zjednodušeno na 'podle zisku' (odborný výraz, shodně s q8-opt3). Limity §4.1 splněny.",
+  "clarity_checked_at": "2026-10-27T23:50:02+00:00",
+  "clarity_reviewer": "clarity-1"
+}

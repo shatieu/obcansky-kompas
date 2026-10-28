@@ -1,0 +1,11 @@
+{
+  "explainer_id": "q7-opt4",
+  "impartiality": "ano",
+  "impartiality_notes": "Beze změn. Pro i proti přítomny, délka do 20 %, bez zabarvených výrazů, tón stejný jako u ostatních voleb; fakta v textu kryta tvrzeními.",
+  "impartiality_checked_at": "2026-10-27T23:47:22+00:00",
+  "impartiality_reviewer": "impartiality-1",
+  "clarity": "ano",
+  "clarity_notes": "Upraveno: 'hmotná nouze' je název volby, proto ponecháno a vysvětleno lidsky v 1. větě ('tedy ti, kterým chybí peníze na základní potřeby a dostávají dávky'); 2. věta odkazuje na 'tento pojem'. Lint už nevaruje. Pro/proti beze změn.",
+  "clarity_checked_at": "2026-10-27T23:50:02+00:00",
+  "clarity_reviewer": "clarity-1"
+}

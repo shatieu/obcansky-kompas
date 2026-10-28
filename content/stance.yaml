@@ -1,0 +1,11 @@
+# Blok „Kde stojíme my“ (SPEC §9.1). Postoj spolku – nikdy se nepropisuje do kompasu,
+# vysvětlivek ani statistik.
+title: Kde stojíme my
+# TODO(owner): potvrdit přesné znění věty postoje (OPEN_QUESTIONS.md). Pracovní znění podle SPEC §1.
+text: Nesouhlasíme s vládním návrhem financování ČT a ČRo.
+todo: "TODO(owner): potvrdit znění věty postoje"
+actions:
+  - label: Napsat zástupcům
+    href: /akce
+  - label: Profilová fotka
+    href: /fotka

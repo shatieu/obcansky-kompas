@@ -1,0 +1,12 @@
+{
+  "claim_id": "q3-opt3-c2",
+  "claim_hash": "481202f2042702a767df0b104f6fb77ce0b945f56aa9a4843850dc6737c1668e",
+  "verdict": "ano",
+  "correction": "",
+  "note": "KEF: přihlášky pokrývají 'zwei jeweils vierjährigen Beitragsperioden'; KEF stanoví finanční potřebu; doporučení 2025–2028.",
+  "url_checked": "https://kef-online.de/kommission/zur-arbeit-der-kommission",
+  "checked_at": "2026-10-27T23:53:49Z",
+  "verifier": "verifier-a1",
+  "round": 1,
+  "human_reviewed": false
+}

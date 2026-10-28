@@ -1,0 +1,59 @@
+{
+  "name": "obcansky-kompas",
+  "version": "0.1.0",
+  "private": true,
+  "license": "AGPL-3.0-only",
+  "type": "module",
+  "engines": {
+    "node": ">=22"
+  },
+  "scripts": {
+    "content:build": "tsx scripts/content-build.ts",
+    "dev": "tsx scripts/content-build.ts && tsx scripts/dev.ts",
+    "build": "tsx scripts/content-build.ts && tsx scripts/lint-content.ts && next build --webpack",
+    "start": "next start",
+    "lint": "eslint .",
+    "typecheck": "tsx scripts/content-build.ts && tsc --noEmit",
+    "test": "tsx scripts/content-build.ts && vitest run",
+    "e2e": "playwright test",
+    "lint:content": "tsx scripts/lint-content.ts",
+    "verify:content": "tsx scripts/verify-content.ts",
+    "db:generate": "drizzle-kit generate",
+    "db:migrate": "tsx scripts/db-migrate.ts",
+    "seed": "tsx scripts/content-build.ts && tsx scripts/seed.ts",
+    "seed:clear": "tsx scripts/seed-clear.ts",
+    "poc:clear": "tsx scripts/poc-clear.ts",
+    "measure:js": "tsx scripts/measure-js.ts"
+  },
+  "dependencies": {
+    "@pdf-lib/fontkit": "1.1.1",
+    "docx": "9.14.0",
+    "drizzle-orm": "0.45.4",
+    "fflate": "0.8.3",
+    "heic-to": "1.6.6",
+    "lucide-react": "1.62.0",
+    "next": "16.4.3",
+    "pdf-lib": "1.17.1",
+    "postgres": "3.4.9",
+    "react": "19.3.1",
+    "react-dom": "19.3.1",
+    "yaml": "2.9.1",
+    "zod": "4.6.7"
+  },
+  "devDependencies": {
+    "@electric-sql/pglite": "0.5.12",
+    "@electric-sql/pglite-socket": "0.2.15",
+    "@playwright/test": "^1.64.1",
+    "@tailwindcss/postcss": "4.3.3",
+    "@types/node": "^24.19.2",
+    "@types/react": "^19.3.0",
+    "@types/react-dom": "^19.3.0",
+    "drizzle-kit": "0.31.11",
+    "eslint": "^9.39.5",
+    "eslint-config-next": "16.4.3",
+    "tailwindcss": "4.3.3",
+    "tsx": "^4.23.15",
+    "typescript": "6.0.3",
+    "vitest": "^5.0.5"
+  }
+}

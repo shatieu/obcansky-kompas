@@ -1,0 +1,31 @@
+id: q8-opt2
+text: |
+  Firma platí víc, čím víc má zaměstnanců. Tak to funguje dnes v Česku, firmy do 24 zaměstnanců neplatí. Firma s více než 500 zaměstnanci platí stonásobek běžného poplatku. V Německu se platí za každou provozovnu podle počtu zaměstnanců.
+pro: "Větší firmy platí víc a malé firmy jsou ušetřeny."
+proti: "Platí i firma s mnoha lidmi, která vydělává málo."
+claims:
+  - id: q8-opt2-c1
+    claim: "V Česku neplatí poplatky firma nebo podnikatel, který zaměstnává nejvýše 24 osob."
+    source_url: "https://www.zakonyprolidi.cz/cs/2005-348"
+    source_title: "Zákon č. 348/2005 Sb., o rozhlasových a televizních poplatcích (znění k 1. 1. 2026)"
+    locator: "§ 5 odst. 4"
+    quote: "zaměstnává nejvýše 24 osob"
+  - id: q8-opt2-c2
+    claim: "V Česku platí firmy poplatky jako násobek běžného poplatku podle počtu zaměstnanců, od pětinásobku při 25 až 49 zaměstnancích."
+    source_url: "https://www.zakonyprolidi.cz/cs/2005-348"
+    source_title: "Zákon č. 348/2005 Sb., o rozhlasových a televizních poplatcích (znění k 1. 1. 2026)"
+    locator: "§ 5 odst. 3"
+    quote: "při počtu 25 až 49 zaměstnanců v pracovním poměru ve výši pětinásobku rozhlasového poplatku"
+  - id: q8-opt2-c3
+    claim: "V Česku platí firma s více než 500 zaměstnanci stonásobek poplatku."
+    source_url: "https://www.zakonyprolidi.cz/cs/2005-348"
+    source_title: "Zákon č. 348/2005 Sb., o rozhlasových a televizních poplatcích (znění k 1. 1. 2026)"
+    locator: "§ 5 odst. 3 (nejvyšší pásmo)"
+  - id: q8-opt2-c4
+    claim: "Německé firmy platí poplatek za každou provozovnu podle počtu zaměstnanců."
+    source_url: "https://www.rundfunkbeitrag.de/unternehmen_und_institutionen/index_ger.html"
+    source_title: "Beitragsservice – Unternehmen und Institutionen"
+    locator: "sekce Beitragsstaffel"
+    quote: "Die Staffel richtet sich nach der Anzahl Ihrer Beschäftigten"
+status: draft
+human_reviewed: false

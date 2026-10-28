@@ -1,0 +1,12 @@
+{
+  "claim_id": "q5-opt2-c1",
+  "claim_hash": "b0d183be2f83a73bb4b5d314a9ba2119803808e6469a5d24bec59e1b5aee4b53",
+  "verdict": "ano",
+  "correction": "",
+  "note": "",
+  "url_checked": "https://yle.fi/aihe/about-yle/finances",
+  "checked_at": "2026-10-27T23:41:38Z",
+  "verifier": "verifier-b1",
+  "round": 1,
+  "human_reviewed": false
+}

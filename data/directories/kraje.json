@@ -1,0 +1,156 @@
+[
+  {
+    "code": "CZ010",
+    "vusc_kod": 19,
+    "name": "Hlavní město Praha",
+    "krajsky_urad": {
+      "name": "HLAVNÍ MĚSTO PRAHA",
+      "ico": "00064581",
+      "address": "Mariánské náměstí 2/2, Staré Město, 110 00 Praha 1",
+      "datova_schranka": "48ia97h"
+    }
+  },
+  {
+    "code": "CZ020",
+    "vusc_kod": 27,
+    "name": "Středočeský kraj",
+    "krajsky_urad": {
+      "name": "Středočeský kraj",
+      "ico": "70891095",
+      "address": "Zborovská 81/11, Smíchov, 150 00 Praha 5",
+      "datova_schranka": "keebyyf"
+    }
+  },
+  {
+    "code": "CZ031",
+    "vusc_kod": 35,
+    "name": "Jihočeský kraj",
+    "krajsky_urad": {
+      "name": "Jihočeský kraj",
+      "ico": "70890650",
+      "address": "U Zimního stadionu 1952/2, České Budějovice 7, 370 01 České Budějovice",
+      "datova_schranka": "kdib3rr"
+    }
+  },
+  {
+    "code": "CZ032",
+    "vusc_kod": 43,
+    "name": "Plzeňský kraj",
+    "krajsky_urad": {
+      "name": "Plzeňský kraj",
+      "ico": "70890366",
+      "address": "Škroupova 1760/18, Jižní Předměstí, 301 00 Plzeň",
+      "datova_schranka": "zzjbr3p"
+    }
+  },
+  {
+    "code": "CZ041",
+    "vusc_kod": 51,
+    "name": "Karlovarský kraj",
+    "krajsky_urad": {
+      "name": "Karlovarský kraj",
+      "ico": "70891168",
+      "address": "Závodní 353/88, Dvory, 360 06 Karlovy Vary",
+      "datova_schranka": "siqbxt2"
+    }
+  },
+  {
+    "code": "CZ042",
+    "vusc_kod": 60,
+    "name": "Ústecký kraj",
+    "krajsky_urad": {
+      "name": "Ústecký kraj",
+      "ico": "70892156",
+      "address": "Velká Hradební 3118/48, Ústí nad Labem-centrum, 400 01 Ústí nad Labem",
+      "datova_schranka": "t9zbsva"
+    }
+  },
+  {
+    "code": "CZ051",
+    "vusc_kod": 78,
+    "name": "Liberecký kraj",
+    "krajsky_urad": {
+      "name": "Liberecký kraj",
+      "ico": "70891508",
+      "address": "U Jezu 642/2a, Liberec IV-Perštýn, 460 01 Liberec",
+      "datova_schranka": "c5kbvkw"
+    }
+  },
+  {
+    "code": "CZ052",
+    "vusc_kod": 86,
+    "name": "Královéhradecký kraj",
+    "krajsky_urad": {
+      "name": "Královéhradecký kraj",
+      "ico": "70889546",
+      "address": "Pivovarské náměstí 1245/2, 500 03 Hradec Králové",
+      "datova_schranka": "gcgbp3q"
+    }
+  },
+  {
+    "code": "CZ053",
+    "vusc_kod": 94,
+    "name": "Pardubický kraj",
+    "krajsky_urad": {
+      "name": "Pardubický kraj",
+      "ico": "70892822",
+      "address": "Komenského náměstí 125, Pardubice-Staré Město, 530 02 Pardubice",
+      "datova_schranka": "z28bwu9"
+    }
+  },
+  {
+    "code": "CZ063",
+    "vusc_kod": 108,
+    "name": "Kraj Vysočina",
+    "krajsky_urad": {
+      "name": "Kraj Vysočina",
+      "ico": "70890749",
+      "address": "Žižkova 1882/57, 586 01 Jihlava",
+      "datova_schranka": "ksab3eu"
+    }
+  },
+  {
+    "code": "CZ064",
+    "vusc_kod": 116,
+    "name": "Jihomoravský kraj",
+    "krajsky_urad": {
+      "name": "Jihomoravský kraj",
+      "ico": "70888337",
+      "address": "Žerotínovo náměstí 449/3, Veveří, 602 00 Brno",
+      "datova_schranka": "x2pbqzq"
+    }
+  },
+  {
+    "code": "CZ071",
+    "vusc_kod": 124,
+    "name": "Olomoucký kraj",
+    "krajsky_urad": {
+      "name": "Olomoucký kraj",
+      "ico": "60609460",
+      "address": "Jeremenkova 1191/40a, Hodolany, 779 00 Olomouc",
+      "datova_schranka": "qiabfmf"
+    }
+  },
+  {
+    "code": "CZ072",
+    "vusc_kod": 141,
+    "name": "Zlínský kraj",
+    "krajsky_urad": {
+      "name": "Zlínský kraj",
+      "ico": "70891320",
+      "address": "třída Tomáše Bati 21, 760 01 Zlín",
+      "datova_schranka": "scsbwku"
+    }
+  },
+  {
+    "code": "CZ080",
+    "vusc_kod": 132,
+    "name": "Moravskoslezský kraj",
+    "krajsky_urad": {
+      "name": "Moravskoslezský kraj",
+      "ico": "70890692",
+      "address": "28. října 2771/117, Moravská Ostrava, 702 00 Ostrava",
+      "datova_schranka": "8x6bxsd"
+    }
+  }
+]

@@ -1,0 +1,126 @@
+# Texty UI pro /akce (SPEC §9.2) a /v/[uuid]/zakon (SPEC §10).
+# Až je jádro sloučí do ui.yaml (klíče `akce` a `zakon`), stačí v components/akce/texts.ts
+# přepnout loader na `ui.akce` / `ui.zakon`.
+# Konvence jako ui.yaml: title/*_title ≤ 8 slov, lead/*_lead 1 věta ≤ 120 znaků, *_button ≤ 3 slova.
+# Tykání v UI; vykání jen v dopisech (content/letters/*.yaml).
+
+akce:
+  meta_title: Napiš svým zástupcům – Občanský kompas
+  kicker: DOPISY
+  title: Napiš svým zástupcům
+  lead: Dopis se složí z tvých odpovědí a zůstane jen v tvém prohlížeči.
+  source_signature: Podle tvého podpisu
+  source_browser: Podle odpovědí v tomto prohlížeči
+  loading: Načítám tvoje odpovědi…
+
+  empty_title: Nejdřív vyplň kompas
+  empty_lead: Dopis se skládá z tvých odpovědí.
+  empty_button: Spustit kompas
+
+  to_title: Komu napíšeš
+  to_lead: Vyber jednoho nebo víc adresátů.
+  where_title: Kde bydlíš
+  region_label: Tvůj kraj
+  region_placeholder: Vyber kraj
+  obec_label: Tvoje obec
+  obec_placeholder: Začni psát název obce
+  obec_loading: Načítám obce…
+  obec_none: Taková obec v kraji není.
+  obec_error: Seznam obcí se nenačetl.
+  obec_retry_button: Zkusit znovu
+  obec_change_button: Změnit obec
+  obec_result: "{name}, okres {okres}"
+  cast_label: Městská část nebo obvod
+  cast_placeholder: Vyber část
+  obvod_label: Senátní obvod
+  obvod_placeholder: Vyber obvod
+  obvod_option: "Obvod č. {n} – {name}"
+  needs_region: Vyber kraj výš.
+  needs_obec: Vyber obec výš.
+  needs_obvod: Vyber část nebo obvod výš.
+  poslanci_edit_button: Vybrat jednotlivě
+  poslanci_hide_button: Skrýt seznam
+  poslanci_select_all: Vybrat vše
+  poslanci_select_none: Zrušit výběr
+  poslanci_selected: "Vybráno {n} z {total}"
+  poslanci_none: Za tvůj kraj teď nemáme žádné poslance.
+  senator_missing: K obvodu teď nemáme senátora.
+
+  # Popisky pod volbou adresáta (klíč = typ adresáta).
+  captions:
+    poslanec: Vyber jednotlivě nebo všechny
+    senator: Podle tvé obce
+    kraj: Krajský úřad, datová schránka
+    obec: Obecní úřad, datová schránka
+    ministr-kultury: Ministerstvo kultury
+    prezident: Kancelář prezidenta republiky
+
+  style_title: Styl dopisu
+  forma_label: Forma
+  delka_label: Délka a důraznost
+  variant_button: Jiná varianta
+  footer_label: "Patička „{footer}“"
+  custom_label: Vlastní věta (nepovinné)
+  custom_hint: Prostý text, nejvýš 300 znaků.
+  sender_name_label: Tvoje jméno pod dopisem (nepovinné)
+  sender_address_label: Tvoje adresa do PDF (nepovinné)
+  private_hint: Jméno, adresa ani dopis se nikam neposílají.
+
+  letters_title: Tvoje dopisy
+  letters_empty: Vyber aspoň jednoho adresáta.
+  show_letter: Zobrazit dopis
+  hide_letter: Skrýt dopis
+  copy_button: Kopírovat text
+  copied: Zkopírováno
+  copy_failed: Kopírování nejde. Označ text ručně.
+  mail_button: Poslat e-mailem
+  pdf_button: Stáhnout PDF
+  no_email: E-mail nemá zveřejněný. Pošli dopis poštou nebo datovou schránkou.
+  databox_label: "Datová schránka: {id}"
+  databox_howto:
+    - Přihlas se do své datové schránky na mojedatovaschranka.cz.
+    - Napiš novou zprávu a jako příjemce zadej ID schránky.
+    - Přilož PDF dopisu a zprávu odešli.
+  post_hint: PDF je na obálku s okénkem (DL), přelož ho na třetiny.
+  zip_button: Stáhnout ZIP
+  zip_caption: "Všechny dopisy v PDF: {n}"
+  working: Připravuji…
+  error: Soubor se nepodařilo vytvořit. Zkus to znovu.
+  file_zip: dopisy-zastupcum.zip
+
+  # Části dopisu, které nejsou v content/letters (formální, vykání).
+  mail_subject: Financování České televize a Českého rozhlasu
+  pdf_subject: "Věc: Financování České televize a Českého rozhlasu"
+  pdf_page: "Strana {n} z {total}"
+  pdf_creator: Občanský kompas
+
+  # Poštovní adresy, které adresáře v data/directories nemají.
+  # TODO(owner): ověřit proti psp.cz a senat.cz (kontakty) před ostrým provozem.
+  postal:
+    poslanec_org: Poslanecká sněmovna Parlamentu České republiky
+    poslanec_address: Sněmovní 176/4, 118 26 Praha 1
+    senator_org: Senát Parlamentu České republiky
+    senator_address: Valdštejnské náměstí 17/4, 118 01 Praha 1
+    kraj_recipient: Zastupitelstvo kraje
+    obec_recipient: Zastupitelstvo obce
+    senator_detail: "Obvod č. {n} – {name}"
+
+zakon:
+  meta_title: Můj zákon – Občanský kompas
+  kicker: MŮJ ZÁKON
+  lead: Zákon složený z tvých odpovědí, ke stažení jako PDF nebo DOCX.
+  source_signature: Podle tvého podpisu
+  source_browser: Podle odpovědí v tomto prohlížeči
+  source_empty: Bez odpovědí – všude zůstane rozhodnutí na zákonodárci.
+  loading: Načítám odpovědi…
+  meta_title_section: Hlavička
+  contents_title: Obsah zákona
+  placeholder_tag: Ponecháno na zákonodárci
+  show_paragraph: Zobrazit znění
+  pdf_button: Stáhnout PDF
+  docx_button: Stáhnout DOCX
+  working: Připravuji…
+  error: Soubor se nepodařilo vytvořit. Zkus to znovu.
+  file_base: muj-zakon
+  pdf_page: "Strana {n} z {total}"
+  pdf_creator: Občanský kompas

@@ -1,0 +1,37 @@
+id: q2
+text: |
+  Dnes mají ČT a ČRo peníze hlavně z poplatků.
+  Platí je ten, kdo má televizi, rádio, počítač nebo mobil.
+  Vláda navrhuje poplatky od roku 2027 zrušit a platit ČT a ČRo ze státního rozpočtu.
+  V Evropě se používají poplatky, peníze ze státního rozpočtu i smíšené způsoby.
+pro: ''
+proti: ''
+claims:
+- id: q2-c1
+  claim: Důvodová zpráva označuje poplatek za základní a stěžejní zdroj příjmu ČT a ČRo.
+  source_url: https://www.psp.cz/sqw/text/orig2.sqw?idd=277415
+  source_title: Vládní návrh zákona, kterým se mění zákon o České televizi a zákon o Českém rozhlasu a zrušuje zákon o poplatcích (sněmovní tisk 231/0), včetně důvodové zprávy
+  locator: Důvodová zpráva, Obecná část, bod 1, str. 4
+  quote: Základním a stěžejním zdrojem příjmu
+- id: q2-c2
+  claim: Poplatek platí fyzická nebo právnická osoba, která vlastní nebo drží rozhlasový či televizní přijímač.
+  source_url: https://www.zakonyprolidi.cz/cs/2005-348
+  source_title: Zákon č. 348/2005 Sb., o rozhlasových a televizních poplatcích (znění od 1. 1. 2026)
+  locator: § 3 odst. 1 a 2
+- id: q2-c3
+  claim: Zákon č. 119/2025 Sb. změnil definici přijímače tak, aby zahrnovala i počítače a všechna mobilní zařízení.
+  source_url: https://www.psp.cz/sqw/text/orig2.sqw?idd=277415
+  source_title: Vládní návrh zákona, kterým se mění zákon o České televizi a zákon o Českém rozhlasu a zrušuje zákon o poplatcích (sněmovní tisk 231/0), včetně důvodové zprávy
+  locator: Důvodová zpráva, Obecná část, bod 2, str. 6
+- id: q2-c4
+  claim: Vládní návrh ruší zákon o poplatcích s účinností od 1. 1. 2027 a ČT a ČRo dává příspěvek ze státního rozpočtu.
+  source_url: https://www.psp.cz/sqw/text/orig2.sqw?idd=277415
+  source_title: Vládní návrh zákona, kterým se mění zákon o České televizi a zákon o Českém rozhlasu a zrušuje zákon o poplatcích (sněmovní tisk 231/0), včetně důvodové zprávy
+  locator: Čl. I a II (nové § 10a odst. 1), Čl. IV a Čl. V, str. 1–3
+- id: q2-c5
+  claim: Důvodová zpráva popisuje v Evropě modely financování z poplatků, ze státního rozpočtu a smíšené modely.
+  source_url: https://www.psp.cz/sqw/text/orig2.sqw?idd=277415
+  source_title: Vládní návrh zákona, kterým se mění zákon o České televizi a zákon o Českém rozhlasu a zrušuje zákon o poplatcích (sněmovní tisk 231/0), včetně důvodové zprávy
+  locator: Důvodová zpráva, Obecná část, bod 5 (přehled modelů financování v Evropě), str. 9
+status: draft
+human_reviewed: false

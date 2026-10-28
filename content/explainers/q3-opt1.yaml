@@ -1,0 +1,20 @@
+id: q3-opt1
+text: |
+  Částku stanoví zákon a sama se zvyšuje, když rostou ceny.
+  Dnešní poplatek se zvedá o 6 %, když ceny od posledního zvýšení vzrostou o víc než 6 %.
+  Vládní návrh má podobné pravidlo, ale s hranicí 10 %.
+pro: Peníze samy rostou s cenami a nemusí se o nich každý rok jednat.
+proti: Pevné pravidlo nereaguje na to, kolik peněz ČT a ČRo opravdu potřebují.
+claims:
+- id: q3-opt1-c1
+  claim: Poplatky se zvýší o 6 %, když součet inflace od posledního zvýšení překročí 6 %.
+  source_url: https://www.zakonyprolidi.cz/cs/2005-348
+  source_title: Zákon č. 348/2005 Sb., o rozhlasových a televizních poplatcích (znění od 1. 1. 2026)
+  locator: § 6 odst. 2
+- id: q3-opt1-c2
+  claim: Podle návrhu se příspěvek zvýší o 10 %, když kumulativní inflace od roku 2026 nebo od posledního zvýšení překročí 10 procentních bodů.
+  source_url: https://www.psp.cz/sqw/text/orig2.sqw?idd=277415
+  source_title: Vládní návrh zákona, kterým se mění zákon o České televizi a zákon o Českém rozhlasu a zrušuje zákon o poplatcích (sněmovní tisk 231/0), včetně důvodové zprávy
+  locator: Čl. I a Čl. II, nové § 10a odst. 3, str. 1–2
+status: draft
+human_reviewed: false

@@ -1,0 +1,17 @@
+# Texty sdílení (SPEC §9.4). Míra shody se nikdy nesdílí vůči stranám.
+moments:
+  - id: podpis
+    text: Vím, jak chci financovat veřejnoprávní média
+    image: 3 klíčové volby
+  - id: zakon
+    text: Sestavil/a jsem vlastní verzi zákona o financování ČT a ČRo
+    image: Můj zákon + hlavní volba
+  - id: dopisy
+    text: Napsal/a jsem svým zástupcům
+    image: počet adresátů podle typu
+  - id: fotka
+    text: Nová profilová fotka
+    image: fotka
+  - id: srovnani
+    text: Shoduji se s {percent} % lidí, kteří kompas vyplnili
+    image: míra shody

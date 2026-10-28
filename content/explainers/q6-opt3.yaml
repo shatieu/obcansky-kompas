@@ -1,0 +1,13 @@
+id: q6-opt3
+text: |
+  Důchodci neplatí vůbec. Výjimka by platila pro všechny důchodce bez ohledu na výši důchodu. Dnes v Česku zákon takovou výjimku nemá.
+pro: "Důchodci nemusí řešit další pravidelnou platbu ze svého důchodu."
+proti: "Ostatní lidé zaplatí víc, aby se vybrala stejná částka."
+claims:
+  - id: q6-opt3-c1
+    claim: "Výčet osvobození od poplatků v českém zákoně neobsahuje výjimku podle věku ani pro důchodce."
+    source_url: "https://www.zakonyprolidi.cz/cs/2005-348"
+    source_title: "Zákon č. 348/2005 Sb., o rozhlasových a televizních poplatcích (znění k 1. 1. 2026)"
+    locator: "§ 4 odst. 1 a 2 (výčet osvobozených osob)"
+status: draft
+human_reviewed: false

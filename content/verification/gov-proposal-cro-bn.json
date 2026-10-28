@@ -1,0 +1,12 @@
+{
+  "claim_id": "gov-proposal-cro-bn",
+  "claim_hash": "1c538eca41998f61281ec03b56869003a484fe0f1670f08edb5cf42b97bce41e",
+  "verdict": "ano",
+  "correction": "",
+  "note": "Čl. II, § 10a odst. 2: 2 065 766 000 Kč (v návrhu je to bod 3, ne bod 4).",
+  "url_checked": "https://www.psp.cz/sqw/text/orig2.sqw?idd=277415",
+  "checked_at": "2026-10-27T23:53:49Z",
+  "verifier": "verifier-a1",
+  "round": 1,
+  "human_reviewed": false
+}

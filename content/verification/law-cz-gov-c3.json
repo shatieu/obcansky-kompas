@@ -1,0 +1,12 @@
+{
+  "claim_id": "law-cz-gov-c3",
+  "claim_hash": "078b98753bc4a72f539328a81ba1d6d88e6c6907adac814d74e2cb81e14b56fa",
+  "verdict": "ano",
+  "correction": "",
+  "note": "",
+  "url_checked": "https://www.mediaguru.cz/vlada-schvalila-zruseni-poplatku-pro-ct-a-cro-z-rozpoctu-jim-da-o-1-4-mld-mene",
+  "checked_at": "2026-10-27T23:41:38Z",
+  "verifier": "verifier-b1",
+  "round": 1,
+  "human_reviewed": false
+}

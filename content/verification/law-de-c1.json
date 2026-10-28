@@ -1,0 +1,12 @@
+{
+  "claim_id": "law-de-c1",
+  "claim_hash": "5edf7e3172aa7df0bc480bd0afe0665f31d216053724cbdc987c51ceb4384568",
+  "verdict": "ano",
+  "correction": "",
+  "note": "",
+  "url_checked": "https://kef-online.de/kommission/zur-arbeit-der-kommission",
+  "checked_at": "2026-10-27T23:41:38Z",
+  "verifier": "verifier-b1",
+  "round": 1,
+  "human_reviewed": false
+}

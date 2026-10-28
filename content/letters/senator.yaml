@@ -1,0 +1,146 @@
+# Dopis senátorovi / senátorce mého obvodu (SPEC §9.2). Struktura a stupně viz poslanec.yaml.
+type: senator
+version: 1
+label: Můj senátor
+positions:
+  osloveni:
+    - id: osl-1
+      forma: [1]
+      delka: [1, 2, 3]
+      text: Dobrý den,
+    - id: osl-2
+      forma: [1, 2]
+      delka: [1, 2]
+      text: Dobrý den, paní senátorko, pane senátore,
+    - id: osl-3
+      forma: [2, 3]
+      delka: [1, 2, 3]
+      text: Vážená paní senátorko, vážený pane senátore,
+    - id: osl-4
+      forma: [3]
+      delka: [1, 2, 3]
+      text: Ctěná paní senátorko, ctěný pane senátore,
+    - id: osl-5
+      forma: [1, 2]
+      delka: [3]
+      text: Paní senátorko, pane senátore,
+
+  uvod:
+    - id: uvod-1
+      forma: [1]
+      delka: [1, 2, 3]
+      text: Píšu Vám z Vašeho senátního obvodu kvůli financování České televize a Českého rozhlasu.
+    - id: uvod-2
+      forma: [1, 2]
+      delka: [1, 2]
+      text: >-
+        Bydlím ve Vašem obvodu a chci Vám krátce napsat, jak vidím financování
+        České televize a Českého rozhlasu.
+    - id: uvod-3
+      forma: [2, 3]
+      delka: [1, 2, 3]
+      text: >-
+        Obracím se na Vás, protože v Senátu zastupujete i můj obvod. Jde mi
+        o financování České televize a Českého rozhlasu.
+    - id: uvod-4
+      forma: [3]
+      delka: [1, 2, 3]
+      text: >-
+        Dovoluji si Vás oslovit ve věci vládního návrhu na financování České
+        televize a Českého rozhlasu, neboť v Senátu zastupujete i můj volební
+        obvod.
+    - id: uvod-5
+      forma: [1, 2, 3]
+      delka: [3]
+      text: >-
+        Píšu Vám, protože vládní návrh na financování České televize a Českého
+        rozhlasu považuji za zásadní věc a chci, aby byl můj hlas slyšet
+        i v Senátu.
+
+  prechod:
+    - id: pre-1
+      forma: [1]
+      delka: [1, 2, 3]
+      text: To je můj pohled.
+    - id: pre-2
+      forma: [1, 2]
+      delka: [1, 2]
+      text: Takto si financování médií veřejné služby představuji.
+    - id: pre-3
+      forma: [2, 3]
+      delka: [1, 2, 3]
+      text: Toto je můj názor na to, jak by financování mělo vypadat.
+    - id: pre-4
+      forma: [3]
+      delka: [1, 2, 3]
+      text: >-
+        Uvedené body shrnují můj postoj k tomu, jak by mělo být financování médií
+        veřejné služby upraveno.
+    - id: pre-5
+      forma: [1, 2, 3]
+      delka: [3]
+      text: >-
+        Na těchto bodech mi opravdu záleží a budu sledovat, jak se k nim
+        postavíte.
+
+  zadost:
+    - id: zad-1
+      forma: [1]
+      delka: [1, 2, 3]
+      text: Prosím, pokud se návrh dostane do Senátu v této podobě, nepodpořte ho.
+    - id: zad-2
+      forma: [1, 2]
+      delka: [1, 2]
+      text: >-
+        Prosím Vás: pokud bude Senát o vládním návrhu jednat v této podobě,
+        nepodpořte ho.
+    - id: zad-3
+      forma: [2, 3]
+      delka: [1, 2, 3]
+      text: >-
+        Žádám Vás, aby vládní návrh v této podobě nezískal v Senátu Váš hlas,
+        a prosím o podporu úprav, které odpovídají uvedeným bodům.
+    - id: zad-4
+      forma: [3]
+      delka: [1, 2, 3]
+      text: >-
+        Dovoluji si Vás požádat, aby vládní návrh v předložené podobě nezískal
+        při projednávání v Senátu Vaši podporu.
+    - id: zad-5
+      forma: [1, 2, 3]
+      delka: [3]
+      text: >-
+        Důrazně Vás žádám: pokud se návrh v této podobě dostane do Senátu, hlasujte
+        proti němu a prosazujte řešení, které odpovídá uvedeným bodům.
+
+  zaver:
+    - id: zav-1
+      forma: [1]
+      delka: [1, 2, 3]
+      text: |-
+        Děkuji.
+        S pozdravem
+    - id: zav-2
+      forma: [1, 2]
+      delka: [1, 2]
+      text: |-
+        Děkuji za Váš čas.
+        S pozdravem
+    - id: zav-3
+      forma: [2, 3]
+      delka: [1, 2, 3]
+      text: |-
+        Děkuji za pozornost, kterou mému dopisu věnujete.
+        S pozdravem
+    - id: zav-4
+      forma: [3]
+      delka: [1, 2, 3]
+      text: |-
+        Děkuji Vám za pozornost a uvítám Vaši odpověď.
+        S úctou
+    - id: zav-5
+      forma: [1, 2, 3]
+      delka: [3]
+      text: |-
+        Vaše rozhodnutí budu pozorně sledovat. Uvítám Vaši odpověď.
+        S pozdravem

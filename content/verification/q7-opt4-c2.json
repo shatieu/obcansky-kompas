@@ -1,0 +1,12 @@
+{
+  "claim_id": "q7-opt4-c2",
+  "claim_hash": "53c7a86585fdc84a9738812ab51d998cb485a27d09cfcd2e5818c45a04d3eaf0",
+  "verdict": "ano",
+  "correction": "",
+  "note": "§ 4 odst. 2 písm. a) a b).",
+  "url_checked": "https://www.zakonyprolidi.cz/cs/2005-348",
+  "checked_at": "2026-10-27T23:53:49Z",
+  "verifier": "verifier-a1",
+  "round": 2,
+  "human_reviewed": false
+}

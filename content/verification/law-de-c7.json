@@ -1,0 +1,12 @@
+{
+  "claim_id": "law-de-c7",
+  "claim_hash": "c2f5b76a50621f725cbf71e72f9d0235100ee5b137d98f45aa57a539b38fbc64",
+  "verdict": "ano",
+  "correction": "",
+  "note": "Úvodní stránka: 'ab 2027 eine Anhebung des monatlichen Rundfunkbeitrags auf 18,64 €'.",
+  "url_checked": "https://kef-online.de/de/",
+  "checked_at": "2026-10-27T23:41:38Z",
+  "verifier": "verifier-b1",
+  "round": 1,
+  "human_reviewed": false
+}

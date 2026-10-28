@@ -1,0 +1,46 @@
+# Modul Q1 – výše prostředků (SPEC §10). Částka se doplní z odpovědi Q1 ({{amount}}).
+id: q1-vyse
+version: 1
+legal_review: pending
+slot: amount
+questions: [q1]
+paragraphs:
+  - id: q1-castka
+    title: Výše prostředků
+    when:
+      q1: answered
+      q2: { not: [6] }
+    subsections:
+      - text: >-
+          Celková výše prostředků určených na financování médií veřejné služby
+          činí {{amount}} ročně.
+      - when:
+          q3: 1
+        text: >-
+          Výše podle odstavce 1 platí pro první kalendářní rok po nabytí účinnosti
+          tohoto zákona a v dalších letech se mění podle {{ref:setting}}.
+      - when:
+          q3: [2, 3]
+        text: >-
+          Výše podle odstavce 1 platí pro první kalendářní rok po nabytí účinnosti
+          tohoto zákona; pro další roky se stanoví postupem podle {{ref:setting}}.
+      - text: >-
+          Poměr, v jakém se prostředky rozdělí mezi Českou televizi a Český
+          rozhlas, stanoví vláda nařízením po vyjádření Rady České televize
+          a Rady Českého rozhlasu.
+
+  - id: q1-cil
+    title: Cílová výše prostředků
+    when:
+      q1: answered
+      q2: 6
+    text: >-
+      Cílová výše prostředků potřebných k plnění veřejné služby činí {{amount}}
+      ročně. Média veřejné služby každoročně zveřejňují, do jaké míry se cílové
+      výše podařilo dosáhnout.
+
+  - id: q1-nevim
+    title: Výše prostředků
+    when:
+      q1: nevim
+    text: "{{nevim}}"

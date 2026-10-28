@@ -1,0 +1,36 @@
+id: q5
+text: |
+  Otázka je, jestli má člověk s vyšším příjmem platit víc. Dnes se v Česku platí pevná částka, 150 Kč měsíčně za televizi a 55 Kč za rozhlas. Ve Finsku a ve Švédsku se platí podle příjmu, ale jen do horní hranice.
+claims:
+  - id: q5-c1
+    claim: "Televizní poplatek v Česku je 150 Kč měsíčně a rozhlasový 55 Kč měsíčně."
+    source_url: "https://www.zakonyprolidi.cz/cs/2005-348"
+    source_title: "Zákon č. 348/2005 Sb., o rozhlasových a televizních poplatcích (znění k 1. 1. 2026)"
+    locator: "§ 6 odst. 1"
+    quote: "měsíční výše televizního poplatku činí 150 Kč"
+  - id: q5-c2
+    claim: "Ve Finsku se Yle daň platí ve výši 2,5 % z příjmů nad 15 150 eur ročně."
+    source_url: "https://yle.fi/aihe/about-yle/finances"
+    source_title: "Yle – Content from Yle's finances"
+    locator: "sekce Yle tax for individuals"
+    quote: "Those who earn less than EUR 15,150 are exempt from paying the tax."
+  - id: q5-c3
+    claim: "Finská Yle daň pro jednotlivce je nejvýš 160 eur ročně."
+    source_url: "https://yle.fi/aihe/about-yle/finances"
+    source_title: "Yle – Content from Yle's finances"
+    locator: "sekce Yle tax for individuals"
+    quote: "The maximum tax per person is EUR 160 per year."
+  - id: q5-c4
+    claim: "Ve Švédsku se poplatek platí ve výši 1 % ze zdanitelného příjmu, dokud nedosáhne horní hranice."
+    source_url: "https://www.skatteverket.se/publicserviceavgift"
+    source_title: "Skatteverket – Public service-avgift"
+    locator: "sekce Så mycket ska du betala för inkomståret 2026"
+    quote: "betalar 1 procent av inkomsten"
+  - id: q5-c5
+    claim: "Švédský poplatek je pro rok 2026 nejvýš 1 184 švédských korun na osobu a rok."
+    source_url: "https://www.skatteverket.se/publicserviceavgift"
+    source_title: "Skatteverket – Public service-avgift"
+    locator: "sekce Så mycket ska du betala för inkomståret 2026"
+    quote: "För inkomståret 2026 är public service-avgiften maximalt 1 184 kronor per person och år."
+status: draft
+human_reviewed: false

@@ -1,0 +1,12 @@
+{
+  "claim_id": "q2-opt4-c6",
+  "claim_hash": "eaaf0dcbe7cb171be9d44d8c91ac3b87a1b80c1abab3d6ead5bf00f101fa521d",
+  "verdict": "ano",
+  "correction": "",
+  "note": "DZ bod 9 (str. 16) ruší povinnost hradit poplatek (text má překlep 'rozhlasový poplatek a rozhlasový poplatek'); bod 10 (str. 17) výslovně 'ruší povinnost fyzických i právnických osob platit rozhlasový a televizní poplatek'.",
+  "url_checked": "https://www.psp.cz/sqw/text/orig2.sqw?idd=277415",
+  "checked_at": "2026-10-27T23:53:49Z",
+  "verifier": "verifier-a1",
+  "round": 1,
+  "human_reviewed": false
+}

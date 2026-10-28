@@ -1,0 +1,30 @@
+id: q8
+text: |
+  Otázka je, jestli mají kromě lidí platit i firmy. Dnes v Česku platí firmy podle počtu zaměstnanců, firmy do 24 zaměstnanců neplatí. Ve Finsku platí firmy podle zisku, ve Švédsku firmy neplatí.
+claims:
+  - id: q8-c1
+    claim: "V Česku platí firmy poplatky jako násobek běžného poplatku podle počtu zaměstnanců, od pětinásobku při 25 až 49 zaměstnancích."
+    source_url: "https://www.zakonyprolidi.cz/cs/2005-348"
+    source_title: "Zákon č. 348/2005 Sb., o rozhlasových a televizních poplatcích (znění k 1. 1. 2026)"
+    locator: "§ 5 odst. 3"
+    quote: "při počtu 25 až 49 zaměstnanců v pracovním poměru ve výši pětinásobku rozhlasového poplatku"
+  - id: q8-c2
+    claim: "V Česku neplatí poplatky firma nebo podnikatel, který zaměstnává nejvýše 24 osob."
+    source_url: "https://www.zakonyprolidi.cz/cs/2005-348"
+    source_title: "Zákon č. 348/2005 Sb., o rozhlasových a televizních poplatcích (znění k 1. 1. 2026)"
+    locator: "§ 5 odst. 4"
+    quote: "zaměstnává nejvýše 24 osob"
+  - id: q8-c3
+    claim: "Finská firma platí Yle daň 140 eur plus 0,35 % ze zdanitelného příjmu nad 50 000 eur."
+    source_url: "https://www.vero.fi/tietoa-verohallinnosta/tietoa_verotuksest/ylevero/"
+    source_title: "Verohallinto – Yleisradiovero"
+    locator: "sekce Yhteisöasiakkaat"
+    quote: "yhteisö maksaa yleisradioveroa 140 euroa ja lisäksi 0,35 % 50 000 euron ylittävältä osalta"
+  - id: q8-c4
+    claim: "Švédský poplatek platí jen lidé, firmy ho neplatí."
+    source_url: "https://www.skatteverket.se/publicserviceavgift"
+    source_title: "Skatteverket – Public service-avgift"
+    locator: "sekce Vem ska inte betala avgiften?"
+    quote: "tas inte ut för juridiska personer, till exempel företag"
+status: draft
+human_reviewed: false
