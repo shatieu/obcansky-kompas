@@ -1,4 +1,4 @@
-import { positionFor, type Rect } from "./layout";
+import { LAYOUT, positionFor, rowScale, rowY, STAGE, type Rect } from "./layout";
 
 /**
  * Kamera davu: střed výřezu ve světě (x, y) a přiblížení z (px na jednotku světa).
@@ -59,9 +59,35 @@ export function zoomAt(c: Camera, v: Viewport, sx: number, sy: number, factor: n
 }
 
 /** Kamera zaměřená na postavu s daným indexem (postava ~ uprostřed výřezu). */
-export function cameraOn(index: number, z: number): Camera {
-  const p = positionFor(index);
+export function cameraOn(index: number, z: number, origin = 0): Camera {
+  const p = positionFor(index, origin);
   return { x: p.x, y: p.y - 60 * p.scale, z: Math.max(z, 1.2 / p.scale) };
+}
+
+/** Výchozí přiblížení: mobil / desktop (cedule přední řady čitelné). */
+export const START_ZOOM = { mobile: 1.15, desktop: 1.3 } as const;
+/** Kolik řad (s celou postavou včetně cedule) má být nad pódiem vidět vždy. */
+const START_ROWS = 3;
+/** Okraj pod čelem pódia (jednotky světa). */
+const START_STAGE_MARGIN = 8;
+
+/**
+ * Výchozí pohled (bez ?x=&y=&z=, bez /demonstrace/[id]): čelo pódia dole nad `insetBottom`
+ * a nad ním přední řady – vždy aspoň START_ROWS celé řady (když je výřez nízký, kamera oddálí).
+ * Rozvržení začíná indexem `origin` na místě 0 hned za pódiem, takže pohled nezávisí na
+ * velikosti davu ani na minIndex (pro 1 i 100 000 lidí stejný).
+ */
+export function startCamera(v: Viewport, o: { mobile: boolean; insetBottom?: number; insetTop?: number }): Camera {
+  const insetBottom = Math.max(0, o.insetBottom ?? 0);
+  const insetTop = Math.max(0, o.insetTop ?? 0);
+  const free = Math.max(120, v.h - insetBottom - insetTop);
+  const r = START_ROWS - 1;
+  const top = rowY(r) - LAYOUT.figureTop * rowScale(r);
+  const need = STAGE.y1 + START_STAGE_MARGIN - top;
+  const zMax = o.mobile ? START_ZOOM.mobile : START_ZOOM.desktop;
+  const z = Math.max(0.35, Math.min(zMax, free / need));
+  const y = STAGE.y1 + START_STAGE_MARGIN - (v.h / 2 - insetBottom) / z;
+  return { x: 0, y, z };
 }
 
 const num = (v: string | null) => {

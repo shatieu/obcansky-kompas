@@ -23,6 +23,10 @@ const PATHS = {
   refresh: "M20 12a8 8 0 1 1-2.3-5.7M20 4v5h-5",
   /** Doplněk projektu (kopírování textu dopisu), kreslený stejnými pravidly. */
   copy: "M8 8h12v12H8zM4 16V4h12",
+  /** Doplněk projektu (dav: minimapa) – složená mapa. */
+  map: "M3 6l6-3 6 3 6-3v15l-6 3-6-3-6 3zM9 3v15M15 6v15",
+  /** Doplněk projektu (dav: další možnosti) – tři čtverečky. */
+  more: "M4 11h2v2H4zM11 11h2v2h-2zM18 11h2v2h-2z",
 } as const;
 
 export type IconName = keyof typeof PATHS;

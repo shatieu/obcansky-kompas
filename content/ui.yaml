@@ -939,6 +939,7 @@ demonstrace_crowd:
   list_button: Zobrazit jako seznam
   find_me_button: Najdi mě
   minimap_button: Mapa davu
+  more_button: Další možnosti
   start_button: Na začátek
   end_button: Na konec davu
   zoom_in: Přiblížit

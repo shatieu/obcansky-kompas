@@ -7,6 +7,7 @@ import { createHash } from "node:crypto";
 import { NextRequest } from "next/server";
 import { afterAll, beforeAll, describe, expect, it, vi } from "vitest";
 import { CONTENT_VERSION } from "@/lib/content";
+import { decodeCell } from "@/lib/demo/overview";
 import { createOrReplaceSignature, requestEditLink, type SignData } from "@/lib/sign/service";
 import { randomKey, startTestDb, withEnv, type TestDb } from "./helpers/runtime";
 
@@ -57,6 +58,8 @@ const routes = {
   meDetail: () => import("@/app/api/demonstrace/me/detail/route"),
   meta: () => import("@/app/api/demonstrace/meta/route"),
   tile: () => import("@/app/api/demonstrace/tile/[n]/route"),
+  overview: () => import("@/app/api/demonstrace/overview/[n]/route"),
+  at: () => import("@/app/api/demonstrace/at/[index]/route"),
   owner: () => import("@/app/api/demonstrace/owner/route"),
   revalidate: () => import("@/app/api/demonstrace/revalidate/route"),
   cron: () => import("@/app/api/cron/moderation/route"),
@@ -68,6 +71,7 @@ interface Res {
   status: number;
   json: Record<string, unknown>;
   headers: Headers;
+  bytes: Uint8Array;
 }
 
 async function call(
@@ -86,8 +90,10 @@ async function call(
     body: method === "GET" || method === "DELETE" ? undefined : JSON.stringify(opts.body ?? {}),
   });
   const res = await handler(req, { params: Promise.resolve(opts.params ?? {}) });
-  const text = await res.text();
-  return { status: res.status, json: text ? (JSON.parse(text) as Record<string, unknown>) : {}, headers: res.headers };
+  const bytes = new Uint8Array(await res.arrayBuffer());
+  const binary = res.headers.get("content-type") === "application/octet-stream";
+  const text = binary ? "" : new TextDecoder().decode(bytes);
+  return { status: res.status, json: text ? (JSON.parse(text) as Record<string, unknown>) : {}, headers: res.headers, bytes };
 }
 
 let db: TestDb;
@@ -228,8 +234,17 @@ describe("dlaždice, meta, karta (§6.4)", () => {
     const tile = await call("tile", "GET", { params: { n: "0" } });
     expect(tile.headers.get("cache-control")).toBe("public, s-maxage=30, stale-while-revalidate=120");
     const items = tile.json.items as unknown[][];
-    const mine = items.find((i) => i[6] === j.json.id)!;
-    expect(mine).toEqual([j.json.index, 123456789, "pochoduje", "red", "t:Za kvalitní zprávy", "Petra", j.json.id, expect.stringMatching(/^\d{4}-\d{2}-\d{2}$/)]);
+    const mine = items.find((i) => i[0] === j.json.index)!;
+    // Bez id (uuid) – kartu dotáhne /at/[index].
+    expect(mine).toEqual([j.json.index, 123456789, "pochoduje", "red", "t:Za kvalitní zprávy", "Petra", expect.stringMatching(/^\d{4}-\d{2}-\d{2}$/)]);
+    expect(JSON.stringify(tile.json)).not.toContain(j.json.id as string);
+    const at = await call("at", "GET", { params: { index: String(j.json.index) } });
+    expect(at.json).toMatchObject({ id: j.json.id, index: j.json.index, name: "Petra" });
+    expect(at.headers.get("vercel-cache-tag")).toContain(`demo-person:${j.json.id}`);
+    const ov = await call("overview", "GET", { params: { n: "0" } });
+    expect(ov.headers.get("content-type")).toBe("application/octet-stream");
+    expect(decodeCell(ov.bytes[j.json.index as number]!)).toMatchObject({ pose: "pochoduje", signColor: "red" });
+    expect(ov.headers.get("vercel-cache-tag")).toBe("demo-overview:0");
     expect((await call("tile", "GET", { params: { n: "abc" } })).status).toBe(404);
     const beyond = await call("tile", "GET", { params: { n: "5" } });
     expect(beyond.json).toEqual({ n: 5, items: [] });
@@ -247,7 +262,7 @@ describe("dlaždice, meta, karta (§6.4)", () => {
       expect(mod.processed).toBeGreaterThan(before);
       const tile = await call("tile", "GET", { params: { n: "0" } });
       expect(JSON.stringify(tile.json)).not.toContain("Čeká na kontrolu");
-      const mine = (tile.json.items as unknown[][]).find((i) => i[6] === j.json.id)!;
+      const mine = (tile.json.items as unknown[][]).find((i) => i[0] === j.json.index)!;
       expect(mine[4]).toBe("p:nejsou-jedno");
       expect(mine[5]).toBeNull();
 
@@ -418,7 +433,9 @@ describe("STATIC_DEMO a READ_ONLY (§9)", () => {
       const items = tile.json.items as unknown[][];
       expect(items).toHaveLength(500);
       expect(items[0]![0]).toBe(0);
-      const p = await call("person", "GET", { params: { id: items[3]![6] as string } });
+      const at = await call("at", "GET", { params: { index: "3" } });
+      expect(at.json).toMatchObject({ index: 3, id: expect.any(String) });
+      const p = await call("person", "GET", { params: { id: at.json.id as string } });
       expect(p.json).toMatchObject({ index: 3 });
     } finally {
       restore();

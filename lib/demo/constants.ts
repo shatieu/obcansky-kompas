@@ -49,7 +49,7 @@ export const CACHE_META = "public, s-maxage=30, stale-while-revalidate=120";
 export const CACHE_PERSON = "public, s-maxage=60, stale-while-revalidate=120";
 
 /**
- * Položka dlaždice: [index, seed, pose, signColor, slogan, name, id, joinedDay].
+ * Položka dlaždice na serveru (data cache, seznam, statický export): [index, seed, pose, signColor, slogan, name, id, joinedDay].
  * slogan = "p:<preset id>", "t:<schválený vlastní text>", nebo "" (panáček bez cedule bez sloganu); joinedDay = YYYY-MM-DD (Europe/Prague).
  */
 export type TileItem = [number, number, Pose, SignColor, string, string | null, string, string];
@@ -58,6 +58,27 @@ export interface TileResponse {
   n: number;
   items: TileItem[];
 }
+
+/**
+ * Položka dlaždice v API (GET /tile/[n]) – bez id (uuid, ~40 % velikosti): [index, seed, pose, signColor, slogan, name, joinedDay].
+ * Id k kartě (sdílení, nahlášení) dá GET /api/demonstrace/at/[index].
+ */
+export type PublicTileItem = [number, number, Pose, SignColor, string, string | null, string];
+
+export interface PublicTileResponse {
+  n: number;
+  items: PublicTileItem[];
+}
+
+export const publicTileItem = (it: TileItem): PublicTileItem => [it[0], it[1], it[2], it[3], it[4], it[5], it[7]];
+
+/** Přehledová dlaždice (GET /overview/[n]): 1 bajt na index, jen vzhled (lib/demo/overview). */
+export const overviewTag = (n: number) => `demo-overview:${n}`;
+/**
+ * Plná přehledová dlaždice: jen póza/barva/tvar cedule a obsazenost (žádný text), čistí ji připojení,
+ * úprava i odvolání tagem `demo-overview:<n>` – proto dlouhá platnost (požadavek vlastníka na egress).
+ */
+export const CACHE_OVERVIEW_FULL = "public, s-maxage=86400, stale-while-revalidate=604800";
 
 export interface MetaResponse {
   count: number;

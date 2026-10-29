@@ -73,9 +73,16 @@ test("§6: stránka davu – počet, ovládání, kanvas", async ({ page }) => {
   await expect(page.getByText(ct.error)).toHaveCount(0);
   // Viditelný počet „N účastníků“ (popis kanvasu pro čtečky má stejné číslo na konci odstavce – ten je skrytý).
   await expect(page.getByText(/^\d[\d\s ]*\s+účastník(ů|ci)?$/).first()).toBeVisible({ timeout: 15_000 });
-  for (const name of [ct.start_button, ct.end_button]) await expect(page.getByRole("button", { name })).toBeVisible();
   await expect(page.getByRole("link", { name: ct.join_button })).toHaveAttribute("href", "/demonstrace/pripojit");
+  // Mobil: skoky v davu a seznam jsou v nabídce „Další možnosti“ (nic neplave přes plátno).
+  const mobile = (page.viewportSize()?.width ?? 1280) < 768;
+  if (mobile) {
+    await expect(page.getByRole("button", { name: ct.minimap_button })).toBeVisible();
+    await page.getByRole("button", { name: ct.more_button }).click();
+  }
+  for (const name of [ct.start_button, ct.end_button]) await expect(page.getByRole("button", { name })).toBeVisible();
   await expect(page.getByRole("link", { name: ct.list_button })).toHaveAttribute("href", "/demonstrace/seznam");
+  if (mobile) await page.keyboard.press("Escape");
   // Ovládání klávesnicí zapíše kameru do URL (?x=&y=&z=, §6.2).
   await page.getByRole("application", { name: ct.canvas_label }).focus();
   await page.keyboard.press("+");
@@ -134,7 +141,7 @@ test("§4/§6.4: dlaždice nikdy neobsahují skryté ani zamítnuté texty a jm�
     expect(it[4]).not.toBe(`t:${bannedText}`);
     expect(it[4]).toMatch(/^(p:[a-z0-9-]+|t:.+)$/);
   }
-  expect(items.find((it) => it[6] === a.id)?.[5]).toBeNull();
+  expect(items.find((it) => it[0] === a.index)?.[5]).toBeNull();
   // Seznam (server, z dlaždic) je taky neukazuje.
   await page.goto(`/demonstrace/seznam?strana=${Math.floor(a.index / 50) + 1}`);
   await expect(page.getByText(hiddenText)).toHaveCount(0);

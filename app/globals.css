@@ -525,6 +525,10 @@
   }
   .k-banner { display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 12px; padding: 12px 16px; background: var(--blue-tint); border-left: 4px solid var(--ink); color: var(--ink); outline: 1px solid var(--tint-edge); }
   .k-banner strong { font-family: var(--font-wide); font-size: 13px; line-height: 16px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; }
+  /* Kompaktní pruh: jeden řádek (dav a jiné plochy, kde se nesmí brát výška). Text se zkrátí, nadpis ne. */
+  .k-banner--compact { flex-wrap: nowrap; align-items: center; gap: 8px; min-height: 28px; padding: 4px 16px; border-left-width: 4px; font-size: 14px; line-height: 20px; white-space: nowrap; overflow: hidden; }
+  .k-banner--compact strong { flex: none; }
+  .k-banner--compact span { min-width: 0; overflow: hidden; text-overflow: ellipsis; }
 
   /* "Můj text" */
   .k-mytext { border: 2px solid var(--ink); background: var(--surface); color: var(--ink); }

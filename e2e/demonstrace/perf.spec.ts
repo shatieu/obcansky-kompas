@@ -129,8 +129,9 @@ test("výkon davu: fps při 50 000 účastnících a JS stránky", async ({ page
   const jsWithCard = sizesCard.reduce((s, [, n]) => s + n, 0);
 
   // /demonstrace/[id] přímo (karta se otevírá při načtení): nový kontext = prázdná cache.
-  const tile0 = (await (await page.request.get("/api/demonstrace/tile/0")).json()) as { items: [number, number, string, string, string, string | null, string, string][] };
-  const someId = tile0.items[Math.floor(tile0.items.length / 2)]![6];
+  const tile0 = (await (await page.request.get("/api/demonstrace/tile/0")).json()) as { items: [number, number, string, string, string, string | null, string][] };
+  const someIndex = tile0.items[Math.floor(tile0.items.length / 2)]![0];
+  const someId = ((await (await page.request.get(`/api/demonstrace/at/${someIndex}`)).json()) as { id: string }).id;
   const ctx2 = await page.context().browser()!.newContext({ baseURL: testInfo.project.use.baseURL, viewport: page.viewportSize()! });
   const p2 = await ctx2.newPage();
   const scripts2 = new Map<string, Promise<number>>();

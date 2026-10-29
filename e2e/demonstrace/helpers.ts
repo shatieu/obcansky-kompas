@@ -29,7 +29,8 @@ export const external = Boolean(process.env.PLAYWRIGHT_BASE_URL || process.env.E
 /** CRON_SECRET lokálního e2e serveru (playwright.config.ts). */
 export const e2eCronSecret = createHash("sha256").update("obcansky-kompas:e2e-only:cron").digest("base64");
 
-export type TileItem = [number, number, string, string, string, string | null, string, string];
+/** Položka dlaždice API (bez id): [index, seed, pose, signColor, slogan, name, joinedDay]. */
+export type TileItem = [number, number, string, string, string, string | null, string];
 
 /** Neutrální slova (ověřená skriptovou moderací, viz uniqueText). */
 const WORDS = ["lipa", "kniha", "rano", "most", "reka", "pole", "vlak", "hora", "ovce", "dub", "les", "zahrada", "okno", "chleba", "mlyn", "jaro"];
@@ -105,12 +106,12 @@ export async function report(request: APIRequestContext, id: string, ip = random
 }
 
 /** Dlaždice obsahující index; na produkci s parametrem proti CDN cache. */
-export async function tileItem(request: APIRequestContext, id: string, index: number): Promise<TileItem | undefined> {
+export async function tileItem(request: APIRequestContext, _id: string, index: number): Promise<TileItem | undefined> {
   const n = Math.floor(index / 1000);
   const res = await request.get(`/api/demonstrace/tile/${n}${external ? `?e2e=${Date.now()}` : ""}`);
   expect(res.status()).toBe(200);
   const tile = (await res.json()) as { items: TileItem[] };
-  return tile.items.find((it) => it[6] === id);
+  return tile.items.find((it) => it[0] === index);
 }
 
 /** Všechny položky davu (všechny dlaždice podle meta). */

@@ -1,6 +1,6 @@
 import { dangerouslyDeleteByTag } from "@vercel/functions";
 import { revalidateTag } from "next/cache";
-import { META_TAG, personTag, tileOf, tileTag } from "./constants";
+import { META_TAG, overviewTag, personTag, tileOf, tileTag } from "./constants";
 
 /**
  * Zneplatnění cache davu po zápisu (připojení, úprava, nahlášení, odvolání, AI verdikt, CLI zásah).
@@ -15,7 +15,9 @@ import { META_TAG, personTag, tileOf, tileTag } from "./constants";
  */
 export function demoTags(opts: { index?: number; id?: string; meta?: boolean }): string[] {
   const tags: string[] = [];
-  if (opts.index !== undefined) tags.push(tileTag(tileOf(opts.index)));
+  // Přehled (1 B/osoba, jen vzhled) se čistí s dlaždicí: připojení, odvolání, změna pózy/barvy.
+  // Čistí se i při změně jen textu (zápis neví, co se změnilo) – jen pár zbytečných missů.
+  if (opts.index !== undefined) tags.push(tileTag(tileOf(opts.index)), overviewTag(tileOf(opts.index)));
   if (opts.id) tags.push(personTag(opts.id));
   if (opts.meta) tags.push(META_TAG);
   return tags;
@@ -48,4 +50,4 @@ export function revalidateDemo(opts: { index?: number; id?: string; meta?: boole
 }
 
 /** Povolené tagy pro revalidační endpoint (jen tagy davu). */
-export const DEMO_TAG_RE = /^(demo-meta|demo-tile:\d{1,6}|demo-person:[0-9a-f-]{36})$/;
+export const DEMO_TAG_RE = /^(demo-meta|demo-tile:\d{1,6}|demo-overview:\d{1,6}|demo-person:[0-9a-f-]{36})$/;

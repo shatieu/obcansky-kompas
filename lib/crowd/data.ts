@@ -1,4 +1,6 @@
-import { POSES, TILE_SIZE, type MetaResponse, type PersonResponse, type Pose, type SignColor, type TileItem, type TileResponse } from "@/lib/demo/constants";
+import { POSES, TILE_SIZE, type MetaResponse, type PersonResponse, type Pose, type PublicTileItem, type PublicTileResponse, type SignColor } from "@/lib/demo/constants";
+import { encodeCell } from "@/lib/demo/overview";
+import { generateStickman } from "@/lib/stickman/params";
 import { isPose, isSignColor } from "@/lib/stickman/params";
 import { mulberry32 } from "@/lib/stickman/prng";
 
@@ -14,7 +16,8 @@ export interface CrowdPerson {
   /** "p:<preset id>" nebo "t:<schválený text>". */
   slogan: string;
   name: string | null;
-  id: string;
+  /** Veřejné id (uuid) – dlaždice API ho nenesou (null); karta ho dotáhne přes personAt(index). */
+  id: string | null;
   /** YYYY-MM-DD */
   joinedDay: string;
 }
@@ -29,7 +32,7 @@ export interface CrowdMeta {
   demo: boolean;
 }
 
-export function personFromItem(it: TileItem): CrowdPerson {
+export function personFromItem(it: PublicTileItem): CrowdPerson {
   return {
     index: it[0],
     seed: it[1] >>> 0,
@@ -37,13 +40,13 @@ export function personFromItem(it: TileItem): CrowdPerson {
     signColor: isSignColor(it[3]) ? it[3] : "white",
     slogan: typeof it[4] === "string" ? it[4] : "",
     name: it[5] ?? null,
-    id: String(it[6]),
-    joinedDay: String(it[7] ?? ""),
+    id: null,
+    joinedDay: String(it[6] ?? ""),
   };
 }
 
 export function personFromResponse(r: PersonResponse): CrowdPerson {
-  return personFromItem([r.index, r.seed, r.pose, r.signColor, r.slogan, r.name, r.id, r.joinedDay]);
+  return { ...personFromItem([r.index, r.seed, r.pose, r.signColor, r.slogan, r.name, r.joinedDay]), id: String(r.id) };
 }
 
 /** Text sloganu k zobrazení: předvolba podle id, nebo schválený vlastní text; "" = bez sloganu. */
@@ -57,6 +60,10 @@ export function sloganText(slogan: string, presets: Record<string, string>, fall
 export interface CrowdSource {
   meta(): Promise<CrowdMeta>;
   tile(n: number): Promise<CrowdPerson[]>;
+  /** Přehledová dlaždice: 1 bajt na index (lib/demo/overview) – siluety vzdáleného pohledu. */
+  overview(n: number): Promise<Uint8Array>;
+  /** Osoba (s id) podle position_index – karta po klepnutí. */
+  personAt(index: number): Promise<CrowdPerson | null>;
   person(id: string): Promise<CrowdPerson | null>;
   me(): Promise<{ id: string; index: number } | null>;
   /** Nahlášení s jednorázovým tokenem Turnstile (bez tokenu server odmítne). */
@@ -88,8 +95,21 @@ export function httpSource(): CrowdSource {
       return { count: m.count, tiles: m.tiles, tileSize: m.tileSize || TILE_SIZE, minIndex, maxIndex, demo: !!m.demo };
     },
     async tile(n) {
-      const t = await getJson<TileResponse>(`${API}/tile/${n}`);
+      const t = await getJson<PublicTileResponse>(`${API}/tile/${n}`);
       return t.items.map(personFromItem);
+    },
+    async overview(n) {
+      const res = await fetch(`${API}/overview/${n}`);
+      if (!res.ok) throw new HttpError(res.status);
+      return new Uint8Array(await res.arrayBuffer());
+    },
+    async personAt(index) {
+      try {
+        return personFromResponse(await getJson<PersonResponse>(`${API}/at/${index}`));
+      } catch (e) {
+        if (e instanceof HttpError && e.status === 404) return null;
+        throw e;
+      }
     },
     async person(id) {
       try {
@@ -157,6 +177,18 @@ export function fixtureSource(count: number, presetIds: string[], customTexts: s
       const out: CrowdPerson[] = [];
       for (let i = n * TILE_SIZE; i < Math.min(count, (n + 1) * TILE_SIZE); i++) out.push(person(i));
       return out;
+    },
+    async overview(n) {
+      const len = Math.max(0, Math.min(TILE_SIZE, count - n * TILE_SIZE));
+      const out = new Uint8Array(len);
+      for (let k = 0; k < len; k++) {
+        const p = person(n * TILE_SIZE + k);
+        out[k] = encodeCell(p.pose, p.signColor, generateStickman(p.seed).signShape);
+      }
+      return out;
+    },
+    async personAt(index) {
+      return index >= 0 && index < count ? person(index) : null;
     },
     async person(id) {
       const m = /^fixture-(\d+)$/.exec(id);

@@ -5,10 +5,10 @@ export function SampleBadge({ children = "Ukázkový režim" }: { children?: Rea
   return <span className="k-badge">{children}</span>;
 }
 
-/** Pruh nad každým blokem s ukázkovými čísly. */
-export function SampleBanner({ title = "Ukázková data", text = "Čísla nejsou skutečná." }: { title?: string; text?: string }) {
+/** Pruh nad každým blokem s ukázkovými čísly. `compact` = jeden řádek (dav: nebere výšku plátnu). */
+export function SampleBanner({ title = "Ukázková data", text = "Čísla nejsou skutečná.", compact = false }: { title?: string; text?: string; compact?: boolean }) {
   return (
-    <div className="k-banner" role="note">
+    <div className={compact ? "k-banner k-banner--compact" : "k-banner"} role="note">
       <strong>{title}</strong>
       <span>{text}</span>
     </div>

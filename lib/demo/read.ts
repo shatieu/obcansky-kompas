@@ -1,7 +1,8 @@
 import { unstable_cache } from "next/cache";
 import { getSql } from "@/lib/db/client";
 import { flags } from "@/lib/env";
-import { META_TAG, personTag, tileTag, type MetaResponse, type PersonResponse, type TileResponse } from "./constants";
+import { META_TAG, personTag, TILE_SIZE, tileTag, type MetaResponse, type PersonResponse, type TileResponse } from "./constants";
+import { encodeOverview } from "./overview";
 import { DEFAULT_PRESET_ID, isPresetId } from "./slogans";
 import { staticMeta, staticPerson, staticTile } from "./static";
 import { queryMeta, queryPersonRow, queryTileRows, shapePerson, shapeTileItem } from "./tiles";
@@ -36,6 +37,29 @@ export async function loadTile(n: number, last: boolean): Promise<TileResponse> 
     ["demo-tile", String(n), String(seed), last ? "last" : "full"],
     { tags: [tileTag(n)], revalidate: last ? 30 : 600 },
   )();
+}
+
+/**
+ * Přehledová dlaždice (1 B na index) z téže data cache jako plná dlaždice – DB se kvůli ní nečte
+ * (lib/demo/overview); kódování je levné (seed → tvar cedule).
+ */
+export async function loadOverview(n: number, last: boolean): Promise<Uint8Array> {
+  const tile = await loadTile(n, last);
+  return encodeOverview(n, tile.items);
+}
+
+/**
+ * Osoba podle position_index (karta po klepnutí – dlaždice API id nenesou). Z data cache dlaždice,
+ * takže ani CDN miss nesahá do DB častěji než dlaždice. null = na indexu nikdo není.
+ */
+export async function loadPersonAt(index: number): Promise<PersonResponse | null> {
+  const meta = await loadMeta();
+  const n = Math.floor(index / TILE_SIZE);
+  if (n >= meta.tiles) return null;
+  const it = (await loadTile(n, n >= meta.tiles - 1)).items.find((x) => x[0] === index);
+  if (!it) return null;
+  const [i, seed, pose, signColor, slogan, name, id, joinedDay] = it;
+  return { id, index: i, seed, pose, signColor, slogan, name, joinedDay };
 }
 
 export async function loadPerson(id: string): Promise<PersonResponse | null> {

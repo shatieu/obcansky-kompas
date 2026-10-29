@@ -32,11 +32,13 @@ import { generateStickman, type StickmanParams } from "@/lib/stickman/params";
 import { poseAt } from "@/lib/stickman/poses";
 import { layoutSignText, SIGN_FONT_WEIGHT, type StickmanPalette } from "@/lib/stickman/sign";
 import { ATLAS_H, ATLAS_W, atlasLayout, drawAtlas, headKey, MARK_PX, PART_RES, signKey, SIL_RES, silKey, type AtlasLayout, type Frame } from "./atlas";
-import { clampCamera, screenToWorld, viewRect, zoomAt, type Camera, type Viewport } from "./camera";
+import { clampCamera, screenToWorld, startCamera, viewRect, zoomAt, type Camera, type Viewport } from "./camera";
+import { figureHitRects, isTap, TAP } from "./hit";
 import { sloganText, type CrowdPerson, type CrowdSource } from "./data";
 import { crowdBounds, forEachInRect, hitTest, LAYOUT, nearestIndex, positionFor, rowOf, rowScale, rowStart, rowY, STAGE, type Rect } from "./layout";
 import { animatedCap, figurePx, LOD_PX, lodFor, selectAnimated } from "./lod";
-import { tileOf, tilesForRect } from "./tiles";
+import { fetchPlan, firstRowBelow, tileOf } from "./tiles";
+import { decodeCell, OVERVIEW_PRESENT } from "@/lib/demo/overview";
 
 // Jen WebGL a canvas (WebGPU nepoužíváme) – menší balík než `pixi.js/particle-container`.
 extensions.add(GlParticleContainerPipe, CanvasParticleContainerPipe);
@@ -72,6 +74,8 @@ export interface EngineOptions {
    */
   focusInsets?: () => { top: number; bottom: number };
   onSelect?: (p: CrowdPerson) => void;
+  /** Klepnutí na postavu známou jen z přehledu (bez plné dlaždice): data dotáhne volající podle indexu. */
+  onSelectIndex?: (index: number) => void;
   onCamera?: (c: Camera) => void;
   onMeta?: (count: number, demo: boolean) => void;
   onError?: (e: unknown) => void;
@@ -93,6 +97,11 @@ interface Colors {
 const MAX_TILES_IN_VIEW = 24;
 const TILE_CONCURRENCY = 4;
 const MAX_CACHED_TILES = 200;
+/** Přehledové dlaždice (1 B/osoba): nejvýš ve výřezu a v paměti (400 × 1 kB). */
+const MAX_OVERVIEW_IN_VIEW = 64;
+/** Průměrná postava (jen pro zásah do siluety známé z přehledu – seed tam není). */
+const NEUTRAL_PARAMS: StickmanParams = { ...generateStickman(1), height: 1, headSize: 1, armLength: 1, legLength: 1, shoulderWidth: 1, lean: 0, headTilt: 0 };
+const MAX_CACHED_OVERVIEW = 400;
 const TEXT_RES = 4;
 const TEXT_CACHE = 400;
 /** Průhlednost postav, které zakrývají zvýrazněnou postavu. */
@@ -211,6 +220,8 @@ export class CrowdEngine {
   private extent = 0;
   /** Nejnižší obsazený index (bez DEMO_MODE chybí seedoví, dav nemusí začínat 0). */
   private minIndex = 0;
+  /** Počátek rozvržení (= minIndex při načtení): první obsazený index stojí hned za pódiem. */
+  private origin = 0;
   private demo = false;
   /** Zvýrazněná postava (karta otevřená, „Najdi mě“, /demonstrace/[id]); null = běžné procházení. */
   private focusIndex: number | null = null;
@@ -223,6 +234,10 @@ export class CrowdEngine {
   private tiles = new Map<number, number>(); // n → poslední použití
   private loading = new Set<number>();
   private queue: number[] = [];
+  /** Přehledové dlaždice: n → bajty (lib/demo/overview), fronta a stahování. */
+  private ov = new Map<number, Uint8Array>();
+  private ovLoading = new Set<number>();
+  private ovQueue: number[] = [];
 
   private rigs = new Map<number, Rig>();
   private rigPool: Rig[] = [];
@@ -333,6 +348,8 @@ export class CrowdEngine {
     }
     this.extent = meta.maxIndex === null ? 0 : Math.max(0, meta.maxIndex + 1);
     this.minIndex = Math.max(0, Math.min(meta.minIndex ?? 0, this.extent));
+    // Postava pod počátkem (focus/„Najdi mě“ mimo meta) by stála na místě 0 – počátek ji zahrne.
+    this.origin = Math.min(this.minIndex, this.o.focusIndex ?? Infinity);
     this.demo = meta.demo;
     // Zobrazený počet = skutečný počet účastníků (ne rozsah indexů s mezerami).
     this.o.onMeta?.(Math.max(0, meta.count), this.demo);
@@ -349,25 +366,26 @@ export class CrowdEngine {
   // ---------- Kamera ----------
 
   private bounds(): Rect {
-    const b = crowdBounds(Math.max(1, this.extent));
+    const b = crowdBounds(Math.max(this.origin + 1, this.extent), this.origin);
     return { x0: Math.min(b.x0, STAGE.x0), x1: Math.max(b.x1, STAGE.x1), y0: b.y0, y1: STAGE.y1 + 40 };
   }
   private clamp(c: Camera): Camera {
     return clampCamera(c, this.bounds(), this.vp);
   }
+  private pos(index: number) {
+    return positionFor(index, this.origin);
+  }
 
-  /** Výchozí pohled: pódium dole, přední řady s čitelnými cedulemi. */
+  /** Výchozí pohled: pódium dole, přední řady s čitelnými cedulemi (lib/crowd/camera startCamera). */
   startCamera(): Camera {
-    const z = this.o.mobile ? 1.15 : 1.3;
-    const y = STAGE.y1 + (this.o.mobile ? 6 : 24) - (this.vp.h / 2 - (this.o.insetBottom ?? 0)) / z;
-    return this.clamp({ x: 0, y, z });
+    return this.clamp(startCamera(this.vp, { mobile: this.o.mobile, insetBottom: this.o.insetBottom }));
   }
   /**
    * Kamera na postavě. `upper` = otevře se karta: postava (i s cedulí) se vejde do pásu mezi
    * horním překryvem a listem karty (focusInsets), jinak doprostřed výřezu.
    */
   cameraOnIndex(index: number, upper = false): Camera {
-    const p = positionFor(index);
+    const p = this.pos(index);
     const ins = upper ? this.o.focusInsets?.() : undefined;
     const top = Math.max(0, ins?.top ?? 0);
     const band = Math.max(96, this.vp.h - top - Math.max(0, ins?.bottom ?? 0));
@@ -377,7 +395,7 @@ export class CrowdEngine {
     return { x: p.x, y: cy - (top + band / 2 - this.vp.h / 2) / z, z };
   }
   endCamera(): Camera {
-    return this.clamp(this.cameraOnIndex(Math.max(0, this.extent - 1)));
+    return this.clamp(this.cameraOnIndex(Math.max(this.origin, this.extent - 1)));
   }
 
   setCamera(c: Camera, animate = false) {
@@ -432,7 +450,7 @@ export class CrowdEngine {
 
   /** Index postavy uprostřed výřezu (klávesa Enter). */
   centerPerson(): CrowdPerson | null {
-    const i = nearestIndex(this.cam.x, this.cam.y, this.extent, 140 / Math.min(1, this.cam.z), (k) => this.persons.has(k));
+    const i = nearestIndex(this.cam.x, this.cam.y, this.extent, 140 / Math.min(1, this.cam.z), (k) => this.persons.has(k), this.origin);
     return i === null ? null : (this.persons.get(i) ?? null);
   }
 
@@ -496,10 +514,60 @@ export class CrowdEngine {
 
   // ---------- Vstup ----------
 
+  /**
+   * Kdo je pod bodem obrazovky (sx, sy)? Plocha postavy včetně cedule a tyčí; animovaný rig podle
+   * aktuálního snímku, ostatní v klidové póze (= silueta). Dotyk má toleranci TOUCH_SLOP_PX.
+   */
+  hitAt(sx: number, sy: number, touch = false): number | null {
+    const w = screenToWorld(this.cam, this.vp, sx, sy);
+    const now = this.reducedMotion ? undefined : performance.now();
+    return hitTest(w.x, w.y, this.extent, {
+      origin: this.origin,
+      // Postava z plné dlaždice, nebo jen z přehledu (vzdálené siluety) – tu dotáhne onSelectIndex.
+      exists: (k) => this.persons.has(k) || !!((this.ovByte(k) ?? 0) & OVERVIEW_PRESENT),
+      slop: (touch ? TAP.touchSlopPx : TAP.mouseSlopPx) / this.cam.z,
+      top: this.focusIndex,
+      shape: (k, pos) => {
+        const p = this.persons.get(k);
+        if (p) return figureHitRects(this.paramsOf(p), p.pose, p.signColor, pos, this.rigs.has(k) ? now : undefined);
+        const c = decodeCell(this.ovByte(k) ?? 0)!;
+        return figureHitRects({ ...NEUTRAL_PARAMS, signShape: c.signShape }, c.pose, c.signColor, pos);
+      },
+    });
+  }
+
+  /**
+   * Zásahové obdélníky postavy na obrazovce (CSS px vůči plátnu) v klidové póze: [tělo, cedule?, tyče…].
+   * Pro e2e (klepnutí na ceduli) a ladění; null = postava není načtená.
+   */
+  debugFigure(index: number): { hasSign: boolean; rects: Rect[] } | null {
+    const p = this.persons.get(index);
+    if (!p) return null;
+    const rects = figureHitRects(this.paramsOf(p), p.pose, p.signColor, this.pos(index));
+    const s = (x: number, y: number) => ({ x: (x - this.cam.x) * this.cam.z + this.vp.w / 2, y: (y - this.cam.y) * this.cam.z + this.vp.h / 2 });
+    return {
+      hasSign: hasSign(p.signColor),
+      rects: rects.map((r) => {
+        const a = s(r.x0, r.y0);
+        const b = s(r.x1, r.y1);
+        return { x0: a.x, y0: a.y, x1: b.x, y1: b.y };
+      }),
+    };
+  }
+
+  /** Indexy načtených postav ve výřezu (pro e2e). */
+  debugVisible(): number[] {
+    const out: number[] = [];
+    forEachInRect(viewRect(this.cam, this.vp), this.extent, (i) => {
+      if (this.persons.has(i)) out.push(i);
+    }, this.origin);
+    return out;
+  }
+
   private bindInput() {
     const el = this.canvas;
     const pointers = new Map<number, { x: number; y: number }>();
-    let downAt: { x: number; y: number; t: number } | null = null;
+    let downAt: { x: number; y: number; t: number; touch: boolean } | null = null;
     let moved = false;
     let pinchD = 0;
     const local = (e: PointerEvent | WheelEvent) => {
@@ -510,7 +578,7 @@ export class CrowdEngine {
       el.setPointerCapture?.(e.pointerId);
       pointers.set(e.pointerId, local(e));
       if (pointers.size === 1) {
-        downAt = { ...local(e), t: performance.now() };
+        downAt = { ...local(e), t: performance.now(), touch: e.pointerType === "touch" || e.pointerType === "pen" };
         moved = false;
       } else downAt = null;
       if (pointers.size === 2) {
@@ -524,8 +592,11 @@ export class CrowdEngine {
       if (!prev) return;
       const cur = local(e);
       if (pointers.size === 1) {
-        if (downAt && Math.hypot(cur.x - downAt.x, cur.y - downAt.y) > 6) moved = true;
-        if (moved) this.panBy(prev.x - cur.x, prev.y - cur.y);
+        // Posun začne až za prahem klepnutí (TAP.movePx) – pak dorovná celou cestu od stisku (bez skoku).
+        if (!moved && downAt && Math.hypot(cur.x - downAt.x, cur.y - downAt.y) > TAP.movePx) {
+          moved = true;
+          this.panBy(downAt.x - cur.x, downAt.y - cur.y);
+        } else if (moved) this.panBy(prev.x - cur.x, prev.y - cur.y);
       }
       pointers.set(e.pointerId, cur);
       if (pointers.size === 2) {
@@ -539,12 +610,13 @@ export class CrowdEngine {
     const onUp = (e: PointerEvent) => {
       const had = pointers.delete(e.pointerId);
       if (pointers.size < 2) pinchD = 0;
-      if (had && downAt && !moved && performance.now() - downAt.t < 600) {
-        const w = screenToWorld(this.cam, this.vp, downAt.x, downAt.y);
-        const i = hitTest(w.x, w.y, this.extent, (k) => this.persons.has(k));
+      // Klepnutí = malý pohyb a krátký stisk (isTap); jinak to byl posun, ne výběr.
+      if (had && e.type === "pointerup" && downAt && !moved && isTap(0, performance.now() - downAt.t)) {
+        const i = this.hitAt(downAt.x, downAt.y, downAt.touch);
         if (i !== null) {
           const p = this.persons.get(i);
           if (p) this.o.onSelect?.(p);
+          else this.o.onSelectIndex?.(i);
         }
       }
       if (pointers.size === 0) downAt = null;
@@ -675,7 +747,7 @@ export class CrowdEngine {
       return s;
     };
     // Dlažba: vodorovné linky po řadách a sbíhavé linky k úběžníku za davem (--blue-tint).
-    const maxRow = rowOf(Math.max(0, this.extent - 1)) + 4;
+    const maxRow = rowOf(Math.max(0, this.extent - 1 - this.origin)) + 4;
     const lines: Sprite[] = [];
     const pad = 400;
     for (let r = 0; r <= maxRow; r += 3) {
@@ -762,9 +834,7 @@ export class CrowdEngine {
     this.built = { view, rect, z };
 
     // První řada, která je už jen tečkami: 100·s·z < LOD_PX.far.
-    const sMin = LOD_PX.far / (100 * z);
-    const dotRow = sMin >= 1 ? 0 : Math.max(0, Math.ceil(LAYOUT.perspectiveK * (1 / sMin - 1)));
-    const dotsFrom = Math.min(this.extent, rowStart(dotRow));
+    const dotsFrom = Math.min(this.extent, this.origin + rowStart(firstRowBelow(LOD_PX.far, z)));
     if (dotsFrom !== this.dotsFrom) {
       this.dotsFrom = dotsFrom;
       this.dotsDirty = true;
@@ -775,11 +845,18 @@ export class CrowdEngine {
     let visible = 0;
     forEachInRect(rect, dotsFrom, (i) => {
       visible++;
-      const pos = positionFor(i);
+      const pos = this.pos(i);
       const lod = lodFor(figurePx(pos.scale, z));
       const p = this.persons.get(i);
       if (!p) {
-        if (i >= this.minIndex && !this.loadedTile(i)) statics.push({ i, tex: this.frame("placeholder"), x: pos.x, y: pos.y, s: pos.scale });
+        if (i < this.minIndex || this.loadedTile(i)) return;
+        // Bez plné dlaždice: silueta z přehledu (výška 1×), dokud nepřijde ani přehled, zástupná.
+        const b = this.ovByte(i);
+        if (b === undefined) statics.push({ i, tex: this.frame("placeholder"), x: pos.x, y: pos.y, s: pos.scale });
+        else {
+          const c = decodeCell(b);
+          if (c) statics.push({ i, tex: this.frame(`s:${silKey(c.pose, c.signColor, c.signShape)}`), x: pos.x, y: pos.y, s: pos.scale });
+        }
         return;
       }
       const params = this.paramsOf(p);
@@ -790,7 +867,7 @@ export class CrowdEngine {
         pos.y - FIGURE_H * pos.scale <= view.y1 + ay;
       if ((lod === "near" || lod === "mid") && inView) cands.push([i, pos.x, pos.y - 50 * pos.scale]);
       else statics.push({ i, tex: this.frame(`s:${silKey(p.pose, p.signColor, params.signShape)}`), x: pos.x, y: pos.y, s: pos.scale * params.height });
-    });
+    }, this.origin);
     this.visibleCount = visible + Math.max(0, this.extent - dotsFrom);
 
     const cap = animatedCap(this.o.mobile);
@@ -800,7 +877,7 @@ export class CrowdEngine {
     // postavy před ní poloprůhledné, nad ní značka výběru. Na úrovni teček značka na tečce.
     const f = this.focusIndex;
     const fp = f !== null ? this.persons.get(f) : undefined;
-    const fPos = f !== null ? positionFor(f) : null;
+    const fPos = f !== null ? this.pos(f) : null;
     let focusBox: Rect | null = null;
     this.markAnchor = null;
     if (f !== null && fp && fPos) {
@@ -826,7 +903,7 @@ export class CrowdEngine {
       if (chosen.has(c[0])) continue;
       const p = this.persons.get(c[0])!;
       const params = this.paramsOf(p);
-      const pos = positionFor(c[0]);
+      const pos = this.pos(c[0]);
       statics.push({ i: c[0], tex: this.frame(`s:${silKey(p.pose, p.signColor, params.signShape)}`), x: pos.x, y: pos.y, s: pos.scale * params.height });
     }
     this.animated = chosen;
@@ -847,7 +924,7 @@ export class CrowdEngine {
         r = this.acquireRig(p);
         this.rigs.set(i, r);
       }
-      const pos = positionFor(i);
+      const pos = this.pos(i);
       const near = figurePx(pos.scale, z) >= LOD_PX.near;
       r.near = near || i === f;
       r.text.visible = near && hasSign(p.signColor);
@@ -875,7 +952,7 @@ export class CrowdEngine {
       const sc = st.s / SIL_RES;
       pt.scaleX = sc;
       pt.scaleY = sc;
-      pt.alpha = focusBox && dimmed(st.i, positionFor(st.i)) ? FOCUS_DIM_ALPHA : 1;
+      pt.alpha = focusBox && dimmed(st.i, this.pos(st.i)) ? FOCUS_DIM_ALPHA : 1;
       arr.push(pt);
     }
     this.statics.particleChildren = arr;
@@ -929,7 +1006,7 @@ export class CrowdEngine {
       }
       const tex = this.frame("white");
       for (let i = base + d.parts.length; i < end; i++) {
-        const pos = positionFor(i);
+        const pos = this.pos(i);
         const size = (30 * pos.scale) / 8;
         const y = pos.y - 45 * pos.scale;
         d.parts.push(new Particle({ texture: tex, x: pos.x, y, scaleX: size, scaleY: size, anchorX: 0.5, anchorY: 0.5, tint: this.colors.soft }));
@@ -960,8 +1037,16 @@ export class CrowdEngine {
       const i = base + k;
       const p = this.persons.get(i);
       const pt = d.parts[k]!;
-      pt.tint = p ? this.dotColor(p.signColor) : this.colors.soft;
-      pt.alpha = !p && (i < this.minIndex || loaded) ? 0 : 1;
+      if (p) {
+        pt.tint = this.dotColor(p.signColor);
+        pt.alpha = 1;
+        continue;
+      }
+      // Bez plných dat barva z přehledu (když je), jinak tlumená; mezery skryté.
+      const b = this.ovByte(i);
+      const c = b === undefined ? undefined : decodeCell(b);
+      pt.tint = c ? this.dotColor(c.signColor) : this.colors.soft;
+      pt.alpha = i < this.minIndex || loaded || c === null ? 0 : 1;
     }
     if (d.from >= 0) d.pc.update();
   }
@@ -971,19 +1056,52 @@ export class CrowdEngine {
     return c === "blue" ? this.colors.blue : c === "red" ? this.colors.red : c === "none" ? this.colors.muted : this.colors.ink;
   }
 
-  /** Dlaždice se stahují jen pro postavy nad úrovní teček (tečky se kreslí z rozvržení). */
+  /**
+   * Co stáhnout (lib/crowd/tiles fetchPlan): tečky nic, siluety přehled (1 B/osoba), plné
+   * dlaždice jen pro blízké a střední postavy ve výřezu (+25 %).
+   */
   private loadTiles(view: Rect) {
-    const detail = Math.min(this.extent, Math.max(0, this.dotsFrom));
-    if (detail === 0) {
-      this.queue = [];
-      return;
-    }
     const w = view.x1 - view.x0;
-    const need = tilesForRect(view, detail, { margin: w * 0.25, max: MAX_TILES_IN_VIEW });
+    const plan = fetchPlan(view, this.cam.z, this.extent, { origin: this.origin, margin: w * 0.25, maxFull: MAX_TILES_IN_VIEW, maxOverview: MAX_OVERVIEW_IN_VIEW });
     const now = performance.now();
-    for (const n of need) if (this.tiles.has(n)) this.tiles.set(n, now);
-    this.queue = need.filter((n) => !this.tiles.has(n) && !this.loading.has(n));
+    for (const n of plan.full) if (this.tiles.has(n)) this.tiles.set(n, now);
+    this.queue = plan.full.filter((n) => !this.tiles.has(n) && !this.loading.has(n));
+    this.ovQueue = plan.overview.filter((n) => !this.tiles.has(n) && !this.ov.has(n) && !this.ovLoading.has(n));
     this.pump();
+  }
+
+  /** Bajt přehledu pro index; undefined = přehled dlaždice ještě není. */
+  private ovByte(i: number): number | undefined {
+    const n = tileOf(i);
+    const b = this.ov.get(n);
+    if (!b) return undefined;
+    const k = i - n * 1000;
+    return k < b.length ? b[k]! : 0;
+  }
+
+  private pumpOverview() {
+    // Přehledy jsou malé: vlastní 2 souběžná stahování navíc k plným dlaždicím.
+    while (this.ovLoading.size < 2 && this.ovQueue.length) {
+      const n = this.ovQueue.shift()!;
+      this.ovLoading.add(n);
+      this.o.source
+        .overview(n)
+        .then((bytes) => {
+          if (this.destroyed) return;
+          this.ov.set(n, bytes);
+          if (this.ov.size > MAX_CACHED_OVERVIEW) this.ov.delete(this.ov.keys().next().value!);
+          this.colorDotTile(n);
+          this.viewDirty = true;
+          this.wake();
+        })
+        .catch((e) => {
+          if (!this.destroyed) console.warn("crowd overview", n, e);
+        })
+        .finally(() => {
+          this.ovLoading.delete(n);
+          if (!this.destroyed) this.pump();
+        });
+    }
   }
 
   private pump() {
@@ -1020,6 +1138,7 @@ export class CrowdEngine {
           if (!this.destroyed) this.pump();
         });
     }
+    this.pumpOverview();
   }
 
   private evictTiles() {
@@ -1052,7 +1171,7 @@ export class CrowdEngine {
     const ink = this.colors.ink;
     for (const l of r.lines) l.tint = ink;
     r.fist.tint = ink;
-    const pos = positionFor(p.index);
+    const pos = this.pos(p.index);
     r.c.position.set(pos.x, pos.y);
     r.c.scale.set(pos.scale);
     r.c.zIndex = pos.y;
@@ -1208,7 +1327,7 @@ export class CrowdEngine {
 
   /** Pro minimapu: hranice davu a výřez kamery ve světě. */
   minimapState() {
-    return { bounds: this.bounds(), view: viewRect(this.cam, this.vp), count: this.extent };
+    return { bounds: this.bounds(), view: viewRect(this.cam, this.vp), count: this.extent, origin: this.origin };
   }
 
   destroy() {

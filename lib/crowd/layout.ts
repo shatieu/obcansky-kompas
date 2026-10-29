@@ -5,6 +5,11 @@ import { hash32 } from "@/lib/stickman/prng";
  * první lidé vepředu uprostřed, dav roste dozadu a do stran po řadách (každá řada o 2 delší),
  * řada se plní od středu střídavě doleva a doprava. Jednoduchá perspektiva: zadní řady menší a výš.
  * Souřadnice světa: chodidla panáčka, osa y dolů, řada 0 na y = 0, pódium před ní (y > 0).
+ *
+ * `origin` (počátek rozvržení) = nejnižší obsazený index (meta.minIndex). Index `origin` stojí
+ * na místě 0 (vepředu uprostřed hned za pódiem), takže dav bez seedových indexů 0…minIndex−1
+ * nezačíná desítky řad za pódiem. Výchozí 0 = původní rozvržení. Náhodný posun zůstává podle
+ * skutečného indexu. `count` ve funkcích níž je vždy rozsah indexů (maxIndex + 1), ne počet lidí.
  */
 export const LAYOUT = {
   /** Lidí v první řadě (liché = jeden přesně uprostřed). */
@@ -78,10 +83,11 @@ function jitter(index: number) {
   return { jx: ((h & 0xffff) / 0xffff) * 2 - 1, jy: (((h >>> 16) & 0xffff) / 0xffff) * 2 - 1 };
 }
 
-/** Pozice podle pořadí připojení. Čistá, stabilní, unikátní. */
-export function positionFor(index: number): Position {
-  const row = rowOf(index);
-  const j = index - rowStart(row);
+/** Pozice podle pořadí připojení. Čistá, stabilní, unikátní (pro pevný `origin`). */
+export function positionFor(index: number, origin = 0): Position {
+  const slot = Math.max(0, index - origin);
+  const row = rowOf(slot);
+  const j = slot - rowStart(row);
   const scale = rowScale(row);
   const { jx, jy } = jitter(index);
   return {
@@ -138,16 +144,16 @@ export function offsetsInRange(r: number, x0: number, x1: number): [number, numb
   return a > b ? null : [a, b];
 }
 
-/** Projde indexy (< count) ve výřezu světa. Pořadí: zadní řady dřív (pro kreslení podle hloubky). */
-export function forEachInRect(rect: Rect, count: number, cb: (index: number, row: number) => void): void {
-  if (count <= 0) return;
-  const maxRow = rowOf(count - 1);
+/** Projde indexy (origin ≤ i < count) ve výřezu světa. Pořadí: zadní řady dřív (pro kreslení podle hloubky). */
+export function forEachInRect(rect: Rect, count: number, cb: (index: number, row: number) => void, origin = 0): void {
+  if (count - origin <= 0) return;
+  const maxRow = rowOf(count - origin - 1);
   const rows = rowsInRange(rect.y0, rect.y1, maxRow);
   if (!rows) return;
   for (let r = rows[1]; r >= rows[0]; r--) {
     const offs = offsetsInRange(r, rect.x0, rect.x1);
     if (!offs) continue;
-    const start = rowStart(r);
+    const start = origin + rowStart(r);
     for (let o = offs[0]; o <= offs[1]; o++) {
       const i = start + offsetSlot(o);
       if (i < count) cb(i, r);
@@ -156,10 +162,10 @@ export function forEachInRect(rect: Rect, count: number, cb: (index: number, row
 }
 
 /** Rozsah indexů každé řady ve výřezu (nadmnožina) – pro výpočet dlaždic bez procházení lidí. */
-export function indexRangesInRect(rect: Rect, count: number): [number, number][] {
+export function indexRangesInRect(rect: Rect, count: number, origin = 0): [number, number][] {
   const out: [number, number][] = [];
-  if (count <= 0) return out;
-  const maxRow = rowOf(count - 1);
+  if (count - origin <= 0) return out;
+  const maxRow = rowOf(count - origin - 1);
   const rows = rowsInRange(rect.y0, rect.y1, maxRow);
   if (!rows) return out;
   for (let r = rows[0]; r <= rows[1]; r++) {
@@ -178,7 +184,7 @@ export function indexRangesInRect(rect: Rect, count: number): [number, number][]
       j0 = offsetSlot(b);
       j1 = offsetSlot(a);
     }
-    const start = rowStart(r);
+    const start = origin + rowStart(r);
     const i0 = start + j0;
     const i1 = Math.min(count - 1, start + j1);
     if (i0 <= i1) out.push([i0, i1]);
@@ -186,9 +192,9 @@ export function indexRangesInRect(rect: Rect, count: number): [number, number][]
   return out;
 }
 
-/** Hranice davu s `count` lidmi (bez pódia). */
-export function crowdBounds(count: number): Rect {
-  const n = Math.max(1, count);
+/** Hranice davu s rozsahem indexů `count` od `origin` (bez pódia). */
+export function crowdBounds(count: number, origin = 0): Rect {
+  const n = Math.max(1, count - origin);
   const maxRow = rowOf(n - 1);
   let halfW = 0;
   // Nejširší je poslední plná řada (perspektiva šířku řad zmenšuje jen pomalu).
@@ -214,50 +220,86 @@ export const STAGE = {
   flagH: 36,
 } as const;
 
+/** Výchozí zásahová plocha bez dat postavy: jen tělo (bez cedule). */
+export function bodyHitRect(p: Position): Rect {
+  const s = p.scale;
+  return { x0: p.x - 17 * s, x1: p.x + 17 * s, y0: p.y - 108 * s, y1: p.y + 4 * s };
+}
+
+export interface HitOptions {
+  /** Je postava načtená / existuje? (mezery v indexech, nenačtené dlaždice) */
+  exists?: (index: number) => boolean;
+  /** Zásahová plocha postavy ve světě (tělo, hlava, cedule, tyče); bez ní jen tělo (`bodyHitRect`). */
+  shape?: (index: number, pos: Position) => readonly Rect[];
+  /** Tolerance ve světě (dotyk: px / zoom). Přesný zásah má vždy přednost před zásahem s tolerancí. */
+  slop?: number;
+  origin?: number;
+  /** Postava kreslená nad všemi (zvýraznění) – při zásahu vyhrává. */
+  top?: number | null;
+}
+
+/** Rezerva svisle: cedule vysoké postavy (výška až 1,12×) přesahuje `figureTop`. */
+const HIT_EXTRA_TOP = 0.25;
+
 /**
- * Zásah klepnutím: kdo stojí v bodě světa (wx, wy)? Vrací přední (nejníž stojící) postavu,
- * jejíž tělo (bez cedule) bod obsahuje, nebo null.
+ * Zásah klepnutím: kdo je v bodě světa (wx, wy)? Plocha postavy včetně cedule a tyčí (`shape`).
+ * Překryvy podle pořadí kreslení: vyhrává zvýrazněná (`top`), jinak přední (nejníž stojící) postava.
+ * Přesný zásah má přednost před zásahem jen v toleranci `slop`.
  */
-export function hitTest(wx: number, wy: number, count: number, exists?: (index: number) => boolean): number | null {
-  if (count <= 0) return null;
-  const maxRow = rowOf(count - 1);
-  const rows = rowsInRange(wy - 4, wy + 4, maxRow);
+export function hitTest(wx: number, wy: number, count: number, opts: HitOptions = {}): number | null {
+  const origin = opts.origin ?? 0;
+  if (count - origin <= 0) return null;
+  const slop = Math.max(0, opts.slop ?? 0);
+  const maxRow = rowOf(count - origin - 1);
+  const rows = rowsInRange(wy - slop - 4, wy + slop + 4 + LAYOUT.figureTop * HIT_EXTRA_TOP, maxRow);
   if (!rows) return null;
-  let best: number | null = null;
-  let bestY = -Infinity;
+  const better = (i: number, y: number, cur: { i: number; y: number } | null) =>
+    !cur || (cur.i !== opts.top && (i === opts.top || y > cur.y));
+  let exact: { i: number; y: number } | null = null;
+  let near: { i: number; y: number } | null = null;
   for (let r = rows[0]; r <= rows[1]; r++) {
-    const s = rowScale(r);
-    const o0 = Math.round(wx / (LAYOUT.spacingX * s));
-    const start = rowStart(r);
-    const half = (rowLength(r) - 1) / 2;
-    for (let o = o0 - 1; o <= o0 + 1; o++) {
-      if (o < -half || o > half) continue;
+    const offs = offsetsInRange(r, wx - slop, wx + slop);
+    if (!offs) continue;
+    const start = origin + rowStart(r);
+    for (let o = offs[0]; o <= offs[1]; o++) {
       const i = start + offsetSlot(o);
-      if (i >= count || (exists && !exists(i))) continue;
-      const p = positionFor(i);
-      if (Math.abs(wx - p.x) <= 17 * s && wy <= p.y + 4 * s && wy >= p.y - 108 * s && p.y > bestY) {
-        best = i;
-        bestY = p.y;
+      if (i >= count || (opts.exists && !opts.exists(i))) continue;
+      const p = positionFor(i, origin);
+      const rects = opts.shape ? opts.shape(i, p) : [bodyHitRect(p)];
+      let hit = 0;
+      for (const b of rects) {
+        if (wx >= b.x0 && wx <= b.x1 && wy >= b.y0 && wy <= b.y1) {
+          hit = 2;
+          break;
+        }
+        if (slop > 0 && wx >= b.x0 - slop && wx <= b.x1 + slop && wy >= b.y0 - slop && wy <= b.y1 + slop) hit = 1;
       }
+      if (hit === 2 && better(i, p.y, exact)) exact = { i, y: p.y };
+      else if (hit === 1 && better(i, p.y, near)) near = { i, y: p.y };
     }
   }
-  return best;
+  return exact?.i ?? near?.i ?? null;
 }
 
 /** Nejbližší postava k bodu (střed postavy), v okolí `radius` jednotek. Pro klávesnici (Enter). */
-export function nearestIndex(wx: number, wy: number, count: number, radius: number, exists?: (index: number) => boolean): number | null {
+export function nearestIndex(wx: number, wy: number, count: number, radius: number, exists?: (index: number) => boolean, origin = 0): number | null {
   let best: number | null = null;
   let bestD = radius * radius;
-  forEachInRect({ x0: wx - radius, y0: wy - radius, x1: wx + radius, y1: wy + radius }, count, (i) => {
-    if (exists && !exists(i)) return;
-    const p = positionFor(i);
-    const dx = p.x - wx;
-    const dy = p.y - 50 * p.scale - wy;
-    const d = dx * dx + dy * dy;
-    if (d < bestD) {
-      bestD = d;
-      best = i;
-    }
-  });
+  forEachInRect(
+    { x0: wx - radius, y0: wy - radius, x1: wx + radius, y1: wy + radius },
+    count,
+    (i) => {
+      if (exists && !exists(i)) return;
+      const p = positionFor(i, origin);
+      const dx = p.x - wx;
+      const dy = p.y - 50 * p.scale - wy;
+      const d = dx * dx + dy * dy;
+      if (d < bestD) {
+        bestD = d;
+        best = i;
+      }
+    },
+    origin,
+  );
   return best;
 }

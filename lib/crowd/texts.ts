@@ -19,6 +19,7 @@ export const crowdTextsSchema = z.object({
   list_button: s,
   find_me_button: s,
   minimap_button: s,
+  more_button: s,
   start_button: s,
   end_button: s,
   zoom_in: s,

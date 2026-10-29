@@ -26,7 +26,8 @@ export function CrowdCard({
   onClose,
   onReport,
 }: {
-  person: CrowdPerson;
+  /** Karta potřebuje id (sdílení, nahlášení) – dlaždice ho nenesou, CrowdView ho dotáhne. */
+  person: CrowdPerson & { id: string };
   texts: CrowdTexts["card"];
   presets: Record<string, string>;
   defaultPreset: string;

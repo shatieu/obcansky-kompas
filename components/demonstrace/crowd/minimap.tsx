@@ -4,7 +4,7 @@ import { useEffect, useImperativeHandle, useRef, type Ref } from "react";
 import { positionFor, type Rect } from "@/lib/crowd/layout";
 
 export interface MinimapHandle {
-  draw(state: { bounds: Rect; view: Rect; count: number }): void;
+  draw(state: { bounds: Rect; view: Rect; count: number; origin?: number }): void;
 }
 
 const W = 152;
@@ -31,7 +31,7 @@ export function Minimap({ handle, onPick, label }: { handle: Ref<MinimapHandle>;
   const cache = useRef<{ count: number; key: string; img: HTMLCanvasElement | null; map: (x: number, y: number) => [number, number]; inv: (x: number, y: number) => [number, number] } | null>(null);
 
   useImperativeHandle(handle, () => ({
-    draw({ bounds, view, count }) {
+    draw({ bounds, view, count, origin = 0 }) {
       const cv = ref.current;
       if (!cv) return;
       const dpr = Math.min(2, window.devicePixelRatio || 1);
@@ -42,7 +42,7 @@ export function Minimap({ handle, onPick, label }: { handle: Ref<MinimapHandle>;
       const css = getComputedStyle(cv);
       const dot = css.getPropertyValue("--ink-secondary").trim() || "#454E5D";
       const ink = css.getPropertyValue("--ink").trim() || "#0B1B33";
-      const key = `${count}|${dot}|${bounds.x0}|${bounds.y0}|${bounds.x1}|${bounds.y1}`;
+      const key = `${count}|${origin}|${dot}|${bounds.x0}|${bounds.y0}|${bounds.x1}|${bounds.y1}`;
       if (!cache.current || cache.current.key !== key) {
         const bw = bounds.x1 - bounds.x0;
         const bh = bounds.y1 - bounds.y0;
@@ -56,10 +56,10 @@ export function Minimap({ handle, onPick, label }: { handle: Ref<MinimapHandle>;
         const pw = W * dpr;
         const ph = H * dpr;
         const grid = new Uint32Array(pw * ph);
-        const step = Math.max(1, Math.floor(count / 200000));
+        const step = Math.max(1, Math.floor((count - origin) / 200000));
         let max = 0;
-        for (let i = 0; i < count; i += step) {
-          const p = positionFor(i);
+        for (let i = origin; i < count; i += step) {
+          const p = positionFor(i, origin);
           const [x, y] = map(p.x, p.y - 45 * p.scale);
           const gx = Math.floor(x * dpr);
           const gy = Math.floor(y * dpr);
@@ -143,7 +143,7 @@ export function Minimap({ handle, onPick, label }: { handle: Ref<MinimapHandle>;
       ref={ref}
       title={label}
       aria-hidden="true"
-      className="block h-[66px] w-[96px] border-2 border-ink bg-surface md:h-[104px] md:w-[152px]"
+      className="block h-[104px] w-[152px] flex-none border-2 border-ink bg-surface"
       style={{ touchAction: "none" }}
     />
   );
