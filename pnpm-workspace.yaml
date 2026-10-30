@@ -4,3 +4,5 @@ allowBuilds:
   sharp: true
 minimumReleaseAgeExclude:
   - lucide-react@1.62.0
+overrides:
+  zod@<4.6.6: 4.6.7
