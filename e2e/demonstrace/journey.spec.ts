@@ -146,6 +146,9 @@ test("§11: podpis → připojení → karta → úprava sloganu → moderace �
 
     await input.fill(custom);
     await expect(page.getByText(MODERATION_MESSAGE)).toHaveCount(0);
+    // Náhled ukazuje nový text, ne předchozí ceduli (úklid animace dřív vracel staré SVG).
+    const signText = page.locator("div.sticky svg text");
+    await expect.poll(async () => (await signText.textContent())?.replace(/\s+/g, "")).toBe(custom.replace(/\s+/g, ""));
     // Volná navigace krokem 6 (Souhlas); souhlas se u úpravy dává znovu.
     await page.getByRole("button", { name: new RegExp(esc(j.step_consent)) }).click();
     await expectStep(page, j.consent_title);

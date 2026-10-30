@@ -46,7 +46,12 @@ export function StickmanPreview({
 
   useEffect(() => {
     const el = ref.current;
-    if (!el || !animate) return;
+    if (!el) return;
+    // Vždy aktuální SVG: snímky předchozí animace mohly DOM změnit a React innerHTML znovu
+    // nevloží, když se `initial` nezměnil. Úklid efektu DOM nepřepisuje – běží až po vložení
+    // nového SVG a se starými props by vrátil předchozí ceduli, barvu i pózu.
+    el.innerHTML = initial;
+    if (!animate) return;
     const reduce = window.matchMedia("(prefers-reduced-motion: reduce)");
     let raf = 0;
     let last = 0;
@@ -73,9 +78,8 @@ export function StickmanPreview({
     return () => {
       cancelAnimationFrame(raf);
       io.disconnect();
-      el.innerHTML = stickmanSvg(params, opts);
     };
-  }, [animate, params, opts, pose, signColor]);
+  }, [animate, initial, params, opts, pose, signColor]);
 
   // SVG je náš vlastní řetězec, text cedule je v něm escapovaný (escapeXml).
   return <div ref={ref} className={cx("[&>svg]:block [&>svg]:h-full [&>svg]:w-full", className)} dangerouslySetInnerHTML={{ __html: initial }} />;

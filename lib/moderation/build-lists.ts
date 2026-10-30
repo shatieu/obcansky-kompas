@@ -43,7 +43,7 @@ export function packList(lines: string[]): string {
     if (p) set.add(p);
   }
   // Delší kmeny dřív (nic na pořadí nezávisí, jen stabilní výstup).
-  return [...set].sort((a, b) => a.localeCompare(b)).join("|");
+  return [...set].sort((a, b) => a.localeCompare(b, "cs")).join("|");
 }
 
 export function packNames(lines: string[]): string {
