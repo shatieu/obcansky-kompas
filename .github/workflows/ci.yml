@@ -23,7 +23,7 @@ jobs:
       # Build a testy běží bez DB a bez klíčů (PGlite v testech, statické stránky při buildu).
       NEXT_TELEMETRY_DISABLED: "1"
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v7
       - uses: pnpm/action-setup@v4
         with:
           version: 11
